@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Control Remoto - Marcador de Fútbol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/control.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE BLOQUEO POR PIN DE SEGURIDAD -->
+  <div class="pin-lock-overlay" id="pinLockScreen">
+    <div class="pin-lock-card">
+      <div class="pin-icon">🔒</div>
+      <h2>Acceso de Árbitro</h2>
+      <p>Ingresa el PIN de seguridad para controlar el marcador:</p>
+      
+      <div class="pin-dots-display" id="pinDotsDisplay">
+        <span class="pin-circle"></span>
+        <span class="pin-circle"></span>
+        <span class="pin-circle"></span>
+        <span class="pin-circle"></span>
+      </div>
+
+      <div class="pin-error-msg" id="pinErrorMsg"></div>
+
+      <!-- Teclado Numérico -->
+      <div class="pin-keypad">
+        <button class="pin-key" data-num="1">1</button>
+        <button class="pin-key" data-num="2">2</button>
+        <button class="pin-key" data-num="3">3</button>
+        <button class="pin-key" data-num="4">4</button>
+        <button class="pin-key" data-num="5">5</button>
+        <button class="pin-key" data-num="6">6</button>
+        <button class="pin-key" data-num="7">7</button>
+        <button class="pin-key" data-num="8">8</button>
+        <button class="pin-key" data-num="9">9</button>
+        <button class="pin-key action" id="btnPinClear">C</button>
+        <button class="pin-key" data-num="0">0</button>
+        <button class="pin-key action" id="btnPinDelete">⌫</button>
+      </div>
+      <div class="pin-hint">PIN por defecto: <strong>1234</strong></div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL DE CONTROL REMOTO -->
+  <div class="mobile-app-container" id="appMainContainer" style="display: none;">
+
+    <!-- CABECERA -->
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="app-ball-icon">⚽</span>
+        <div>
+          <h1 class="app-title">Control de Marcador</h1>
+          <div class="connection-status" id="connectionStatus">
+            <span class="status-indicator online"></span>
+            <span class="status-label" id="statusLabel">Conectado al servidor</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-lock-again" id="btnLockApp" title="Bloquear Control">🔒</button>
+        <a href="/" target="_blank" class="header-view-btn" title="Ver Pantalla del Marcador">🖥️ Ver TV</a>
+      </div>
+    </header>
+
+    <!-- PESTAÑAS -->
+    <nav class="app-tabs">
+      <button class="tab-btn active" id="tabBtnLive" data-tab="tabLive">
+        ⏱️ Partido en Vivo
+      </button>
+      <button class="tab-btn" id="tabBtnTeams" data-tab="tabTeams">
+        ⚙️ Configuración y Audios
+      </button>
+    </nav>
+
+    <!-- PESTAÑA 1: CONTROL EN VIVO -->
+    <main class="tab-content active" id="tabLive">
+      
+      <!-- MINI MARCADOR EN VIVO -->
+      <section class="live-preview-card">
+        <div class="mini-team">
+          <img src="/assets/team-local.svg" alt="" id="miniLogo1" class="mini-logo">
+          <span class="mini-name" id="miniName1">LOCAL</span>
+          <span class="mini-score" id="miniScore1">0</span>
+        </div>
+
+        <div class="mini-center">
+          <span class="mini-period" id="miniPeriod">1T</span>
+          <span class="mini-time" id="miniTimer">00:00</span>
+          <span class="mini-extra" id="miniExtra" style="display: none;">+3'</span>
+        </div>
+
+        <div class="mini-team">
+          <span class="mini-score" id="miniScore2">0</span>
+          <span class="mini-name" id="miniName2">VISITA</span>
+          <img src="/assets/team-visita.svg" alt="" id="miniLogo2" class="mini-logo">
+        </div>
+      </section>
+
+      <!-- BOTONES DE GOLES GRANDES -->
+      <section class="section-container">
+        <h2 class="section-title">Anotar Goles</h2>
+        <div class="goals-grid">
+          
+          <!-- Equipo 1 -->
+          <div class="goal-controller team-1-controller">
+            <div class="controller-team-header">
+              <span class="controller-team-name" id="ctrlName1">LOCAL</span>
+              <span class="controller-score-badge" id="ctrlScore1">0</span>
+            </div>
+            <button class="btn-goal-add" id="btnAddGoal1">
+              <span class="btn-goal-icon">⚽</span>
+              <span class="btn-goal-text">+1 GOL</span>
+            </button>
+            <div class="score-actions">
+              <button class="btn-score-minus" id="btnMinusGoal1">-1</button>
+              <button class="btn-score-reset" id="btnZeroGoal1">0</button>
+            </div>
+          </div>
+
+          <!-- Equipo 2 -->
+          <div class="goal-controller team-2-controller">
+            <div class="controller-team-header">
+              <span class="controller-team-name" id="ctrlName2">VISITA</span>
+              <span class="controller-score-badge" id="ctrlScore2">0</span>
+            </div>
+            <button class="btn-goal-add" id="btnAddGoal2">
+              <span class="btn-goal-icon">⚽</span>
+              <span class="btn-goal-text">+1 GOL</span>
+            </button>
+            <div class="score-actions">
+              <button class="btn-score-minus" id="btnMinusGoal2">-1</button>
+              <button class="btn-score-reset" id="btnZeroGoal2">0</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TANDA DE PENALES CON LÓGICA FIFA Y DECLARACIÓN DE GANADOR -->
+      <!-- TANDA DE PENALES CON LÓGICA FIFA Y TURNOS ALTERNADOS -->
+      <section class="section-container penalty-section-card">
+        <div class="section-title-row">
+          <h2 class="section-title">⚽ Tanda de Penales (Turno Alterno)</h2>
+          <button class="btn-toggle-penalties" id="btnTogglePenaltiesView">
+            Activar en Pantalla
+          </button>
+        </div>
+
+        <!-- Alerta de Turno de Patear -->
+        <div class="ctrl-turn-banner" id="ctrlTurnBanner">
+          <span class="ctrl-turn-icon">🎯</span>
+          <span class="ctrl-turn-text" id="ctrlTurnText">TURNO DE PATEAR: EQUIPO LOCAL (Ronda 1)</span>
+        </div>
+
+        <!-- Alerta de Error de Turno (Tiro fuera de turno) -->
+        <div class="ctrl-penalty-error-toast" id="ctrlPenErrorToast" style="display: none;">
+          <div class="error-toast-icon">⛔</div>
+          <div class="error-toast-body">
+            <strong class="error-toast-title">ACCIÓN BLOQUEADA</strong>
+            <span class="error-toast-msg" id="ctrlPenErrorMsg">No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal</span>
+          </div>
+          <button type="button" class="btn-close-toast" id="btnClosePenToast">&times;</button>
+        </div>
+
+        <!-- Alerta de Ganador cuando concluyen los penales -->
+        <div class="ctrl-winner-alert" id="ctrlWinnerAlert" style="display: none;">
+          <span class="trophy-icon">🏆</span>
+          <div class="winner-alert-content">
+            <strong id="ctrlWinnerAlertTitle">¡GANADOR POR PENALES!</strong>
+            <span id="ctrlWinnerAlertSubtitle">Serie matemáticamente terminada</span>
+          </div>
+        </div>
+
+        <!-- Sorteo de Primer Pateador (Solo antes de iniciar la tanda) -->
+        <div class="ctrl-coin-toss-bar" id="ctrlCoinTossBar">
+          <span class="coin-label">🪙 Sorteo (Quién patea 1°):</span>
+          <div class="coin-buttons">
+            <button type="button" class="btn-coin-team active" id="btnCoinTossTeam1">Inicia Local</button>
+            <button type="button" class="btn-coin-team" id="btnCoinTossTeam2">Inicia Visita</button>
+          </div>
+        </div>
+
+        <div class="penalties-score-banner">
+          <span>Marcador de Penales:</span>
+          <strong id="ctrlPenaltyBannerScore">0 - 0</strong>
+        </div>
+
+        <!-- Penales Equipo 1 -->
+        <div class="penalty-team-box team-1-penalties" id="penBoxTeam1">
+          <div class="penalty-team-header">
+            <span class="pen-team-name" id="penName1">LOCAL</span>
+            <span class="pen-team-turn-tag" id="penTurnTag1">🎯 PATEANDO</span>
+            <span class="pen-team-score" id="penScore1">0</span>
+          </div>
+          
+          <div class="ctrl-pen-dots" id="ctrlDots1">
+            <!-- Inyectado por JS -->
+          </div>
+
+          <div class="pen-quick-actions">
+            <button class="btn-pen-scored" id="btnPenGoal1">🟢 + GOL</button>
+            <button class="btn-pen-missed" id="btnPenMiss1">🔴 + FALLÓ</button>
+            <button class="btn-pen-post" id="btnPenPost1" title="Pega en el poste">🥅 ¡Al Palo!</button>
+            <button class="btn-pen-undo" id="btnPenUndo1">↩ Deshacer</button>
+          </div>
+        </div>
+
+        <!-- Penales Equipo 2 -->
+        <div class="penalty-team-box team-2-penalties" id="penBoxTeam2">
+          <div class="penalty-team-header">
+            <span class="pen-team-name" id="penName2">VISITA</span>
+            <span class="pen-team-turn-tag" id="penTurnTag2">⏳ ESPERANDO</span>
+            <span class="pen-team-score" id="penScore2">0</span>
+          </div>
+          
+          <div class="ctrl-pen-dots" id="ctrlDots2">
+            <!-- Inyectado por JS -->
+          </div>
+
+          <div class="pen-quick-actions">
+            <button class="btn-pen-scored" id="btnPenGoal2">🟢 + GOL</button>
+            <button class="btn-pen-missed" id="btnPenMiss2">🔴 + FALLÓ</button>
+            <button class="btn-pen-post" id="btnPenPost2" title="Pega en el poste">🥅 ¡Al Palo!</button>
+            <button class="btn-pen-undo" id="btnPenUndo2">↩ Deshacer</button>
+          </div>
+        </div>
+
+        <div class="pen-reset-row">
+          <button class="btn-pen-undo-global" id="btnPenUndoGlobal">↩ Deshacer Último Tiro</button>
+          <button class="btn-pen-reset" id="btnResetPenalties">🔄 Reiniciar Penales a 0-0</button>
+        </div>
+      </section>
+
+      <!-- CONTROL DEL CRONÓMETRO -->
+      <section class="section-container">
+        <h2 class="section-title">Cronómetro</h2>
+        <div class="timer-controller-card">
+          <div class="timer-big-readout" id="ctrlTimerDisplay">00:00</div>
+          
+          <button class="btn-timer-toggle" id="btnTimerToggle">
+            <span id="timerToggleIcon">▶</span>
+            <span id="timerToggleText">INICIAR CRONÓMETRO</span>
+          </button>
+
+          <!-- Saltos Rápidos según duración configurada -->
+          <div class="timer-quick-actions" id="timerQuickActionsContainer">
+            <button class="btn-quick-time" id="btnJumpStart" data-set-sec="0">00:00 (1T)</button>
+            <button class="btn-quick-time" id="btnJumpHalf" data-set-sec="2700">45:00 (2T)</button>
+            <button class="btn-quick-time" id="btnJumpEnd" data-set-sec="5400">90:00 (Fin)</button>
+          </div>
+
+          <div class="timer-adjust-row">
+            <button class="btn-adjust" id="btnMinusMinute">-1 Min</button>
+            <button class="btn-adjust" id="btnPlusMinute">+1 Min</button>
+            <button class="btn-adjust danger" id="btnResetTimer">00:00</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PERIODO DEL PARTIDO -->
+      <section class="section-container">
+        <h2 class="section-title">Periodo del Partido</h2>
+        <div class="periods-grid">
+          <button class="btn-period active" data-period="1T">1T</button>
+          <button class="btn-period" data-period="Entretiempo">Entretiempo</button>
+          <button class="btn-period" data-period="2T">2T</button>
+          <button class="btn-period" data-period="Prórroga">Prórroga</button>
+          <button class="btn-period" data-period="Penales">Penales</button>
+          <button class="btn-period" data-period="Finalizado">Final</button>
+        </div>
+      </section>
+
+      <!-- TIEMPO EXTRA / AÑADIDO -->
+      <section class="section-container">
+        <h2 class="section-title">Tiempo Añadido (Extra Time)</h2>
+        <div class="extra-time-chips">
+          <button class="btn-extra active" data-extra="0">0'</button>
+          <button class="btn-extra" data-extra="1">+1'</button>
+          <button class="btn-extra" data-extra="2">+2'</button>
+          <button class="btn-extra" data-extra="3">+3'</button>
+          <button class="btn-extra" data-extra="4">+4'</button>
+          <button class="btn-extra" data-extra="5">+5'</button>
+          <button class="btn-extra" data-extra="6">+6'</button>
+        </div>
+      </section>
+
+      <!-- FONDO Y CLIMA DE CANCHA (ADAPTAR VISIBILIDAD EXTERIOR) -->
+      <section class="section-container weather-themes-card">
+        <h2 class="section-title">🌤️ Fondo y Clima de Cancha</h2>
+        <p class="section-help-sub">Cambia el brillo y contraste de la pantalla según la luz del sol:</p>
+        <div class="themes-grid">
+          <button type="button" class="btn-theme-select active" data-theme="night">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-label">Noche<small>Estadio</small></span>
+          </button>
+          <button type="button" class="btn-theme-select" data-theme="sunny">
+            <span class="theme-icon">☀️</span>
+            <span class="theme-label">Soleado<small>Día / Brillo</small></span>
+          </button>
+          <button type="button" class="btn-theme-select" data-theme="cloudy">
+            <span class="theme-icon">⛅</span>
+            <span class="theme-label">Nublado<small>Sin Reflejos</small></span>
+          </button>
+          <button type="button" class="btn-theme-select" data-theme="sunset">
+            <span class="theme-icon">🌅</span>
+            <span class="theme-label">Atardecer<small>Hora Dorada</small></span>
+          </button>
+          <button type="button" class="btn-theme-select" data-theme="grass">
+            <span class="theme-icon">🌱</span>
+            <span class="theme-label">Césped<small>Cancha Verde</small></span>
+          </button>
+          <button type="button" class="btn-theme-select high-contrast" data-theme="high-contrast">
+            <span class="theme-icon">⚡</span>
+            <span class="theme-label">Alto Contraste<small>Pleno Sol LED</small></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- SOUNDBOARD EN VIVO MARIANO CLOSS (100% LOCAL SIN IA) -->
+      <section class="section-container soundboard-card">
+        <h2 class="section-title">🎙️ Frases Mariano Closs en Vivo</h2>
+        <p class="section-help-sub">Toca para reproducir frases auténticas en el parlante del marcador:</p>
+        <div class="soundboard-grid">
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-cantalo.mp3">
+            🗣️ "¡Cántalo, cántalo!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-cerrar-estadio.mp3">
+            🏟️ "¡Cierren el estadio!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-no-lo-cante.mp3">
+            🛑 "¡No lo cante, no lo grite!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-atencion.mp3">
+            ⚡ "¡Atención, gol!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-al-palo.mp3">
+            🥅 "¡Al palo!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-cerca-palo.mp3">
+            💨 "¡Cerca del palo!"
+          </button>
+          <button type="button" class="btn-soundboard-clip primary" data-clip="/assets/sounds/mariano-closs-gol.mp3">
+            ⚽ "¡Mariano Closs Gol!"
+          </button>
+        </div>
+      </section>
+
+      <!-- EFECTOS DE SONIDO -->
+      <section class="section-container">
+        <h2 class="section-title">Efectos de Sonido</h2>
+        <div class="sound-buttons-grid">
+          <button class="btn-sound" id="btnSoundWhistleShort">
+            📢 Silbato (Falta / Reanudar)
+          </button>
+          <button class="btn-sound" id="btnSoundWhistleLong">
+            🏁 Silbato Final (Triple)
+          </button>
+          <button class="btn-sound horn" id="btnSoundGoalHorn">
+            🎺 Probar Audio de Gol
+          </button>
+        </div>
+      </section>
+
+      <!-- REINICIAR PARTIDO -->
+      <section class="section-container danger-zone">
+        <button class="btn-danger-reset" id="btnResetAllMatch">
+          🔄 Reiniciar Todo el Partido a Cero
+        </button>
+      </section>
+
+    </main>
+
+    <!-- PESTAÑA 2: CONFIGURACIÓN, DURACIÓN Y AUDIOS -->
+    <main class="tab-content" id="tabTeams" style="display: none;">
+      
+      <form id="formTeamsConfig" class="teams-form">
+
+        <!-- CONFIGURACIÓN DE AUDIO DE GOL REAL (MARIANO CLOSS / MP3) -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #fbbf24; border-color: #fbbf24;">🎙️ AUDIO DE GOL (MARIANO CLOSS)</div>
+          <p class="form-help-text">
+            Elige el audio auténtico sin IA que sonará en el marcador con cada gol:
+          </p>
+          
+          <div class="audio-options-list">
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="closs_random" id="audioRadioClossRandom" checked>
+              <div class="audio-option-label">
+                <strong>🎙️ Mariano Closs (Aleatorio - Variar frases en cada gol)</strong>
+                <span>Elige al azar: ¡Cántalo!, ¡Cierren el estadio!, ¡Benzemaaa!, etc. 100% auténtico local</span>
+              </div>
+            </label>
+
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="closs_cantalo" id="audioRadioClossCantalo">
+              <div class="audio-option-label">
+                <strong>🎙️ Mariano Closs: "¡Cántalo, cántalo, cántalo!"</strong>
+                <span>Frase fija tradicional de gol</span>
+              </div>
+            </label>
+
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="closs_estadio" id="audioRadioClossEstadio">
+              <div class="audio-option-label">
+                <strong>🎙️ Mariano Closs: "¡Cierren el estadio, genio!"</strong>
+                <span>Grito eufórico histórico</span>
+              </div>
+            </label>
+
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="closs_benzema" id="audioRadioClossBenzema">
+              <div class="audio-option-label">
+                <strong>🎙️ Mariano Closs: "¡Benzemaaa Mariano Closs Gol!"</strong>
+                <span>Grito clásico de Champions League</span>
+              </div>
+            </label>
+
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="horn" id="audioRadioHorn">
+              <div class="audio-option-label">
+                <strong>🎺 Bocina Acústica de Estadio</strong>
+                <span>Sonido tradicional de bocina deportiva</span>
+              </div>
+            </label>
+
+            <label class="audio-option-item">
+              <input type="radio" name="goalAudioType" value="custom" id="audioRadioCustom">
+              <div class="audio-option-label">
+                <strong>📁 Subir otro MP3 Personalizado</strong>
+                <span id="customAudioNameDisplay">Selecciona un archivo MP3 desde tu teléfono</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-group mt-2">
+            <input type="file" id="fileCustomAudio" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac" class="file-input-hidden">
+            <button type="button" class="btn-upload-audio" id="btnTriggerAudioUpload">
+              🎵 Cargar otro archivo de Audio desde tu Celular
+            </button>
+            <span class="upload-feedback" id="feedbackAudioUpload"></span>
+          </div>
+        </div>
+
+        <!-- CONFIGURACIÓN DE DURACIÓN DEL PARTIDO -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #38bdf8; border-color: #38bdf8;">⏱️ DURACIÓN DE PARTIDO</div>
+          <p class="form-help-text">Configura cuántos minutos dura cada tiempo:</p>
+
+          <div class="duration-presets-grid">
+            <button type="button" class="btn-duration-preset" data-min="15">15 min<br><small>Fútbol 5</small></button>
+            <button type="button" class="btn-duration-preset" data-min="20">20 min<br><small>Fútbol 5</small></button>
+            <button type="button" class="btn-duration-preset" data-min="25">25 min<br><small>Fútbol 7</small></button>
+            <button type="button" class="btn-duration-preset" data-min="30">30 min<br><small>Fútbol 8</small></button>
+            <button type="button" class="btn-duration-preset active" data-min="45">45 min<br><small>Fútbol 11</small></button>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="form-label" for="inputHalfDuration">Minutos personalizados por tiempo:</label>
+            <div class="input-with-button">
+              <input type="number" id="inputHalfDuration" class="form-input" min="1" max="90" value="45">
+              <button type="button" class="btn-apply-duration" id="btnApplyDuration">Aplicar Minutos</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Nombre del Torneo -->
+        <div class="form-group">
+          <label class="form-label" for="inputTournament">Nombre del Torneo / Competencia</label>
+          <input type="text" id="inputTournament" class="form-input" placeholder="Ej: Torneo Interbarrios, Copa Libre">
+        </div>
+
+        <!-- EQUIPO LOCAL -->
+        <div class="team-config-card">
+          <div class="team-config-badge">EQUIPO LOCAL</div>
+          
+          <div class="form-group">
+            <label class="form-label" for="inputTeam1Name">Nombre del Equipo (Nombre Completo)</label>
+            <input type="text" id="inputTeam1Name" class="form-input" placeholder="Ej. Real Madrid, Boca Juniors">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label" for="inputTeam1Color">Color del Club</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="inputTeam1Color" value="#00d2ff" class="input-color">
+                <span id="team1ColorLabel" class="color-hex">#00D2FF</span>
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label">Escudo</label>
+              <div class="logo-preview-box">
+                <img src="/assets/team-local.svg" id="previewTeam1Logo" class="logo-preview-img" alt="Logo Local">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <input type="file" id="fileTeam1Logo" accept="image/*" class="file-input-hidden">
+            <button type="button" class="btn-upload-logo" id="btnTriggerUpload1">
+              📷 Cambiar Escudo (Foto o Galería)
+            </button>
+            <span class="upload-feedback" id="feedbackTeam1"></span>
+          </div>
+        </div>
+
+        <!-- EQUIPO VISITA -->
+        <div class="team-config-card">
+          <div class="team-config-badge visitor">EQUIPO VISITA</div>
+          
+          <div class="form-group">
+            <label class="form-label" for="inputTeam2Name">Nombre del Equipo (Nombre Completo)</label>
+            <input type="text" id="inputTeam2Name" class="form-input" placeholder="Ej. Barcelona, River Plate">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label" for="inputTeam2Color">Color del Club</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="inputTeam2Color" value="#ff3366" class="input-color">
+                <span id="team2ColorLabel" class="color-hex">#FF3366</span>
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label">Escudo</label>
+              <div class="logo-preview-box">
+                <img src="/assets/team-visita.svg" id="previewTeam2Logo" class="logo-preview-img" alt="Logo Visita">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <input type="file" id="fileTeam2Logo" accept="image/*" class="file-input-hidden">
+            <button type="button" class="btn-upload-logo" id="btnTriggerUpload2">
+              📷 Cambiar Escudo (Foto o Galería)
+            </button>
+            <span class="upload-feedback" id="feedbackTeam2"></span>
+          </div>
+        </div>
+
+        <!-- CAMBIAR PIN DE SEGURIDAD -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #ef4444; border-color: #ef4444;">🔒 PIN DE SEGURIDAD</div>
+          <div class="form-group">
+            <label class="form-label" for="inputNewPin">Cambiar PIN del Control Remoto</label>
+            <div class="input-with-button">
+              <input type="text" id="inputNewPin" class="form-input" placeholder="4 dígitos (ej. 1234)" maxlength="8">
+              <button type="button" class="btn-apply-duration" id="btnChangePin">Guardar PIN</button>
+            </div>
+            <span class="upload-feedback" id="feedbackPin"></span>
+          </div>
+        </div>
+
+        <!-- Botón Guardar Cambios -->
+        <button type="submit" class="btn-save-teams" id="btnSaveTeams">
+          💾 Guardar Todo y Volver al Partido
+        </button>
+
+      </form>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-synth.js"></script>
+  <script src="/js/control.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="shieldGradVisita" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e11d48"/>
+      <stop offset="50%" stop-color="#be123c"/>
+      <stop offset="100%" stop-color="#4c0519"/>
+    </linearGradient>
+    <linearGradient id="goldBorderVisita" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="glowVisita" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#e11d48" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Escudo Base -->
+  <path d="M 100 10 L 180 30 L 170 150 C 155 195 100 230 100 230 C 100 230 45 195 30 150 L 20 30 Z" 
+        fill="url(#shieldGradVisita)" stroke="url(#goldBorderVisita)" stroke-width="6" filter="url(#glowVisita)"/>
+  
+  <!-- Franja diagonal dorada -->
+  <path d="M 32 60 L 168 140 L 160 170 L 30 90 Z" fill="rgba(251, 191, 36, 0.25)"/>
+  
+  <!-- Balón de fútbol estilizado -->
+  <circle cx="100" cy="115" r="42" fill="#ffffff" stroke="#4c0519" stroke-width="3"/>
+  <!-- Pentágono central -->
+  <polygon points="100,95 119,109 112,130 88,130 81,109" fill="#4c0519"/>
+  <!-- Líneas del balón -->
+  <line x1="100" y1="95" x2="100" y2="74" stroke="#4c0519" stroke-width="3"/>
+  <line x1="119" y1="109" x2="137" y2="102" stroke="#4c0519" stroke-width="3"/>
+  <line x1="112" y1="130" x2="126" y2="148" stroke="#4c0519" stroke-width="3"/>
+  <line x1="88" y1="130" x2="74" y2="148" stroke="#4c0519" stroke-width="3"/>
+  <line x1="81" y1="109" x2="63" y2="102" stroke="#4c0519" stroke-width="3"/>
+
+  <!-- Corona / Estrellas -->
+  <polygon points="100,45 103,54 112,54 105,60 108,69 100,63 92,69 95,60 88,54 97,54" fill="#fbbf24"/>
+  <polygon points="70,52 72,59 79,59 74,64 76,71 70,66 64,71 66,64 61,59 68,59" fill="#fbbf24"/>
+  <polygon points="130,52 132,59 139,59 134,64 136,71 130,66 124,71 126,64 121,59 128,59" fill="#fbbf24"/>
+  
+  <!-- Letras CLUB -->
+  <text x="100" y="190" font-family="'Montserrat', sans-serif" font-weight="900" font-size="20" fill="#ffffff" text-anchor="middle" letter-spacing="3">VISITA</text>
+</svg>

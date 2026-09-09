@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcador de Fútbol - Transmisión en Vivo</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@500;700;800;900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/scoreboard.css">
+</head>
+<body>
+  <div class="scoreboard-wrapper" id="scoreboardWrapper">
+
+    <!-- Fondo de estadio dinámico -->
+    <div class="stadium-bg"></div>
+    <div class="stadium-lights"></div>
+
+    <!-- Barra de Estado Superior -->
+    <header class="top-bar">
+      <div class="tournament-badge" id="tournamentName" title="Presiona 'Q' en el teclado para abrir QR privado">
+        TORNEO DE FÚTBOL
+      </div>
+      <div class="broadcast-live">
+        <span class="live-dot"></span> EN VIVO
+      </div>
+    </header>
+
+    <!-- CRONÓMETRO DEL TIEMPO (ARRIBA AL CENTRO) -->
+    <section class="clock-top-section">
+      <div class="match-center-board" id="matchCenterBoard">
+        <!-- Indicador de Periodo -->
+        <div class="period-badge" id="periodBadge">1T</div>
+
+        <!-- Cronómetro de Juego Principal -->
+        <div class="timer-display" id="timerDisplay">
+          <span class="timer-minutes" id="timerMinutes">00</span>
+          <span class="timer-colon">:</span>
+          <span class="timer-seconds" id="timerSeconds">00</span>
+        </div>
+
+        <!-- Placa de Tiempo Extra / Añadido -->
+        <div class="extra-time-badge" id="extraTimeBadge" style="display: none;">
+          <span class="extra-label">+</span><span id="extraMinutes">3</span>'
+        </div>
+
+        <!-- Estado de tiempo (Pausado / En Juego) -->
+        <div class="timer-status" id="timerStatusText">PAUSADO</div>
+      </div>
+    </section>
+
+    <!-- TABLERO PRINCIPAL DE TANDA DE PENALES (ESTILO TRANSMISIÓN DEPORTIVA) -->
+    <section class="penalty-broadcast-board" id="penaltyMainBoard" style="display: none;">
+      <div class="pen-board-header">
+        <div class="pen-header-left">
+          <span class="pen-live-pulse-badge">⚡ DEFINICIÓN POR PENALES</span>
+          <span class="pen-rules-tag">REGLAMENTO FIFA (5 TIROS)</span>
+        </div>
+        <div class="pen-status-line" id="penaltyStatusLine">RONDA 1 DE 5 • TURNO DE: EQUIPO LOCAL</div>
+        <div class="pen-header-right">
+          <span class="pen-aggregate-label">PENALES:</span>
+          <span class="pen-aggregate-value" id="penaltyAggregateScore">0 - 0</span>
+        </div>
+      </div>
+
+      <div class="pen-teams-shootout">
+        <!-- Fila Equipo 1 (Local) -->
+        <div class="pen-team-row" id="penRowTeam1">
+          <div class="pen-team-identity">
+            <div class="pen-row-accent" id="penAccent1"></div>
+            <img src="/assets/team-local.svg" alt="" id="penBoardLogo1" class="pen-board-logo">
+            <div class="pen-name-wrap">
+              <span class="pen-board-name" id="penBoardName1">EQUIPO LOCAL</span>
+              <span class="pen-kicker-indicator" id="penKickerTag1" style="display: none;">⚡ PATEANDO AHORA</span>
+            </div>
+          </div>
+          <div class="pen-shots-strip" id="penShotsStrip1">
+            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+          </div>
+          <div class="pen-total-box">
+            <span class="pen-total-label">GOLES</span>
+            <span class="pen-total-number" id="penBoardScore1">0</span>
+          </div>
+        </div>
+
+        <!-- Fila Equipo 2 (Visita) -->
+        <div class="pen-team-row" id="penRowTeam2">
+          <div class="pen-team-identity">
+            <div class="pen-row-accent" id="penAccent2"></div>
+            <img src="/assets/team-visita.svg" alt="" id="penBoardLogo2" class="pen-board-logo">
+            <div class="pen-name-wrap">
+              <span class="pen-board-name" id="penBoardName2">EQUIPO VISITA</span>
+              <span class="pen-kicker-indicator" id="penKickerTag2" style="display: none;">⚡ PATEANDO AHORA</span>
+            </div>
+          </div>
+          <div class="pen-shots-strip" id="penShotsStrip2">
+            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+          </div>
+          <div class="pen-total-box">
+            <span class="pen-total-label">GOLES</span>
+            <span class="pen-total-number" id="penBoardScore2">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Ganador Definido -->
+      <div class="penalty-winner-banner" id="penaltyWinnerBanner" style="display: none;">
+        <span class="trophy-emoji">🏆</span>
+        <div class="winner-info-wrap">
+          <span class="winner-title-text" id="penaltyWinnerMessage">¡GANADOR POR PENALES: EQUIPO LOCAL!</span>
+          <span class="winner-sub-text" id="penaltyWinnerSub">Serie finalizada matemáticamente • ¡Campeón / Clasificado!</span>
+        </div>
+        <span class="trophy-emoji">🏆</span>
+      </div>
+    </section>
+
+    <!-- TARJETAS DE EQUIPOS (ABAJO DEL CRONÓMETRO, ANCHO COMPLETO PARA NOMBRES) -->
+    <main class="main-scoreboard">
+      
+      <!-- EQUIPO 1 (LOCAL) -->
+      <div class="team-card team-home" id="cardTeam1">
+        <div class="team-accent" id="accentTeam1"></div>
+        <div class="logo-wrapper">
+          <img src="/assets/team-local.svg" alt="Escudo Local" id="logoTeam1" class="team-logo">
+        </div>
+        <div class="team-info">
+          <!-- Insignia de turno de penal -->
+          <div class="turn-kicking-tag" id="turnTagTeam1" style="display: none;">
+            <span class="pulse-fire">⚡</span> PATEANDO
+          </div>
+          <!-- Nombre completo sin truncar -->
+          <h2 class="team-name" id="nameTeam1">EQUIPO LOCAL</h2>
+          <span class="team-tag">LOCAL</span>
+
+          <!-- TANDA DE PENALES (5 BOLITAS) EQUIPO 1 -->
+          <div class="penalty-dots-container" id="penaltyContainerTeam1" style="display: none;">
+            <div class="penalty-dots-label">PENALES: <strong id="penaltyScoreTeam1">0</strong></div>
+            <div class="penalty-dots-row" id="dotsTeam1">
+              <!-- Bolitas inyectadas por JS -->
+            </div>
+          </div>
+        </div>
+        <div class="score-box">
+          <span class="score-number" id="scoreTeam1">0</span>
+        </div>
+      </div>
+
+      <!-- SEPARADOR CENTRAL VS -->
+      <div class="match-vs-divider">
+        <span class="vs-text">VS</span>
+      </div>
+
+      <!-- EQUIPO 2 (VISITA) -->
+      <div class="team-card team-away" id="cardTeam2">
+        <div class="score-box">
+          <span class="score-number" id="scoreTeam2">0</span>
+        </div>
+        <div class="team-info">
+          <!-- Insignia de turno de penal -->
+          <div class="turn-kicking-tag" id="turnTagTeam2" style="display: none;">
+            <span class="pulse-fire">⚡</span> PATEANDO
+          </div>
+          <!-- Nombre completo sin truncar -->
+          <h2 class="team-name" id="nameTeam2">EQUIPO VISITA</h2>
+          <span class="team-tag">VISITA</span>
+
+          <!-- TANDA DE PENALES (5 BOLITAS) EQUIPO 2 -->
+          <div class="penalty-dots-container" id="penaltyContainerTeam2" style="display: none;">
+            <div class="penalty-dots-label">PENALES: <strong id="penaltyScoreTeam2">0</strong></div>
+            <div class="penalty-dots-row" id="dotsTeam2">
+              <!-- Bolitas inyectadas por JS -->
+            </div>
+          </div>
+        </div>
+        <div class="logo-wrapper">
+          <img src="/assets/team-visita.svg" alt="Escudo Visita" id="logoTeam2" class="team-logo">
+        </div>
+        <div class="team-accent" id="accentTeam2"></div>
+      </div>
+
+    </main>
+
+    <!-- Barra Inferior Limpia -->
+    <footer class="bottom-bar">
+      <div class="broadcast-sponsor">
+        <span>TRANSMISIÓN DEPORTIVA OFICIAL</span>
+      </div>
+      
+      <div class="control-tools">
+        <button class="tool-btn" id="btnCycleTheme" title="Cambiar Fondo / Clima (Soleado, Nublado, Noche, Césped, Alto Contraste)">
+          <span id="themeBtnIcon">🌙</span>
+        </button>
+        <button class="tool-btn" id="btnToggleSound" title="Sonido">
+          <span id="soundIcon">🔊</span>
+        </button>
+        <button class="tool-btn" id="btnFullscreen" title="Pantalla Completa (F11)">
+          ⛶
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL DE CÓDIGO QR PRIVADO (Presionar 'Q' o triple clic en torneo) -->
+  <div class="modal-overlay" id="qrModal" style="display: none;">
+    <div class="qr-card">
+      <button class="close-modal-btn" id="btnCloseQrModal">&times;</button>
+      <div class="qr-badge">ACCESO ADMINISTRADOR</div>
+      <h3>Control Remoto Privado</h3>
+      <p>Escanea este código con tu celular. Se requiere PIN de seguridad para ingresar:</p>
+      
+      <div class="qr-img-container">
+        <img src="" alt="Código QR Control Móvil" id="qrImage" class="qr-image">
+      </div>
+
+      <div class="qr-url-box">
+        <span class="qr-url-label">Enlace Privado:</span>
+        <a href="#" target="_blank" id="qrDirectUrl" class="qr-url-link">http://...</a>
+      </div>
+
+      <div class="qr-note">
+        🔒 Los espectadores no pueden ver este enlace en la pantalla del partido.
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE CELEBRACIÓN DE GOL -->
+  <div class="goal-overlay" id="goalOverlay" style="display: none;">
+    <div class="goal-burst"></div>
+    <div class="goal-content">
+      <div class="goal-team-logo-wrap">
+        <img src="" alt="" id="goalTeamLogo" class="goal-team-logo">
+      </div>
+      <div class="goal-text">¡GOOOOOOOL!</div>
+      <div class="goal-team-name" id="goalTeamName">EQUIPO</div>
+      <div class="goal-score-pill" id="goalScorePill">1 - 0</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-synth.js"></script>
+  <script src="/js/scoreboard.js"></script>
+</body>
+</html>

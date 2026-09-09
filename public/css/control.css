@@ -1,0 +1,1482 @@
+/* ==========================================================================
+   ESTILOS DE CONTROL REMOTO PARA TELÉFONO CELULAR
+   ========================================================================== */
+
+:root {
+  --app-bg: #090d16;
+  --card-bg: #111827;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --accent-cyan: #00d2ff;
+  --accent-pink: #ff3366;
+  --accent-green: #10b981;
+  --accent-gold: #f59e0b;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--text-main);
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+/* PANTALLA DE BLOQUEO POR PIN */
+.pin-lock-overlay {
+  position: fixed;
+  inset: 0;
+  background: #090d16;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.pin-lock-card {
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+.pin-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pin-lock-card h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+}
+
+.pin-lock-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+}
+
+.pin-dots-display {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.pin-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.pin-circle.filled {
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  transform: scale(1.15);
+}
+
+.pin-error-msg {
+  min-height: 20px;
+  font-size: 0.85rem;
+  color: #f87171;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pin-key {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  font-size: 1.5rem;
+  font-weight: 700;
+  height: 60px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, transform 0.1s;
+}
+
+.pin-key:active {
+  background: #38bdf8;
+  color: #090d16;
+  transform: scale(0.95);
+}
+
+.pin-key.action {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pin-hint {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* APLICACIÓN PRINCIPAL */
+.mobile-app-container {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* CABECERA */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 1rem;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-ball-icon {
+  font-size: 2rem;
+}
+
+.app-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 2px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+.status-indicator.online {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-lock-again {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.header-view-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+}
+
+/* PESTAÑAS */
+.app-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.3rem;
+  border-radius: 12px;
+  margin-bottom: 1.2rem;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.65rem;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: #1e293b;
+  color: #38bdf8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* MINI MARCADOR */
+.live-preview-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e1b4b);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.mini-team {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.mini-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.mini-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  min-width: 32px;
+  text-align: center;
+}
+
+.mini-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.8rem;
+}
+
+.mini-period {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #334155;
+  color: #38bdf8;
+  padding: 0.1rem 0.5rem;
+  border-radius: 6px;
+}
+
+.mini-time {
+  font-family: 'Bebas Neue', monospace;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  color: #f8fafc;
+  margin-top: 2px;
+}
+
+.mini-extra {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  color: #4ade80;
+}
+
+/* SECCIONES COMUNES */
+.section-container {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.section-title-row .section-title {
+  margin-bottom: 0;
+}
+
+/* CONTROL DE GOLES */
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.goal-controller {
+  background: #1e293b;
+  border-radius: 14px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.team-1-controller {
+  border-top: 4px solid var(--accent-cyan);
+}
+
+.team-2-controller {
+  border-top: 4px solid var(--accent-pink);
+}
+
+.controller-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controller-team-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.controller-score-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  color: #fbbf24;
+}
+
+.btn-goal-add {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: none;
+  color: white;
+  padding: 1.2rem 0.5rem;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  transition: transform 0.1s, filter 0.1s;
+}
+
+.team-2-controller .btn-goal-add {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+}
+
+.btn-goal-add:active {
+  transform: scale(0.96);
+  filter: brightness(1.2);
+}
+
+.btn-goal-icon {
+  font-size: 1.6rem;
+}
+
+.score-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-score-minus, .btn-score-reset {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-score-minus:active, .btn-score-reset:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   TANDA DE PENALES (5 BOLITAS INTERACTIVAS CON LÓGICA FIFA)
+   ========================================================================== */
+.penalty-section-card {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.03);
+}
+
+.btn-toggle-penalties {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid #fbbf24;
+  color: #fbbf24;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-toggle-penalties.active {
+  background: #fbbf24;
+  color: #0f172a;
+}
+
+/* Alerta de Ganador de la Serie */
+.ctrl-winner-alert {
+  background: linear-gradient(135deg, #065f46, #047857);
+  border: 2px solid #34d399;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  animation: winnerAlertPulse 1.5s infinite alternate;
+}
+
+.ctrl-winner-alert .trophy-icon {
+  font-size: 1.8rem;
+}
+
+.winner-alert-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.winner-alert-content strong {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.winner-alert-content span {
+  font-size: 0.75rem;
+  color: #a7f3d0;
+}
+
+@keyframes winnerAlertPulse {
+  0% { box-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
+  100% { box-shadow: 0 0 20px rgba(52, 211, 153, 0.7); }
+}
+
+/* Aviso de Turno en Control */
+.ctrl-turn-banner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+  border: 1.5px solid #fbbf24;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  animation: turnBannerPulse 1.5s infinite alternate;
+}
+
+@keyframes turnBannerPulse {
+  0% { border-color: #fbbf24; box-shadow: 0 0 8px rgba(251, 191, 36, 0.2); }
+  100% { border-color: #fde047; box-shadow: 0 0 16px rgba(251, 191, 36, 0.5); }
+}
+
+.ctrl-turn-icon {
+  font-size: 1.2rem;
+}
+
+.ctrl-turn-text {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fef08a;
+  letter-spacing: 0.5px;
+}
+
+/* Toast de Error de Turno (Tiro fuera de turno) */
+.ctrl-penalty-error-toast {
+  background: linear-gradient(135deg, #7f1d1d, #991b1b);
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  animation: shakeToast 0.4s ease-in-out;
+}
+
+@keyframes shakeToast {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.error-toast-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.error-toast-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #fee2e2;
+  letter-spacing: 0.5px;
+}
+
+.error-toast-msg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+.btn-close-toast {
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.pen-team-turn-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.pen-team-turn-tag.active {
+  background: #f59e0b;
+  color: #000000;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+  animation: turnPulse 1.2s infinite;
+}
+
+.penalty-team-box.kicking-turn {
+  border: 2px solid #fbbf24 !important;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.penalty-team-box.waiting-turn {
+  opacity: 0.75;
+}
+
+.penalties-score-banner {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+
+.penalties-score-banner strong {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: #fbbf24;
+}
+
+.penalty-team-box {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s;
+}
+
+.penalty-team-box.team-winner {
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+}
+
+.team-1-penalties {
+  border-left: 4px solid var(--accent-cyan);
+}
+
+.team-2-penalties {
+  border-left: 4px solid var(--accent-pink);
+}
+
+.penalty-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.pen-team-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pen-team-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  color: #fbbf24;
+}
+
+.ctrl-pen-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.ctrl-dot {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.ctrl-dot.pending {
+  background: #334155;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #64748b;
+}
+.ctrl-dot.pending::after {
+  content: '○';
+}
+
+.ctrl-dot.scored {
+  background: #10b981;
+  border: 2px solid #34d399;
+  color: white;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+.ctrl-dot.scored::after {
+  content: '✓';
+}
+
+.ctrl-dot.missed {
+  background: #ef4444;
+  border: 2px solid #f87171;
+  color: white;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+.ctrl-dot.missed::after {
+  content: '✕';
+}
+
+.pen-quick-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-pen-scored {
+  flex: 1.2;
+  background: #065f46;
+  border: 1px solid #10b981;
+  color: #34d399;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.55rem 0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-pen-missed {
+  flex: 1.2;
+  background: #7f1d1d;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.55rem 0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-pen-undo {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.55rem 0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-pen-scored:active, .btn-pen-missed:active, .btn-pen-undo:active {
+  transform: scale(0.96);
+}
+
+.pen-reset-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.btn-pen-undo-global {
+  flex: 1.2;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e2e8f0;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-pen-undo-global:active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.97);
+}
+
+.btn-pen-reset {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   CRONÓMETRO
+   ========================================================================== */
+.timer-controller-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.timer-big-readout {
+  font-family: 'Bebas Neue', monospace;
+  font-size: 3.8rem;
+  line-height: 1;
+  color: #38bdf8;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+.btn-timer-toggle {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  color: white;
+  padding: 1.1rem;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  transition: transform 0.1s, background 0.2s;
+}
+
+.btn-timer-toggle.running {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+}
+
+.btn-timer-toggle:active {
+  transform: scale(0.98);
+}
+
+.timer-quick-actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.btn-quick-time {
+  flex: 1;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.6rem 0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-quick-time:active {
+  background: #334155;
+  color: #38bdf8;
+}
+
+.timer-adjust-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.btn-adjust {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-adjust.danger {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+/* PERIODOS */
+.periods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.btn-period {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.7rem 0.3rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-period.active {
+  background: #0284c7;
+  color: white;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+/* TIEMPO EXTRA */
+.extra-time-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.btn-extra {
+  flex: 1;
+  min-width: 45px;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-extra.active {
+  background: #065f46;
+  border-color: #34d399;
+  color: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+/* SONIDOS */
+.sound-buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-sound {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #e2e8f0;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-sound.horn {
+  background: linear-gradient(135deg, #78350f, #b45309);
+  color: #fef3c7;
+  border-color: #f59e0b;
+}
+
+/* ZONA DE PELIGRO */
+.danger-zone {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.btn-danger-reset {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #f87171;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   CONFIGURACIÓN Y AUDIOS
+   ========================================================================== */
+.teams-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.team-config-card {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 1.2rem;
+}
+
+.team-config-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+  background: rgba(0, 210, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+}
+
+.team-config-badge.visitor {
+  color: var(--accent-pink);
+  background: rgba(255, 51, 102, 0.1);
+  border-color: var(--accent-pink);
+}
+
+.form-help-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Selector de Audios */
+.audio-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.audio-option-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.audio-option-item input[type="radio"] {
+  margin-top: 3px;
+  accent-color: #38bdf8;
+  width: 18px;
+  height: 18px;
+}
+
+.audio-option-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.audio-option-label strong {
+  font-size: 0.9rem;
+  color: #f8fafc;
+}
+
+.audio-option-label span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.btn-upload-audio {
+  width: 100%;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px dashed #fbbf24;
+  color: #fbbf24;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+
+/* Presets de Duración */
+.duration-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.btn-duration-preset {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.6rem 0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.btn-duration-preset small {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.btn-duration-preset.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: white;
+}
+.btn-duration-preset.active small {
+  color: #e0f2fe;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-apply-duration {
+  background: #0284c7;
+  border: none;
+  color: white;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Campos de Formulario */
+.form-group {
+  margin-bottom: 0.8rem;
+}
+
+.mt-2 {
+  margin-top: 0.6rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.form-input {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.75rem 0.8rem;
+  border-radius: 10px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+}
+
+.input-color {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.color-hex {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.logo-preview-box {
+  width: 50px;
+  height: 50px;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.logo-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.btn-upload-logo {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.upload-feedback {
+  display: block;
+  font-size: 0.75rem;
+  color: #10b981;
+  margin-top: 0.3rem;
+}
+
+.btn-save-teams {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: none;
+  color: white;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 1rem;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+}
+
+/* ==========================================================================
+   SORTEO Y BOTONES ADICIONALES DE PENALES (¡AL PALO!)
+   ========================================================================== */
+.ctrl-coin-toss-bar {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  border-radius: 10px;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.coin-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.coin-buttons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-coin-team {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-coin-team.active {
+  background: #f59e0b;
+  color: #000000;
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.btn-pen-post {
+  background: rgba(249, 115, 22, 0.2);
+  border: 1px solid #f97316;
+  color: #fdba74;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.5rem 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pen-post:active {
+  background: #f97316;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   TEMAS Y CLIMA DE CANCHA (CONTROL MÓVIL)
+   ========================================================================== */
+.weather-themes-card {
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+.section-help-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: -0.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.btn-theme-select {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.6rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-theme-select .theme-icon {
+  font-size: 1.5rem;
+}
+
+.btn-theme-select .theme-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.btn-theme-select .theme-label small {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.btn-theme-select.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.btn-theme-select.active .theme-label {
+  color: #38bdf8;
+}
+
+.btn-theme-select.high-contrast.active {
+  border-color: #ffe600;
+  background: rgba(255, 230, 0, 0.15);
+  box-shadow: 0 0 14px rgba(255, 230, 0, 0.4);
+}
+.btn-theme-select.high-contrast.active .theme-label {
+  color: #ffe600;
+}
+
+/* ==========================================================================
+   SOUNDBOARD MARIANO CLOSS (EN VIVO)
+   ========================================================================== */
+.soundboard-card {
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(24, 18, 5, 0.8) 100%);
+}
+
+.soundboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.btn-soundboard-clip {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.75rem 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-soundboard-clip:active {
+  transform: scale(0.96);
+  background: rgba(251, 191, 36, 0.25);
+  border-color: #fbbf24;
+}
+
+.btn-soundboard-clip.primary {
+  grid-column: span 2;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.15));
+  border-color: #f59e0b;
+  color: #fef08a;
+  font-size: 0.95rem;
+  padding: 0.85rem;
+}
+
+.btn-soundboard-clip.primary:active {
+  background: #f59e0b;
+  color: #000000;
+}

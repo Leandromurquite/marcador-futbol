@@ -1,0 +1,19 @@
+{
+  "name": "marcador-futbol",
+  "version": "1.0.0",
+  "description": "Marcador de fútbol en tiempo real para TV/PC con control remoto por celular vía Wi-Fi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}
