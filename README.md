@@ -1,42 +1,133 @@
-# ⚽ Marcador de Fútbol en Tiempo Real (Local + Control Remoto Móvil)
+﻿# ⚽ Marcador de Fútbol en Tiempo Real (PC/TV + Control Remoto Móvil)
 
-Sistema profesional de marcador de fútbol para proyectar en pantallas, televisores o monitores y controlarlo de manera remota y segura desde cualquier teléfono celular (iPhone / Android) sin que el público vea los enlaces ni pueda modificar nada.
-
----
-
-## 🚀 Cómo iniciar el marcador
-
-### Opción 1: Un solo clic (Recomendado en Windows)
-Haz doble clic sobre el archivo **`iniciar-marcador.bat`**.
-Se abrirá automáticamente el marcador en tu navegador y mostrará el código QR privado y tu PIN en la consola.
-
-### Opción 2: Desde la terminal
-```bash
-cd c:\Users\murqu\Downloads\marcador-futbol
-node server.js
-```
+Sistema web profesional para transmisión y control de marcadores de fútbol en tiempo real. Diseñado para proyectar en monitores, televisores o pantallas LED en canchas deportivas y operarlo de forma privada y segura desde cualquier teléfono celular (iPhone / Android) vía Wi-Fi o Hotspot móvil.
 
 ---
 
-## 🔒 Privacidad y Acceso Seguro del Celular
+## 📋 Características Principales
 
-1. **Pantalla Pública Limpia**: El enlace y código QR fueron retirados de la vista pública en la pantalla del marcador. El público no verá ninguna dirección IP.
-2. **Acceso Privado para el Árbitro/Admin**:
-   - Escanea el código QR que se muestra en la **consola negra de tu PC** al arrancar.
-   - O presiona la tecla **`Q`** en el teclado de tu computadora para ver el QR privado temporalmente.
-3. **Bloqueo por PIN de Seguridad**:
-   - Al entrar al enlace desde el celular (`http://<tu-ip>:3000/control`), se solicitará un PIN.
-   - El PIN por defecto es: **`1234`**.
-   - Puedes cambiarlo en cualquier momento desde la pestaña *Configuración* en tu celular.
+- 📱 **Control Remoto Móvil Privado**: Maneja goles, reloj, periodos, penales y sonidos desde el celular sin que los espectadores vean el panel de control ni las direcciones IP.
+- 🔒 **Seguridad con PIN**: Pantalla de bloqueo con teclado numérico para que solo los árbitros o administradores autorizados puedan controlar el partido.
+- 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA)**:
+  - Rotación aleatoria de festejos de gol (*"¡Cántalo, cántalo!"*, *"¡Cierren el estadio!"*, *"¡Benzemaaa!"*, etc.).
+  - Soundboard en vivo en el celular para lanzar frases y efectos en cualquier momento.
+  - Audios contextuales para penales (*"¡Al palo!"*, *"¡Cerca del palo!"*).
+- 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
+  - 🌙 **Noche**: Iluminación de estadio clásico.
+  - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.
+  - ⛅ **Nublado**: Tonalidades mate antirreflejo.
+  - 🌅 **Atardecer**: Atmósfera crepuscular dorada.
+  - 🌱 **Césped**: Textura de pasto deportivo y líneas de cancha.
+  - ⚡ **Alto Contraste Solar**: Fondo 100% negro puro con dígitos LED amarillo neón y verde eléctrico para máxima legibilidad bajo sol directo a mediodía.
+- ⚽ **Tanda de Penales Oficial FIFA**:
+  - Tablero central de transmisión con 5 tiros numerados para cada equipo.
+  - Control de turnos alternos estrictos (bloquea tiros fuera de turno con aviso sonoro y toast).
+  - Sorteo inicial de quién patea primero.
+  - Detección matemática de ganador antes del 5to tiro si ya no hay alcance posible.
+  - Muerte súbita automática en caso de empate a 5.
+- ⏱️ **Cronómetro y Duración Adaptable**: Ajuste para Fútbol 5 (15-20 min), Fútbol 7 (25 min), Fútbol 8 (30 min) o Fútbol 11 (45 min).
+- 📷 **Personalización Total**: Carga escudos, nombres y colores de ambos clubes directamente desde el celular o la computadora.
 
 ---
 
-## 🌟 Nuevas Funcionalidades Incluidas
+## 📱 Guía Técnica: Cómo Ejecutar y Conectar desde el Celular
 
-- 🎙️ **Audio de Gol estilo Mariano Closs**: Relato apasionado y enérgico (*"¡Cántalo, cántalo, cántalo, GOOOOL!"*) al anotar cada gol, combinado con ovación y bocina de estadio.
-- 📁 **Sube tu propio MP3 de gol**: En la pestaña *Configuración* del celular o PC, puedes subir cualquier archivo de audio grabado o descargado para que suene exactamente como tú quieras.
-- ⏱️ **Duración de Partido Configurable**: Ajusta cuántos minutos dura cada tiempo (15 min para Fútbol 5, 20 min, 25 min para Fútbol 7, 30 min para Fútbol 8, 45 min para Fútbol 11, o cualquier número personalizado). Los botones de salto de tiempo se adaptan automáticamente.
-- ⚽ **Tanda de Penales (5 Bolitas por Equipo)**:
-  - En la pantalla grande de TV aparecen 5 bolitas LED debajo de cada equipo: ⚪ Pendiente, 🟢 Gol (verde con tilde), 🔴 Falló (roja con X).
-  - En el celular puedes marcar goles y fallos con un toque, o tocar directamente cualquiera de las 5 bolitas para cambiar su estado.
-  - Soporte de muerte súbita (agrega más bolitas automáticamente si empatan los 5 primeros tiros).
+Para usar tu celular como control remoto del marcador, sigue estos sencillos pasos:
+
+### 1. Requisito de Red
+Tanto la **computadora (marcador)** como el **celular (control remoto)** deben estar conectados a la **misma red**:
+- La misma red **Wi-Fi** del club, casa o cancha.
+- **O bien, Zona Wi-Fi portátil / Compartir Datos (Hotspot)**: Si estás en una cancha sin Wi-Fi, activa la *Zona Wi-Fi* de tu celular y conecta la computadora a ella.
+
+### 2. Iniciar el Servidor en la Computadora
+- **Opción Rápida (Windows)**: Haz doble clic en el archivo iniciar-marcador.bat.
+- **Opción por Terminal**:
+  `ash
+  npm start
+  `
+La consola mostrará una salida como esta:
+`	ext
+======================================================
+       ⚽ MARCADOR DE FÚTBOL EN TIEMPO REAL ⚽        
+======================================================
+💻 PANTALLA DEL MARCADOR (PC/TV): http://localhost:3000
+📱 CONTROL REMOTO PRIVADO:        http://192.168.1.50:3000/control
+🔑 PIN DE ACCESO CELULAR:         1234
+======================================================
+`
+
+### 3. Abrir el Control en el Celular
+Hay dos formas fáciles:
+
+1. **Escaneando el Código QR**:
+   - En la computadora, pulsa la tecla **Q** en el teclado (o haz triple clic en el título del torneo). Aparecerá el código QR en pantalla.
+   - Apunta la cámara de tu celular al código QR y ábrelo en tu navegador móvil (Chrome, Safari, etc.).
+2. **Escribiendo la dirección IP**:
+   - Abre el navegador de tu celular y escribe la dirección que apareció en la consola, por ejemplo:
+     http://192.168.1.50:3000/control (reemplaza con la IP que muestre tu terminal).
+
+### 4. Desbloqueo por PIN de Seguridad
+1. Al ingresar en el celular, verás la pantalla de bloqueo de árbitro.
+2. Ingresa el PIN por defecto: **1234**.
+3. ¡Listo! Ya tienes el control total del marcador en la palma de tu mano.
+
+> 🔒 **Cambiar el PIN**: Puedes cambiar el PIN en cualquier momento desde la pestaña **Configuración** en el control remoto.
+
+---
+
+## 🛠️ Solución de Problemas de Conexión en el Celular
+
+Si el navegador del celular dice *"No se puede conectar"* o *"Página no disponible"*:
+
+1. **Verificar que ambos estén en la misma red Wi-Fi**:
+   - Si la computadora está en red 5GHz y el celular en 2.4GHz del mismo router, usualmente funciona, pero algunas configuraciones aíslan dispositivos. Conéctalos a la misma banda.
+2. **Permitir Node.js en el Firewall de Windows**:
+   - Abre la ventana de búsqueda de Windows y escribe *Permitir una aplicación a través del Firewall de Windows*.
+   - Busca Node.js JavaScript Runtime y asegúrate de que las casillas **Privada** y **Pública** estén marcadas.
+   - O abre PowerShell como Administrador y ejecuta:
+     `powershell
+     New-NetFirewallRule -DisplayName "Marcador Futbol Port 3000" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow
+     `
+
+---
+
+## 🏗️ Arquitectura y Tecnologías
+
+- **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- **Comunicación en Tiempo Real**: [Socket.io](https://socket.io/) (WebSockets bidireccionales con sincronización inferior a 10ms)
+- **Frontend Marcador y Control**: HTML5 semántico, CSS3 moderno con variables CSS y Flexbox/Grid, JavaScript Vanilla ES6+ (sin frameworks pesados para garantizar carga instantánea en cualquier celular).
+- **Audio Engine**: Integración con Web Audio API y reproductor HTML5 de clips MP3 auténticos almacenados localmente.
+- **Códigos QR Dinámicos**: Generación automática con biblioteca qrcode.
+
+---
+
+## 📦 Instalación y Configuración Inicial
+
+Si descargas o clonas el proyecto en otra computadora:
+
+`ash
+# 1. Clonar el repositorio
+git clone https://github.com/Leandromurquite/marcador-futbol.git
+cd marcador-futbol
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Iniciar el servidor
+npm start
+`
+
+---
+
+## ⌨️ Atajos de Teclado en la Pantalla del Marcador
+
+| Tecla | Acción |
+| :---: | :--- |
+| Q | Mostrar / Ocultar Código QR de acceso privado para celulares |
+| F11 | Pantalla Completa (Full Screen para TV o proyector) |
+
+---
+
+## 📄 Licencia
+
+Este proyecto es de código abierto bajo la licencia MIT.
