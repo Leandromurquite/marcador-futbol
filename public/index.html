@@ -266,14 +266,23 @@
         <span class="concluded-trophy">🏆</span>
       </div>
 
-      <div class="concluded-reports-tag">
-        <span>📄 Reporte Oficial en PDF y Planilla Excel generados</span>
+      <!-- Descargas de Actas en Pantalla Principal -->
+      <div class="concluded-reports-actions">
+        <a href="/api/report/pdf" id="btnTvDownloadPdf" class="btn-tv-download pdf" target="_blank" download>
+          📄 Descargar Acta PDF
+        </a>
+        <a href="/api/report/excel" id="btnTvDownloadXlsx" class="btn-tv-download xlsx" target="_blank" download>
+          📊 Descargar Planilla Excel (.xlsx)
+        </a>
       </div>
     </div>
   </div>
 
   <!-- Audio de Hinchada de Fondo en Vivo (Continuo mientras se juega) -->
   <audio id="stadiumAmbianceAudio" src="/assets/sounds/ambiente-estadio-continuo.mp3" loop preload="auto"></audio>
+
+  <!-- Audio dedicado para Celebraciones de Gol (relatos de Mariano Closs) -->
+  <audio id="goalCelebrationAudio" preload="auto"></audio>
 
   <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>

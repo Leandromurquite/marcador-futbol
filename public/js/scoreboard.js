@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const stadiumAmbianceAudio = document.getElementById('stadiumAmbianceAudio');
   let crowdAmbianceConfig = { enabled: true, isPlaying: false, autoWithTimer: true, volume: 0.35 };
 
+  // Audio dedicado para celebración de gol
+  const goalCelebrationAudio = document.getElementById('goalCelebrationAudio');
+
   // Banner flotante de activación de audio (para políticas de autoplay de navegadores)
   const audioUnlockBanner = document.getElementById('audioUnlockBanner');
   const btnUnlockAudio = document.getElementById('btnUnlockAudio');
@@ -393,10 +396,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 7000);
     }
 
-    // Reproducir audio real
+    // Reproducir audio real de gol (Mariano Closs)
     const audioConfig = data.goalAudio || currentGoalAudio;
-    if (window.SoundEffects) {
-      const audioUrl = (audioConfig && audioConfig.customUrl) ? audioConfig.customUrl : null;
+    const audioUrl = (audioConfig && audioConfig.customUrl) ? audioConfig.customUrl : '/assets/sounds/closs-cantalo.mp3';
+
+    if (goalCelebrationAudio) {
+      goalCelebrationAudio.src = audioUrl;
+      goalCelebrationAudio.currentTime = 0;
+      goalCelebrationAudio.volume = 1.0;
+      const playPromise = goalCelebrationAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          if (audioUnlockBanner) audioUnlockBanner.style.display = 'none';
+        }).catch((err) => {
+          console.warn('Autoplay bloqueado en celebración de gol:', err);
+          if (audioUnlockBanner) audioUnlockBanner.style.display = 'flex';
+          if (window.SoundEffects) window.SoundEffects.playGoal(audioUrl);
+        });
+      }
+    } else if (window.SoundEffects) {
       window.SoundEffects.playGoal(audioUrl);
     }
 
@@ -520,6 +538,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    const btnTvDownloadPdf = document.getElementById('btnTvDownloadPdf');
+    const btnTvDownloadXlsx = document.getElementById('btnTvDownloadXlsx');
+    if (btnTvDownloadPdf && record.files && record.files.pdf) {
+      btnTvDownloadPdf.href = record.files.pdf;
+    }
+    if (btnTvDownloadXlsx && record.files && record.files.xlsx) {
+      btnTvDownloadXlsx.href = record.files.xlsx;
+    }
+
     if (matchFinishedOverlay) {
       matchFinishedOverlay.style.display = 'flex';
     }
@@ -589,6 +616,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Desbloqueo universal de audio para cumplir con las políticas de autoplay
   function unlockAllAudio() {
     if (window.SoundEffects) window.SoundEffects.init();
+    if (goalCelebrationAudio) {
+      goalCelebrationAudio.play().then(() => {
+        goalCelebrationAudio.pause();
+      }).catch(() => {});
+    }
     if (stadiumAmbianceAudio) {
       stadiumAmbianceAudio.play().then(() => {
         const shouldStayPlaying = crowdAmbianceConfig && (

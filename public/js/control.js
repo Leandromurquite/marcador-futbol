@@ -261,10 +261,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const finishedWinnerText = document.getElementById('finishedWinnerText');
   const btnDownloadPdf = document.getElementById('btnDownloadPdf');
   const btnDownloadXlsx = document.getElementById('btnDownloadXlsx');
+  const btnDirectPdf = document.getElementById('btnDirectPdf');
+  const btnDirectXlsx = document.getElementById('btnDirectXlsx');
   const btnModalResetMatch = document.getElementById('btnModalResetMatch');
   const btnModalCloseFinished = document.getElementById('btnModalCloseFinished');
   const matchHistoryList = document.getElementById('matchHistoryList');
   const btnRefreshHistory = document.getElementById('btnRefreshHistory');
+
+  // Banner de Celebración de Gol en Celular
+  const mobileGoalBanner = document.getElementById('mobileGoalBanner');
+  const mobileGoalTitle = document.getElementById('mobileGoalTitle');
+  const mobileGoalSubtitle = document.getElementById('mobileGoalSubtitle');
+  let mobileGoalTimeout = null;
+
+  function showMobileGoalToast(teamName, s1, s2) {
+    if (!mobileGoalBanner) return;
+    if (mobileGoalTimeout) clearTimeout(mobileGoalTimeout);
+    if (mobileGoalTitle) mobileGoalTitle.textContent = `¡GOOOOOOL! (${s1} - ${s2})`;
+    if (mobileGoalSubtitle) mobileGoalSubtitle.textContent = `Anotó: ${teamName}`;
+    mobileGoalBanner.style.display = 'flex';
+    mobileGoalTimeout = setTimeout(() => {
+      mobileGoalBanner.style.display = 'none';
+    }, 4500);
+  }
 
   // Formulario Equipos y Audios
   const formTeamsConfig = document.getElementById('formTeamsConfig');
@@ -692,6 +711,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimerButtonState(data.isRunning);
   });
   socket.on('score_updated', (data) => updateUI(data.state));
+  socket.on('goal_celebration', (data) => {
+    if (data && data.goalAudio && data.goalAudio.customUrl) {
+      playLocalClip(data.goalAudio.customUrl);
+    }
+    haptic(140);
+    showMobileGoalToast(data.teamName || 'EQUIPO', data.score1, data.score2);
+  });
   socket.on('period_updated', (data) => {
     updatePeriodButtons(data.period);
     if (typeof data.seconds === 'number') updateTimer(data.seconds);
@@ -743,6 +769,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnDownloadXlsx && record.files && record.files.xlsx) {
       btnDownloadXlsx.href = record.files.xlsx;
     }
+    if (btnDirectPdf && record.files && record.files.pdf) {
+      btnDirectPdf.href = record.files.pdf;
+    }
+    if (btnDirectXlsx && record.files && record.files.xlsx) {
+      btnDirectXlsx.href = record.files.xlsx;
+    }
 
     if (modalMatchFinished) {
       modalMatchFinished.style.display = 'flex';
@@ -751,9 +783,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHistory();
   });
 
-  // ACCIONES GOLES
+  // ACCIONES GOLES CON AUDIO REAL EN CELULAR Y PANTALLA
   btnAddGoal1.addEventListener('click', () => {
-    haptic(60);
+    haptic(80);
+    const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
+    playLocalClip(clip);
+    showMobileGoalToast(ctrlName1.textContent, (parseInt(ctrlScore1.textContent) || 0) + 1, parseInt(ctrlScore2.textContent) || 0);
     socket.emit('update_score', { team: 'team1', delta: 1 });
   });
   btnMinusGoal1.addEventListener('click', () => {
@@ -766,7 +801,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnAddGoal2.addEventListener('click', () => {
-    haptic(60);
+    haptic(80);
+    const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
+    playLocalClip(clip);
+    showMobileGoalToast(ctrlName2.textContent, parseInt(ctrlScore1.textContent) || 0, (parseInt(ctrlScore2.textContent) || 0) + 1);
     socket.emit('update_score', { team: 'team2', delta: 1 });
   });
   btnMinusGoal2.addEventListener('click', () => {
@@ -816,6 +854,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnPenGoal1.addEventListener('click', () => {
     haptic(40);
+    const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
+    playLocalClip(clip);
     handlePenaltyAction('team1', 'scored');
   });
   btnPenMiss1.addEventListener('click', () => {
@@ -835,6 +875,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnPenGoal2.addEventListener('click', () => {
     haptic(40);
+    const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
+    playLocalClip(clip);
     handlePenaltyAction('team2', 'scored');
   });
   btnPenMiss2.addEventListener('click', () => {

@@ -362,6 +362,92 @@ app.get('/api/history', (req, res) => {
   }
 });
 
+// Función auxiliar para construir el registro oficial del partido actual
+function buildCurrentMatchRecord() {
+  const now = new Date();
+  const dateFormatted = now.toLocaleDateString('es-AR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) + ' ' + now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+  let winner = null;
+  let winnerName = null;
+  let winnerType = 'regular';
+
+  const p = matchState.penalties;
+  if (p && p.enabled && p.winner) {
+    winner = p.winner;
+    winnerName = p.winnerName || matchState[p.winner].name;
+    winnerType = 'penalties';
+  } else if (matchState.team1.score > matchState.team2.score) {
+    winner = 'team1';
+    winnerName = matchState.team1.name;
+    winnerType = 'regular';
+  } else if (matchState.team2.score > matchState.team1.score) {
+    winner = 'team2';
+    winnerName = matchState.team2.name;
+    winnerType = 'regular';
+  } else {
+    winner = 'draw';
+    winnerName = 'Empate';
+    winnerType = 'draw';
+  }
+
+  return {
+    id: 'match-' + Date.now(),
+    timestamp: now.toISOString(),
+    dateFormatted,
+    tournament: matchState.tournament,
+    team1: { ...matchState.team1 },
+    team2: { ...matchState.team2 },
+    timer: { ...matchState.timer },
+    penalties: JSON.parse(JSON.stringify(matchState.penalties)),
+    winner,
+    winnerName,
+    winnerType
+  };
+}
+
+// Descarga directa de Acta en PDF (en cualquier momento)
+app.get('/api/report/pdf', async (req, res) => {
+  try {
+    const record = buildCurrentMatchRecord();
+    const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
+    const filename = `Acta_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}.pdf`;
+    const tempPath = path.join(reportsDir, `temp_${Date.now()}_${filename}`);
+    await generateMatchPdf(record, tempPath);
+    res.download(tempPath, filename, (err) => {
+      if (fs.existsSync(tempPath)) {
+        try { fs.unlinkSync(tempPath); } catch (e) {}
+      }
+    });
+  } catch (err) {
+    console.error('Error generando PDF:', err);
+    res.status(500).json({ error: 'Error al generar el acta en PDF' });
+  }
+});
+
+// Descarga directa de Planilla en Excel (en cualquier momento)
+app.get('/api/report/excel', (req, res) => {
+  try {
+    const record = buildCurrentMatchRecord();
+    const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
+    const filename = `Planilla_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}.xlsx`;
+    const tempPath = path.join(reportsDir, `temp_${Date.now()}_${filename}`);
+    generateMatchExcel(record, tempPath);
+    res.download(tempPath, filename, (err) => {
+      if (fs.existsSync(tempPath)) {
+        try { fs.unlinkSync(tempPath); } catch (e) {}
+      }
+    });
+  } catch (err) {
+    console.error('Error generando Excel:', err);
+    res.status(500).json({ error: 'Error al generar la planilla en Excel' });
+  }
+});
+
 // Rutas directas
 app.get('/control', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'control.html'));

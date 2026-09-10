@@ -1,1 +1,60 @@
-﻿[]
+[
+  {
+    "id": "match-1789008045536",
+    "timestamp": "2026-09-10T02:40:45.536Z",
+    "dateFormatted": "miércoles, 9 de septiembre de 2026 11:40 p. m.",
+    "tournament": "TORNEO DE FÚTBOL",
+    "team1": {
+      "name": "EQUIPO LOCAL",
+      "shortName": "EQU",
+      "logo": "/assets/team-local.svg",
+      "color": "#00d2ff",
+      "score": 12
+    },
+    "team2": {
+      "name": "EQUIPO VISITA",
+      "shortName": "EQU",
+      "logo": "/assets/team-visita.svg",
+      "color": "#ff3366",
+      "score": 12
+    },
+    "timer": {
+      "seconds": 545,
+      "isRunning": false,
+      "period": "Finalizado",
+      "extraTime": 0
+    },
+    "penalties": {
+      "enabled": true,
+      "firstKicker": "team1",
+      "currentTurn": "team1",
+      "currentRound": 1,
+      "team1": [
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
+      "team2": [
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
+      "score1": 0,
+      "score2": 0,
+      "winner": null,
+      "winnerName": null,
+      "isFinished": false
+    },
+    "winner": "draw",
+    "winnerName": "Empate",
+    "winnerType": "draw",
+    "files": {
+      "xlsx": "/reports/partido_1789008045536_EQUIPO_LOCAL_vs_EQUIPO_VISITA.xlsx",
+      "pdf": "/reports/partido_1789008045536_EQUIPO_LOCAL_vs_EQUIPO_VISITA.pdf"
+    }
+  }
+]

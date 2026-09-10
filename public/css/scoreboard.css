@@ -1557,4 +1557,50 @@ body[data-theme="high-contrast"] .pen-total-number {
   transform: scale(1.05);
 }
 
+/* Botones de Descarga en el Overlay Concluido de TV */
+.concluded-reports-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.btn-tv-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.btn-tv-download.pdf {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: 1.5px solid #f87171;
+  color: #ffffff;
+}
+
+.btn-tv-download.pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+}
+
+.btn-tv-download.xlsx {
+  background: linear-gradient(135deg, #10b981, #047857);
+  border: 1.5px solid #34d399;
+  color: #ffffff;
+}
+
+.btn-tv-download.xlsx:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
 

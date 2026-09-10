@@ -80,6 +80,15 @@
     <!-- PESTAÑA 1: CONTROL EN VIVO -->
     <main class="tab-content active" id="tabLive">
       
+      <!-- Banner Flotante de Celebración de Gol en el Celular -->
+      <div id="mobileGoalBanner" class="mobile-goal-banner" style="display: none;">
+        <span class="mobile-goal-ball">⚽</span>
+        <div class="mobile-goal-text">
+          <strong id="mobileGoalTitle">¡GOOOOOOL!</strong>
+          <span id="mobileGoalSubtitle">Equipo Local</span>
+        </div>
+      </div>
+
       <!-- MINI MARCADOR EN VIVO -->
       <section class="live-preview-card">
         <div class="mini-team">
@@ -405,14 +414,35 @@
         </div>
       </section>
 
-      <!-- FINALIZAR PARTIDO Y GENERAR INFORMES EXCEL / PDF -->
+      <!-- INFORMES Y ACTAS OFICIALES (PDF / EXCEL) -->
       <section class="section-container finish-match-section">
+        <h2 class="section-title">📄 Actas e Informes Oficiales</h2>
+        <p class="section-help-sub">Descarga al instante la planilla estructurada en Excel o el acta en PDF lista para imprimir y firmar:</p>
+
+        <div class="finished-download-actions" style="margin-bottom: 1.2rem;">
+          <a href="/api/report/pdf" id="btnDirectPdf" class="btn-download-report pdf" target="_blank" download>
+            <span class="btn-dl-icon">📄</span>
+            <div class="btn-dl-text">
+              <strong>Descargar Acta Oficial en PDF</strong>
+              <small>Documento vectorial con firmas de árbitro y capitanes</small>
+            </div>
+          </a>
+
+          <a href="/api/report/excel" id="btnDirectXlsx" class="btn-download-report xlsx" target="_blank" download>
+            <span class="btn-dl-icon">📊</span>
+            <div class="btn-dl-text">
+              <strong>Descargar Planilla Excel (.xlsx)</strong>
+              <small>Tabla estructurada con detalles, tiempos y penales</small>
+            </div>
+          </a>
+        </div>
+
         <div class="finish-match-banner">
           <div class="finish-match-info">
             <span class="finish-match-icon">🏁</span>
             <div>
               <h3 class="finish-match-title">Finalizar Encuentro Oficial</h3>
-              <p class="finish-match-desc">Detiene el partido y genera de inmediato las actas en PDF y Excel para descargar.</p>
+              <p class="finish-match-desc">Detiene el cronómetro, declara ganador oficial y archiva el partido en el historial.</p>
             </div>
           </div>
           <button type="button" class="btn-finish-match" id="btnFinishMatch">
@@ -688,7 +718,7 @@
 
       <!-- Botones de Descarga -->
       <div class="finished-download-actions">
-        <a href="#" id="btnDownloadPdf" class="btn-download-report pdf" target="_blank" download>
+        <a href="/api/report/pdf" id="btnDownloadPdf" class="btn-download-report pdf" target="_blank" download>
           <span class="btn-dl-icon">📄</span>
           <div class="btn-dl-text">
             <strong>Descargar Acta Oficial en PDF</strong>
@@ -696,7 +726,7 @@
           </div>
         </a>
 
-        <a href="#" id="btnDownloadXlsx" class="btn-download-report xlsx" target="_blank" download>
+        <a href="/api/report/excel" id="btnDownloadXlsx" class="btn-download-report xlsx" target="_blank" download>
           <span class="btn-dl-icon">📊</span>
           <div class="btn-dl-text">
             <strong>Descargar Planilla Excel (.xlsx)</strong>
