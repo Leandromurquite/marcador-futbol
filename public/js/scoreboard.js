@@ -126,6 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let goalTimeout = null;
   let currentGoalAudio = { type: 'closs_random', customUrl: '/assets/sounds/closs-cantalo.mp3' };
 
+  // Audio continuo de Hinchada
+  const stadiumAmbianceAudio = document.getElementById('stadiumAmbianceAudio');
+  let crowdAmbianceConfig = { enabled: true, volume: 0.35 };
+
   // Cargar info de red para el QR privado
   async function loadNetworkInfo() {
     try {
@@ -319,6 +323,12 @@ document.addEventListener('DOMContentLoaded', () => {
       applyTheme(state.theme);
     }
 
+    // Ambiente de Hinchada
+    if (state.crowdAmbiance) {
+      crowdAmbianceConfig = state.crowdAmbiance;
+      updateCrowdAmbiance();
+    }
+
     // Penales
     if (state.penalties) {
       updatePenaltiesUI(state.penalties);
@@ -326,16 +336,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setTimerRunningState(running) {
-    isTimerRunning = running;
-    if (running) {
-      timerDisplay.classList.remove('timer-paused');
-      timerStatusText.textContent = 'EN JUEGO';
-      timerStatusText.style.color = '#38bdf8';
-    } else {
-      timerDisplay.classList.add('timer-paused');
-      timerStatusText.textContent = 'PAUSADO';
-      timerStatusText.style.color = '#94a3b8';
+    isTimerRunning = !!running;
+    if (timerDisplay) {
+      timerDisplay.classList.toggle('timer-paused', !isTimerRunning);
+      timerDisplay.classList.toggle('running', isTimerRunning);
     }
+    if (timerStatusText) {
+      timerStatusText.textContent = isTimerRunning ? 'EN JUEGO' : 'PAUSADO';
+      timerStatusText.style.color = isTimerRunning ? '#38bdf8' : '#94a3b8';
+    }
+    updateCrowdAmbiance();
   }
 
   function updatePeriod(period) {
@@ -357,6 +367,22 @@ document.addEventListener('DOMContentLoaded', () => {
     el.classList.add('score-bump');
   }
 
+  function updateCrowdAmbiance() {
+    if (!stadiumAmbianceAudio) return;
+    if (crowdAmbianceConfig && crowdAmbianceConfig.enabled && isTimerRunning) {
+      stadiumAmbianceAudio.volume = (typeof crowdAmbianceConfig.volume === 'number') ? crowdAmbianceConfig.volume : 0.35;
+      if (stadiumAmbianceAudio.paused) {
+        stadiumAmbianceAudio.play().catch(() => {
+          // Autoplay policy: iniciará al primer clic
+        });
+      }
+    } else {
+      if (!stadiumAmbianceAudio.paused) {
+        stadiumAmbianceAudio.pause();
+      }
+    }
+  }
+
   // Celebración de gol (Audio real sin IA)
   function showGoalCelebration(data) {
     if (goalTimeout) clearTimeout(goalTimeout);
@@ -366,6 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
     goalScorePill.textContent = `${data.score1} - ${data.score2}`;
 
     goalOverlay.style.display = 'flex';
+
+    // Atenuar hinchada durante el relato de gol
+    if (stadiumAmbianceAudio && !stadiumAmbianceAudio.paused) {
+      stadiumAmbianceAudio.volume = Math.max(0.05, (crowdAmbianceConfig.volume || 0.35) * 0.15);
+      setTimeout(() => {
+        if (stadiumAmbianceAudio && isTimerRunning && crowdAmbianceConfig.enabled) {
+          stadiumAmbianceAudio.volume = crowdAmbianceConfig.volume || 0.35;
+        }
+      }, 7000);
+    }
 
     // Reproducir audio real
     const audioConfig = data.goalAudio || currentGoalAudio;
@@ -448,6 +484,21 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('play_sound_clip', (data) => {
     if (data && data.url && window.SoundEffects) {
       window.SoundEffects.playGoal(data.url);
+    }
+  });
+
+  socket.on('crowd_ambiance_updated', (cfg) => {
+    if (cfg) {
+      crowdAmbianceConfig = cfg;
+      if (stadiumAmbianceAudio) {
+        if (typeof cfg.volume === 'number') {
+          stadiumAmbianceAudio.volume = cfg.volume;
+        }
+        if (cfg.soundUrl && !stadiumAmbianceAudio.src.endsWith(cfg.soundUrl)) {
+          stadiumAmbianceAudio.src = cfg.soundUrl;
+        }
+      }
+      updateCrowdAmbiance();
     }
   });
 

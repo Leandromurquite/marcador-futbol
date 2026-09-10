@@ -1960,3 +1960,119 @@ body {
   color: #ffffff;
 }
 
+/* ==========================================================================
+   AMBIENTE DE HINCHADA EN VIVO Y CÁNTICOS DE TRIBUNA
+   ========================================================================== */
+.crowd-ambiance-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.crowd-ambiance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.crowd-ambiance-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.crowd-icon {
+  font-size: 1.8rem;
+}
+
+.crowd-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.crowd-desc {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.btn-toggle-crowd {
+  background: rgba(148, 163, 184, 0.2);
+  border: 1px solid #64748b;
+  color: #cbd5e1;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-crowd.active {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.crowd-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.crowd-volume-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
+
+.crowd-volume-slider {
+  flex: 1;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.crowd-volume-val {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #38bdf8;
+  min-width: 38px;
+  text-align: right;
+}
+
+/* Soundboard de Cánticos */
+.hinchada-card {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.chant-fire {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.25), rgba(185, 28, 28, 0.4)) !important;
+  border-color: #ef4444 !important;
+  color: #fecaca !important;
+}
+
+.chant-anthem {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(2, 132, 199, 0.4)) !important;
+  border-color: #38bdf8 !important;
+  color: #e0f2fe !important;
+}
+
+

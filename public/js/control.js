@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentState = null;
   let currentSeconds = 0;
   let isTimerRunning = false;
-  let currentHalfMinutes = 45;
+  let currentHalfMinutes = 12;
   let uploadedLogo1 = null;
   let uploadedLogo2 = null;
   let uploadedCustomAudio = null;
@@ -212,8 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Temas y Clima de Cancha
   const themeButtons = document.querySelectorAll('.btn-theme-select');
 
-  // Soundboard Mariano Closs
+  // Soundboard Mariano Closs y Cánticos
   const soundboardButtons = document.querySelectorAll('.btn-soundboard-clip');
+
+  // Ambiente Continuo de Hinchada
+  const btnToggleCrowd = document.getElementById('btnToggleCrowd');
+  const crowdToggleIcon = document.getElementById('crowdToggleIcon');
+  const crowdToggleText = document.getElementById('crowdToggleText');
+  const rangeCrowdVolume = document.getElementById('rangeCrowdVolume');
+  const crowdVolumeDisplay = document.getElementById('crowdVolumeDisplay');
 
   // Sonidos
   const btnSoundWhistleShort = document.getElementById('btnSoundWhistleShort');
@@ -311,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Actualizar Botones de Salto de Tiempo
   function updateJumpButtons(halfMins) {
-    currentHalfMinutes = halfMins || 45;
+    currentHalfMinutes = halfMins || 12;
     const halfSecs = currentHalfMinutes * 60;
     const fullSecs = halfSecs * 2;
 
@@ -536,6 +543,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updatePenaltiesUI(state.penalties);
     }
 
+    if (state.crowdAmbiance) {
+      updateCrowdUI(state.crowdAmbiance);
+    }
+
     if (state.goalAudio) {
       if (state.goalAudio.type === 'closs_random') {
         if (audioRadioClossRandom) audioRadioClossRandom.checked = true;
@@ -619,8 +630,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function updateCrowdUI(crowd) {
+    if (!crowd) return;
+    if (btnToggleCrowd) {
+      btnToggleCrowd.classList.toggle('active', !!crowd.enabled);
+      if (crowdToggleIcon) crowdToggleIcon.textContent = crowd.enabled ? '🔊' : '🔇';
+      if (crowdToggleText) crowdToggleText.textContent = crowd.enabled ? 'Hinchada Activada' : 'Hinchada Silenciada';
+    }
+    if (rangeCrowdVolume && typeof crowd.volume === 'number') {
+      const pct = Math.round(crowd.volume * 100);
+      rangeCrowdVolume.value = pct;
+      if (crowdVolumeDisplay) crowdVolumeDisplay.textContent = `${pct}%`;
+    }
+  }
+
   // Socket Events
   socket.on('sync_state', (state) => updateUI(state));
+  socket.on('crowd_ambiance_updated', (cfg) => {
+    if (currentState) {
+      currentState.crowdAmbiance = cfg;
+    }
+    updateCrowdUI(cfg);
+  });
   socket.on('timer_tick', (data) => {
     updateTimer(data.seconds);
     setTimerButtonState(data.isRunning);
@@ -820,6 +851,27 @@ document.addEventListener('DOMContentLoaded', () => {
           socket.emit('play_sound_clip', { url: clip });
         }
       });
+    });
+  }
+
+  // Hinchada de Fondo Continua (Toggle y Volumen)
+  if (btnToggleCrowd) {
+    btnToggleCrowd.addEventListener('click', () => {
+      haptic(30);
+      const isCurrentlyEnabled = btnToggleCrowd.classList.contains('active');
+      const nextEnabled = !isCurrentlyEnabled;
+      btnToggleCrowd.classList.toggle('active', nextEnabled);
+      if (crowdToggleIcon) crowdToggleIcon.textContent = nextEnabled ? '🔊' : '🔇';
+      if (crowdToggleText) crowdToggleText.textContent = nextEnabled ? 'Hinchada Activada' : 'Hinchada Silenciada';
+      socket.emit('set_crowd_ambiance', { enabled: nextEnabled });
+    });
+  }
+
+  if (rangeCrowdVolume) {
+    rangeCrowdVolume.addEventListener('input', (e) => {
+      const vol = parseInt(e.target.value, 10) / 100;
+      if (crowdVolumeDisplay) crowdVolumeDisplay.textContent = `${e.target.value}%`;
+      socket.emit('set_crowd_ambiance', { volume: vol });
     });
   }
 

@@ -114,8 +114,13 @@ function getRandomGoalClip() {
 let matchState = {
   tournament: 'TORNEO DE FÚTBOL',
   pin: '1234',
-  halfDurationMinutes: 45,
+  halfDurationMinutes: 12,
   theme: 'night', // 'night' | 'sunny' | 'cloudy' | 'sunset' | 'grass' | 'high-contrast'
+  crowdAmbiance: {
+    enabled: true,
+    volume: 0.35,
+    soundUrl: '/assets/sounds/ambiente-estadio-continuo.mp3'
+  },
   goalAudio: {
     type: 'closs_random', // 'closs_random' | 'closs_fixed' | 'horn' | 'custom'
     customUrl: '/assets/sounds/closs-cantalo.mp3',
@@ -652,10 +657,20 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Reproducir clip de Mariano Closs desde el Soundboard
+  // Reproducir clip de Mariano Closs o Cánticos desde el Soundboard
   socket.on('play_sound_clip', (data) => {
     if (data && data.url) {
       io.emit('play_sound_clip', { url: data.url });
+    }
+  });
+
+  // Ambiente Continuo de Hinchada mientras se juega el partido
+  socket.on('set_crowd_ambiance', (data) => {
+    if (data) {
+      if (typeof data.enabled === 'boolean') matchState.crowdAmbiance.enabled = data.enabled;
+      if (typeof data.volume === 'number') matchState.crowdAmbiance.volume = Math.max(0, Math.min(1, data.volume));
+      if (data.soundUrl) matchState.crowdAmbiance.soundUrl = data.soundUrl;
+      io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
     }
   });
 

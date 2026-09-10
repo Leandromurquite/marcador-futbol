@@ -247,11 +247,11 @@
             <span id="timerToggleText">INICIAR CRONÓMETRO</span>
           </button>
 
-          <!-- Saltos Rápidos según duración configurada -->
+          <!-- Saltos Rápidos según duración configurada (Predeterminado 12 min) -->
           <div class="timer-quick-actions" id="timerQuickActionsContainer">
             <button class="btn-quick-time" id="btnJumpStart" data-set-sec="0">00:00 (1T)</button>
-            <button class="btn-quick-time" id="btnJumpHalf" data-set-sec="2700">45:00 (2T)</button>
-            <button class="btn-quick-time" id="btnJumpEnd" data-set-sec="5400">90:00 (Fin)</button>
+            <button class="btn-quick-time" id="btnJumpHalf" data-set-sec="720">12:00 (2T)</button>
+            <button class="btn-quick-time" id="btnJumpEnd" data-set-sec="1440">24:00 (Fin)</button>
           </div>
 
           <div class="timer-adjust-row">
@@ -340,6 +340,51 @@
           </button>
           <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-lo-va-a-ganar.mp3">
             🔥 "¡Y lo va a ganar, Gol!"
+          </button>
+        </div>
+      </section>
+
+      <!-- AMBIENTE DE HINCHADA EN VIVO (CONTINUO DURANTE EL PARTIDO) -->
+      <section class="section-container crowd-ambiance-card">
+        <div class="crowd-ambiance-header">
+          <div class="crowd-ambiance-info">
+            <span class="crowd-icon">🏟️</span>
+            <div>
+              <h3 class="crowd-title">Hinchada de Fondo en Vivo</h3>
+              <p class="crowd-desc">Suena en el marcador automáticamente mientras el partido se esté jugando (reloj corriendo).</p>
+            </div>
+          </div>
+          <button type="button" class="btn-toggle-crowd active" id="btnToggleCrowd">
+            <span id="crowdToggleIcon">🔊</span>
+            <span id="crowdToggleText">Hinchada Activada</span>
+          </button>
+        </div>
+        <div class="crowd-volume-row">
+          <label for="rangeCrowdVolume" class="crowd-volume-label">Volumen Hinchada:</label>
+          <input type="range" id="rangeCrowdVolume" min="0" max="100" value="35" class="crowd-volume-slider">
+          <span id="crowdVolumeDisplay" class="crowd-volume-val">35%</span>
+        </div>
+      </section>
+
+      <!-- CÁNTICOS DE HINCHADA EN VIVO -->
+      <section class="section-container soundboard-card hinchada-card">
+        <h2 class="section-title">🎺 Cánticos de Hinchada en Vivo</h2>
+        <p class="section-help-sub">Toca para reproducir cantos y aliento de la tribuna en cualquier momento:</p>
+        <div class="soundboard-grid hinchada-grid">
+          <button type="button" class="btn-soundboard-clip chant-fire" data-clip="/assets/sounds/hinchada-jugadores-huevos.mp3">
+            🔥 "¡Jugadores, l.c.d.s.m., a ver si ponen huevos!"
+          </button>
+          <button type="button" class="btn-soundboard-clip chant-anthem" data-clip="/assets/sounds/hinchada-muchachos.mp3">
+            🏆 "¡Muchachos, nos volvimos a ilusionar!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-banda-loca.mp3">
+            🇦🇷 "¡Esta es la banda loca de Argentina!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-dale-boca.mp3">
+            💙💛 "¡Dale, dale Bo!"
+          </button>
+          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/ambiente-estadio-cheering.mp3">
+            👏 "¡Ovación y Aplausos de Cancha!"
           </button>
         </div>
       </section>
@@ -478,17 +523,18 @@
           <p class="form-help-text">Configura cuántos minutos dura cada tiempo:</p>
 
           <div class="duration-presets-grid">
+            <button type="button" class="btn-duration-preset active" data-min="12">12 min<br><small>Oficial Cancha</small></button>
             <button type="button" class="btn-duration-preset" data-min="15">15 min<br><small>Fútbol 5</small></button>
             <button type="button" class="btn-duration-preset" data-min="20">20 min<br><small>Fútbol 5</small></button>
             <button type="button" class="btn-duration-preset" data-min="25">25 min<br><small>Fútbol 7</small></button>
             <button type="button" class="btn-duration-preset" data-min="30">30 min<br><small>Fútbol 8</small></button>
-            <button type="button" class="btn-duration-preset active" data-min="45">45 min<br><small>Fútbol 11</small></button>
+            <button type="button" class="btn-duration-preset" data-min="45">45 min<br><small>Fútbol 11</small></button>
           </div>
 
           <div class="form-group mt-2">
             <label class="form-label" for="inputHalfDuration">Minutos personalizados por tiempo:</label>
             <div class="input-with-button">
-              <input type="number" id="inputHalfDuration" class="form-input" min="1" max="90" value="45">
+              <input type="number" id="inputHalfDuration" class="form-input" min="1" max="90" value="12">
               <button type="button" class="btn-apply-duration" id="btnApplyDuration">Aplicar Minutos</button>
             </div>
           </div>

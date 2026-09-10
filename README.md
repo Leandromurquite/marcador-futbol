@@ -11,6 +11,12 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
 - 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA - Exclusivamente Goles)**:
   - Rotación aleatoria de relatos auténticos de gol (*"¡Cántalo, cántalo, Gol!"*, *"¡Messi lo hizo, Gol!"*, *"¡Golazo de Enzo Fernández!"*, *"¡Y lo va a ganar!"*, *"¡Benzemaaa Gol!"*).
   - Soundboard en vivo en el celular para lanzar los 5 gritos de gol en cualquier momento.
+- 🏟️ **Ambiente de Hinchada en Vivo (Continuo mientras se juega)**:
+  - Sonido ambiental de estadio con cantos y aliento continuo que suena automáticamente de fondo en el marcador mientras el cronómetro esté corriendo.
+  - Se pausa automáticamente al pausar el partido y se atenúa durante los festejos de gol.
+  - Control de volumen (0% a 100%) y botón para activar o silenciar la hinchada desde el celular.
+- 🎺 **Botonera de Cánticos de Hinchada en Vivo**:
+  - Lanzamiento instantáneo de cánticos populares de cancha: *"¡Jugadores, la concha de su madre, a ver si ponen huevos que no juegan con nadie!"*, *"¡Muchachos, ahora nos volvimos a ilusionar!"*, *"¡Esta es la banda loca de la Argentina!"*, *"¡Dale, dale Bo!"* y ovaciones de tribuna.
 - 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
   - 🌙 **Noche**: Iluminación de estadio clásico.
   - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.
@@ -24,7 +30,9 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
   - Sorteo inicial de quién patea primero.
   - Detección matemática de ganador antes del 5to tiro si ya no hay alcance posible.
   - Muerte súbita automática en caso de empate a 5.
-- ⏱️ **Cronómetro y Duración Adaptable**: Ajuste para Fútbol 5 (15-20 min), Fútbol 7 (25 min), Fútbol 8 (30 min) o Fútbol 11 (45 min).
+- ⏱️ **Cronómetro de 12 Minutos Oficial y Adaptable**:
+  - Configurado a **12 minutos por tiempo** (Oficial para torneos de cancha / Fútbol 5), con saltos rápidos a 00:00 (1T), 12:00 (2T) y 24:00 (Fin).
+  - Presets de cambio rápido a 15, 20, 25, 30 o 45 minutos o minutos libres personalizados.
 - 🏁 **Terminar Partido y Generación de Reportes Oficiales (PDF y Excel .xlsx)**:
   - Al pulsar el botón dedicado **🏁 Terminar Partido**, se detiene el reloj y se generan al instante las actas oficiales del encuentro.
   - **Planilla Excel (.xlsx)**: Hoja estructurada con datos del torneo, fecha, resultado final, duración, desglose tiro por tiro de penales y firmas oficiales.
