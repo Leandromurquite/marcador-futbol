@@ -46,11 +46,14 @@ Tanto la **computadora (marcador)** como el **celular (control remoto)** deben e
 - **O bien, Zona Wi-Fi portátil / Compartir Datos (Hotspot)**: Si estás en una cancha sin Wi-Fi, activa la *Zona Wi-Fi* de tu celular y conecta la computadora a ella.
 
 ### 2. Iniciar el Servidor en la Computadora
-- **Opción Rápida (Windows)**: Haz doble clic en el archivo iniciar-marcador.bat.
-- **Opción por Terminal**:
-  `ash
-  npm start
-  `
+
+Abre la terminal (PowerShell, CMD o Git Bash) en la carpeta del proyecto y ejecuta el comando principal:
+
+```bash
+node server.js
+```
+
+*(O si prefieres npm: `npm.cmd start` o `npm start`)*
 La consola mostrará una salida como esta:
 `	ext
 ======================================================
@@ -121,7 +124,7 @@ cd marcador-futbol
 npm install
 
 # 3. Iniciar el servidor
-npm start
+node server.js
 `
 
 ---
