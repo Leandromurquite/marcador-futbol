@@ -92,12 +92,12 @@ const controlUrl = `http://${localIp}:${PORT}/control`;
 const displayUrl = `http://${localIp}:${PORT}/`;
 
 const CLOSS_CLIPS = [
-  { id: 'closs-cantalo', name: '¡Cántalo, Cántalo, Cántalo!', file: '/assets/sounds/closs-cantalo.mp3' },
+  { id: 'closs-cantalo', name: '¡Cántalo, Cántalo, Gol!', file: '/assets/sounds/closs-cantalo.mp3' },
   { id: 'mariano-closs-gol', name: '¡Benzemaaa Mariano Closs Gol!', file: '/assets/sounds/mariano-closs-gol.mp3' },
-  { id: 'closs-cerrar-estadio', name: '¡Cierren el Estadio, Genio!', file: '/assets/sounds/closs-cerrar-estadio.mp3' },
-  { id: 'closs-no-lo-cante', name: '¡No lo Cante, no lo Grite!', file: '/assets/sounds/closs-no-lo-cante.mp3' },
-  { id: 'closs-atencion', name: '¡Atención, Gol!', file: '/assets/sounds/closs-atencion.mp3' },
-  { id: 'closs-al-palo', name: '¡Al Palo!', file: '/assets/sounds/closs-al-palo.mp3' },
+  { id: 'closs-gol-messi', name: '¡Messi lo Hizo, Gol!', file: '/assets/sounds/closs-gol-messi.mp3' },
+  { id: 'closs-gol-enzo', name: '¡Golazo de Enzo Fernández!', file: '/assets/sounds/closs-gol-enzo.mp3' },
+  { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' },
+  { id: 'closs-atencion', name: '¡Atención!', file: '/assets/sounds/closs-atencion.mp3' },
   { id: 'closs-cerca-palo', name: '¡Cerca del Palo!', file: '/assets/sounds/closs-cerca-palo.mp3' }
 ];
 
@@ -105,9 +105,9 @@ function getRandomGoalClip() {
   const goalClips = [
     '/assets/sounds/closs-cantalo.mp3',
     '/assets/sounds/mariano-closs-gol.mp3',
-    '/assets/sounds/closs-cerrar-estadio.mp3',
-    '/assets/sounds/closs-atencion.mp3',
-    '/assets/sounds/closs-no-lo-cante.mp3'
+    '/assets/sounds/closs-gol-messi.mp3',
+    '/assets/sounds/closs-gol-enzo.mp3',
+    '/assets/sounds/closs-lo-va-a-ganar.mp3'
   ];
   return goalClips[Math.floor(Math.random() * goalClips.length)];
 }
@@ -610,9 +610,7 @@ io.on('connection', (socket) => {
         const clip = getRandomGoalClip();
         io.emit('play_sound_clip', { url: clip });
       } else if (data.action === 'missed') {
-        if (data.reason === 'post') {
-          io.emit('play_sound_clip', { url: '/assets/sounds/closs-al-palo.mp3' });
-        } else if (data.reason === 'wide') {
+        if (data.reason === 'post' || data.reason === 'wide') {
           io.emit('play_sound_clip', { url: '/assets/sounds/closs-cerca-palo.mp3' });
         } else {
           io.emit('play_sound', { sound: 'whistle_short' });

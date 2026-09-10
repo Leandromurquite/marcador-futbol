@@ -9,9 +9,9 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
 - 📱 **Control Remoto Móvil Privado**: Maneja goles, reloj, periodos, penales y sonidos desde el celular sin que los espectadores vean el panel de control ni las direcciones IP.
 - 🔒 **Seguridad con PIN**: Pantalla de bloqueo con teclado numérico para que solo los árbitros o administradores autorizados puedan controlar el partido.
 - 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA)**:
-  - Rotación aleatoria de festejos de gol (*"¡Cántalo, cántalo!"*, *"¡Cierren el estadio!"*, *"¡Benzemaaa!"*, etc.).
-  - Soundboard en vivo en el celular para lanzar frases y efectos en cualquier momento.
-  - Audios contextuales para penales (*"¡Al palo!"*, *"¡Cerca del palo!"*).
+  - Rotación aleatoria de relatos auténticos de gol (*"¡Cántalo, cántalo, Gol!"*, *"¡Messi lo hizo, Gol!"*, *"¡Golazo de Enzo Fernández!"*, *"¡Y lo va a ganar!"*, *"¡Benzemaaa Gol!"*).
+  - Soundboard en vivo en el celular para lanzar relatos épicos en cualquier momento.
+  - Audios contextuales para penales (*"¡Cerca del palo!"*, *"¡Atención!"*).
 - 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
   - 🌙 **Noche**: Iluminación de estadio clásico.
   - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.
@@ -19,8 +19,8 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
   - 🌅 **Atardecer**: Atmósfera crepuscular dorada.
   - 🌱 **Césped**: Textura de pasto deportivo y líneas de cancha.
   - ⚡ **Alto Contraste Solar**: Fondo 100% negro puro con dígitos LED amarillo neón y verde eléctrico para máxima legibilidad bajo sol directo a mediodía.
-- ⚽ **Tanda de Penales Oficial FIFA**:
-  - Tablero central de transmisión con 5 tiros numerados para cada equipo.
+- ⚽ **Tanda de Penales Oficial FIFA (Ubicada Debajo del Marcador)**:
+  - Tablero central de transmisión con 5 tiros numerados para cada equipo ubicado estratégicamente debajo de las placas de goles y nombres.
   - Control de turnos alternos estrictos (bloquea tiros fuera de turno con aviso sonoro y toast).
   - Sorteo inicial de quién patea primero.
   - Detección matemática de ganador antes del 5to tiro si ya no hay alcance posible.

@@ -540,10 +540,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioRadioClossRandom) audioRadioClossRandom.checked = true;
       } else if (state.goalAudio.type === 'closs_fixed' || state.goalAudio.type === 'closs') {
         const clip = state.goalAudio.selectedClip || state.goalAudio.customUrl || '';
-        if (clip.includes('cerrar-estadio')) {
-          if (audioRadioClossEstadio) audioRadioClossEstadio.checked = true;
-        } else if (clip.includes('mariano-closs-gol')) {
+        if (clip.includes('mariano-closs-gol')) {
           if (audioRadioClossBenzema) audioRadioClossBenzema.checked = true;
+        } else if (clip.includes('closs-gol-messi')) {
+          const r = document.getElementById('audioRadioClossMessi');
+          if (r) r.checked = true;
+        } else if (clip.includes('closs-gol-enzo')) {
+          const r = document.getElementById('audioRadioClossEnzo');
+          if (r) r.checked = true;
+        } else if (clip.includes('closs-lo-va-a-ganar')) {
+          const r = document.getElementById('audioRadioClossGanar');
+          if (r) r.checked = true;
         } else {
           if (audioRadioClossCantalo) audioRadioClossCantalo.checked = true;
         }
@@ -1051,19 +1058,27 @@ document.addEventListener('DOMContentLoaded', () => {
       if (type === 'closs_random') {
         url = '/assets/sounds/closs-cantalo.mp3';
         selectedClip = '/assets/sounds/closs-cantalo.mp3';
-        name = 'Mariano Closs (Aleatorio - Variar Frases)';
+        name = 'Mariano Closs (Aleatorio - Variar Relatos)';
       } else if (type === 'closs_cantalo') {
         url = '/assets/sounds/closs-cantalo.mp3';
         selectedClip = '/assets/sounds/closs-cantalo.mp3';
-        name = 'Mariano Closs: "¡Cántalo, cántalo!"';
-      } else if (type === 'closs_estadio') {
-        url = '/assets/sounds/closs-cerrar-estadio.mp3';
-        selectedClip = '/assets/sounds/closs-cerrar-estadio.mp3';
-        name = 'Mariano Closs: "¡Cierren el estadio!"';
+        name = 'Mariano Closs: "¡Cántalo, cántalo, Gol!"';
       } else if (type === 'closs_benzema') {
         url = '/assets/sounds/mariano-closs-gol.mp3';
         selectedClip = '/assets/sounds/mariano-closs-gol.mp3';
         name = 'Mariano Closs: "¡Benzemaaa Gol!"';
+      } else if (type === 'closs_messi') {
+        url = '/assets/sounds/closs-gol-messi.mp3';
+        selectedClip = '/assets/sounds/closs-gol-messi.mp3';
+        name = 'Mariano Closs: "¡Messi lo hizo, Gol!"';
+      } else if (type === 'closs_enzo') {
+        url = '/assets/sounds/closs-gol-enzo.mp3';
+        selectedClip = '/assets/sounds/closs-gol-enzo.mp3';
+        name = 'Mariano Closs: "¡Golazo de Enzo Fernández!"';
+      } else if (type === 'closs_ganar') {
+        url = '/assets/sounds/closs-lo-va-a-ganar.mp3';
+        selectedClip = '/assets/sounds/closs-lo-va-a-ganar.mp3';
+        name = 'Mariano Closs: "¡Y lo va a ganar, Gol!"';
       } else if (type === 'horn') {
         url = null;
         selectedClip = null;
@@ -1159,15 +1174,19 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'closs_random',
       customUrl: '/assets/sounds/closs-cantalo.mp3',
       selectedClip: '/assets/sounds/closs-cantalo.mp3',
-      name: 'Mariano Closs (Aleatorio - Variar Frases)'
+      name: 'Mariano Closs (Aleatorio - Variar Relatos)'
     };
 
     if (selectedAudioType === 'closs_cantalo') {
-      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-cantalo.mp3', selectedClip: '/assets/sounds/closs-cantalo.mp3', name: 'Mariano Closs: "¡Cántalo, cántalo!"' };
-    } else if (selectedAudioType === 'closs_estadio') {
-      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-cerrar-estadio.mp3', selectedClip: '/assets/sounds/closs-cerrar-estadio.mp3', name: 'Mariano Closs: "¡Cierren el estadio!"' };
+      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-cantalo.mp3', selectedClip: '/assets/sounds/closs-cantalo.mp3', name: 'Mariano Closs: "¡Cántalo, cántalo, Gol!"' };
     } else if (selectedAudioType === 'closs_benzema') {
       audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/mariano-closs-gol.mp3', selectedClip: '/assets/sounds/mariano-closs-gol.mp3', name: 'Mariano Closs: "¡Benzemaaa Gol!"' };
+    } else if (selectedAudioType === 'closs_messi') {
+      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-gol-messi.mp3', selectedClip: '/assets/sounds/closs-gol-messi.mp3', name: 'Mariano Closs: "¡Messi lo hizo, Gol!"' };
+    } else if (selectedAudioType === 'closs_enzo') {
+      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-gol-enzo.mp3', selectedClip: '/assets/sounds/closs-gol-enzo.mp3', name: 'Mariano Closs: "¡Golazo de Enzo Fernández!"' };
+    } else if (selectedAudioType === 'closs_ganar') {
+      audioPayload = { type: 'closs_fixed', customUrl: '/assets/sounds/closs-lo-va-a-ganar.mp3', selectedClip: '/assets/sounds/closs-lo-va-a-ganar.mp3', name: 'Mariano Closs: "¡Y lo va a ganar, Gol!"' };
     } else if (selectedAudioType === 'horn') {
       audioPayload = { type: 'horn', customUrl: null, selectedClip: null, name: 'Bocina de Estadio' };
     } else if (selectedAudioType === 'custom') {

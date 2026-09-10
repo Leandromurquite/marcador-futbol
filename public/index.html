@@ -50,72 +50,7 @@
       </div>
     </section>
 
-    <!-- TABLERO PRINCIPAL DE TANDA DE PENALES (ESTILO TRANSMISIÓN DEPORTIVA) -->
-    <section class="penalty-broadcast-board" id="penaltyMainBoard" style="display: none;">
-      <div class="pen-board-header">
-        <div class="pen-header-left">
-          <span class="pen-live-pulse-badge">⚡ DEFINICIÓN POR PENALES</span>
-          <span class="pen-rules-tag">REGLAMENTO FIFA (5 TIROS)</span>
-        </div>
-        <div class="pen-status-line" id="penaltyStatusLine">RONDA 1 DE 5 • TURNO DE: EQUIPO LOCAL</div>
-        <div class="pen-header-right">
-          <span class="pen-aggregate-label">PENALES:</span>
-          <span class="pen-aggregate-value" id="penaltyAggregateScore">0 - 0</span>
-        </div>
-      </div>
-
-      <div class="pen-teams-shootout">
-        <!-- Fila Equipo 1 (Local) -->
-        <div class="pen-team-row" id="penRowTeam1">
-          <div class="pen-team-identity">
-            <div class="pen-row-accent" id="penAccent1"></div>
-            <img src="/assets/team-local.svg" alt="" id="penBoardLogo1" class="pen-board-logo">
-            <div class="pen-name-wrap">
-              <span class="pen-board-name" id="penBoardName1">EQUIPO LOCAL</span>
-              <span class="pen-kicker-indicator" id="penKickerTag1" style="display: none;">⚡ PATEANDO AHORA</span>
-            </div>
-          </div>
-          <div class="pen-shots-strip" id="penShotsStrip1">
-            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
-          </div>
-          <div class="pen-total-box">
-            <span class="pen-total-label">GOLES</span>
-            <span class="pen-total-number" id="penBoardScore1">0</span>
-          </div>
-        </div>
-
-        <!-- Fila Equipo 2 (Visita) -->
-        <div class="pen-team-row" id="penRowTeam2">
-          <div class="pen-team-identity">
-            <div class="pen-row-accent" id="penAccent2"></div>
-            <img src="/assets/team-visita.svg" alt="" id="penBoardLogo2" class="pen-board-logo">
-            <div class="pen-name-wrap">
-              <span class="pen-board-name" id="penBoardName2">EQUIPO VISITA</span>
-              <span class="pen-kicker-indicator" id="penKickerTag2" style="display: none;">⚡ PATEANDO AHORA</span>
-            </div>
-          </div>
-          <div class="pen-shots-strip" id="penShotsStrip2">
-            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
-          </div>
-          <div class="pen-total-box">
-            <span class="pen-total-label">GOLES</span>
-            <span class="pen-total-number" id="penBoardScore2">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Banner de Ganador Definido -->
-      <div class="penalty-winner-banner" id="penaltyWinnerBanner" style="display: none;">
-        <span class="trophy-emoji">🏆</span>
-        <div class="winner-info-wrap">
-          <span class="winner-title-text" id="penaltyWinnerMessage">¡GANADOR POR PENALES: EQUIPO LOCAL!</span>
-          <span class="winner-sub-text" id="penaltyWinnerSub">Serie finalizada matemáticamente • ¡Campeón / Clasificado!</span>
-        </div>
-        <span class="trophy-emoji">🏆</span>
-      </div>
-    </section>
-
-    <!-- TARJETAS DE EQUIPOS (ABAJO DEL CRONÓMETRO, ANCHO COMPLETO PARA NOMBRES) -->
+    <!-- TARJETAS DE EQUIPOS (MARCADOR PRINCIPAL DEL ENCUENTRO) -->
     <main class="main-scoreboard">
       
       <!-- EQUIPO 1 (LOCAL) -->
@@ -180,6 +115,71 @@
       </div>
 
     </main>
+
+    <!-- TABLERO DE TANDA DE PENALES (ABAJO DEL MARCADOR DEL ENCUENTRO) -->
+    <section class="penalty-broadcast-board" id="penaltyMainBoard" style="display: none;">
+      <div class="pen-board-header">
+        <div class="pen-header-left">
+          <span class="pen-live-pulse-badge">⚡ DEFINICIÓN POR PENALES</span>
+          <span class="pen-rules-tag">REGLAMENTO FIFA (5 TIROS)</span>
+        </div>
+        <div class="pen-status-line" id="penaltyStatusLine">RONDA 1 DE 5 • TURNO DE: EQUIPO LOCAL</div>
+        <div class="pen-header-right">
+          <span class="pen-aggregate-label">PENALES:</span>
+          <span class="pen-aggregate-value" id="penaltyAggregateScore">0 - 0</span>
+        </div>
+      </div>
+
+      <div class="pen-teams-shootout">
+        <!-- Fila Equipo 1 (Local) -->
+        <div class="pen-team-row" id="penRowTeam1">
+          <div class="pen-team-identity">
+            <div class="pen-row-accent" id="penAccent1"></div>
+            <img src="/assets/team-local.svg" alt="" id="penBoardLogo1" class="pen-board-logo">
+            <div class="pen-name-wrap">
+              <span class="pen-board-name" id="penBoardName1">EQUIPO LOCAL</span>
+              <span class="pen-kicker-indicator" id="penKickerTag1" style="display: none;">⚡ PATEANDO AHORA</span>
+            </div>
+          </div>
+          <div class="pen-shots-strip" id="penShotsStrip1">
+            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+          </div>
+          <div class="pen-total-box">
+            <span class="pen-total-label">GOLES</span>
+            <span class="pen-total-number" id="penBoardScore1">0</span>
+          </div>
+        </div>
+
+        <!-- Fila Equipo 2 (Visita) -->
+        <div class="pen-team-row" id="penRowTeam2">
+          <div class="pen-team-identity">
+            <div class="pen-row-accent" id="penAccent2"></div>
+            <img src="/assets/team-visita.svg" alt="" id="penBoardLogo2" class="pen-board-logo">
+            <div class="pen-name-wrap">
+              <span class="pen-board-name" id="penBoardName2">EQUIPO VISITA</span>
+              <span class="pen-kicker-indicator" id="penKickerTag2" style="display: none;">⚡ PATEANDO AHORA</span>
+            </div>
+          </div>
+          <div class="pen-shots-strip" id="penShotsStrip2">
+            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+          </div>
+          <div class="pen-total-box">
+            <span class="pen-total-label">GOLES</span>
+            <span class="pen-total-number" id="penBoardScore2">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Ganador Definido -->
+      <div class="penalty-winner-banner" id="penaltyWinnerBanner" style="display: none;">
+        <span class="trophy-emoji">🏆</span>
+        <div class="winner-info-wrap">
+          <span class="winner-title-text" id="penaltyWinnerMessage">¡GANADOR POR PENALES: EQUIPO LOCAL!</span>
+          <span class="winner-sub-text" id="penaltyWinnerSub">Serie finalizada matemáticamente • ¡Campeón / Clasificado!</span>
+        </div>
+        <span class="trophy-emoji">🏆</span>
+      </div>
+    </section>
 
     <!-- Barra Inferior Limpia -->
     <footer class="bottom-bar">
