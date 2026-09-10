@@ -8,10 +8,9 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
 
 - 📱 **Control Remoto Móvil Privado**: Maneja goles, reloj, periodos, penales y sonidos desde el celular sin que los espectadores vean el panel de control ni las direcciones IP.
 - 🔒 **Seguridad con PIN**: Pantalla de bloqueo con teclado numérico para que solo los árbitros o administradores autorizados puedan controlar el partido.
-- 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA)**:
+- 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA - Exclusivamente Goles)**:
   - Rotación aleatoria de relatos auténticos de gol (*"¡Cántalo, cántalo, Gol!"*, *"¡Messi lo hizo, Gol!"*, *"¡Golazo de Enzo Fernández!"*, *"¡Y lo va a ganar!"*, *"¡Benzemaaa Gol!"*).
-  - Soundboard en vivo en el celular para lanzar relatos épicos en cualquier momento.
-  - Audios contextuales para penales (*"¡Cerca del palo!"*, *"¡Atención!"*).
+  - Soundboard en vivo en el celular para lanzar los 5 gritos de gol en cualquier momento.
 - 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
   - 🌙 **Noche**: Iluminación de estadio clásico.
   - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.

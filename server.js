@@ -96,9 +96,7 @@ const CLOSS_CLIPS = [
   { id: 'mariano-closs-gol', name: '¡Benzemaaa Mariano Closs Gol!', file: '/assets/sounds/mariano-closs-gol.mp3' },
   { id: 'closs-gol-messi', name: '¡Messi lo Hizo, Gol!', file: '/assets/sounds/closs-gol-messi.mp3' },
   { id: 'closs-gol-enzo', name: '¡Golazo de Enzo Fernández!', file: '/assets/sounds/closs-gol-enzo.mp3' },
-  { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' },
-  { id: 'closs-atencion', name: '¡Atención!', file: '/assets/sounds/closs-atencion.mp3' },
-  { id: 'closs-cerca-palo', name: '¡Cerca del Palo!', file: '/assets/sounds/closs-cerca-palo.mp3' }
+  { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' }
 ];
 
 function getRandomGoalClip() {
@@ -610,11 +608,7 @@ io.on('connection', (socket) => {
         const clip = getRandomGoalClip();
         io.emit('play_sound_clip', { url: clip });
       } else if (data.action === 'missed') {
-        if (data.reason === 'post' || data.reason === 'wide') {
-          io.emit('play_sound_clip', { url: '/assets/sounds/closs-cerca-palo.mp3' });
-        } else {
-          io.emit('play_sound', { sound: 'whistle_short' });
-        }
+        io.emit('play_sound', { sound: 'whistle_short' });
       }
     }
   });

@@ -372,11 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showPenaltyError(`La serie de penales ya finalizó. ¡${p.winnerName} es el ganador!`);
             return;
           }
-          if (state === 'pending' && p.currentTurn && teamKey !== p.currentTurn) {
-            const rivalName = (p.currentTurn === 'team1' ? penName1.textContent : penName2.textContent).trim();
-            showPenaltyError(`No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal (Turno de ${rivalName})`);
-            return;
-          }
         }
 
         let nextState = 'pending';
@@ -398,6 +393,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Actualizar UI de Penales con Turnos y Declaración de Ganador
   function updatePenaltiesUI(penalties) {
     if (!penalties) return;
+    if (currentState) {
+      currentState.penalties = penalties;
+    } else {
+      currentState = { penalties };
+    }
+
     penScore1.textContent = penalties.score1 || 0;
     penScore2.textContent = penalties.score2 || 0;
     ctrlPenaltyBannerScore.textContent = `${penalties.score1 || 0} - ${penalties.score2 || 0}`;
@@ -428,12 +429,12 @@ document.addEventListener('DOMContentLoaded', () => {
         penBoxTeam2.classList.add('waiting-turn');
 
         if (penTurnTag1) {
-          penTurnTag1.textContent = '🎯 PATEANDO';
+          penTurnTag1.textContent = '🎯 PATEANDO AHORA';
           penTurnTag1.classList.add('active');
           penTurnTag1.style.display = 'inline-block';
         }
         if (penTurnTag2) {
-          penTurnTag2.textContent = '⏳ ESPERANDO';
+          penTurnTag2.textContent = '⏳ ESPERA SU TURNO';
           penTurnTag2.classList.remove('active');
           penTurnTag2.style.display = 'inline-block';
         }
@@ -444,12 +445,12 @@ document.addEventListener('DOMContentLoaded', () => {
         penBoxTeam1.classList.add('waiting-turn');
 
         if (penTurnTag2) {
-          penTurnTag2.textContent = '🎯 PATEANDO';
+          penTurnTag2.textContent = '🎯 PATEANDO AHORA';
           penTurnTag2.classList.add('active');
           penTurnTag2.style.display = 'inline-block';
         }
         if (penTurnTag1) {
-          penTurnTag1.textContent = '⏳ ESPERANDO';
+          penTurnTag1.textContent = '⏳ ESPERA SU TURNO';
           penTurnTag1.classList.remove('active');
           penTurnTag1.style.display = 'inline-block';
         }
@@ -635,7 +636,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof data.isRunning === 'boolean') setTimerButtonState(data.isRunning);
     if (data.penalties) updatePenaltiesUI(data.penalties);
   });
-  socket.on('penalties_updated', (penalties) => updatePenaltiesUI(penalties));
+  socket.on('penalties_updated', (penalties) => {
+    if (currentState) {
+      currentState.penalties = penalties;
+    } else {
+      currentState = { penalties };
+    }
+    updatePenaltiesUI(penalties);
+  });
   socket.on('penalty_turn_error', (data) => showPenaltyError(data.message));
   socket.on('extra_time_updated', (data) => updateExtraButtons(data.extraTime));
   socket.on('teams_updated', (state) => updateUI(state));
@@ -720,12 +728,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showPenaltyError(`La serie de penales ya finalizó. ¡${p.winnerName} es el ganador!`);
         return;
       }
-      if (p.currentTurn && team !== p.currentTurn) {
-        const rivalName = (p.currentTurn === 'team1' ? penName1.textContent : penName2.textContent).trim();
-        showPenaltyError(`No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal (Turno de ${rivalName})`);
-        return;
-      }
     }
+    // Enviar directamente al servidor; el servidor tiene la autoridad oficial y valida turnos
     socket.emit('quick_penalty_action', { team, action, reason });
   }
 
