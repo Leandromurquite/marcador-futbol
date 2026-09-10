@@ -118,6 +118,8 @@ let matchState = {
   theme: 'night', // 'night' | 'sunny' | 'cloudy' | 'sunset' | 'grass' | 'high-contrast'
   crowdAmbiance: {
     enabled: true,
+    isPlaying: false,
+    autoWithTimer: true,
     volume: 0.35,
     soundUrl: '/assets/sounds/ambiente-estadio-continuo.mp3'
   },
@@ -421,6 +423,10 @@ io.on('connection', (socket) => {
       seconds: matchState.timer.seconds,
       isRunning: matchState.timer.isRunning
     });
+    if (matchState.crowdAmbiance.enabled && matchState.crowdAmbiance.autoWithTimer) {
+      matchState.crowdAmbiance.isPlaying = matchState.timer.isRunning;
+      io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
+    }
   });
 
   socket.on('timer_set', (data) => {
@@ -443,6 +449,10 @@ io.on('connection', (socket) => {
       seconds: 0,
       isRunning: false
     });
+    if (matchState.crowdAmbiance.autoWithTimer) {
+      matchState.crowdAmbiance.isPlaying = false;
+      io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
+    }
   });
 
   // Periodos
@@ -664,10 +674,25 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Reproducir efectos (silbato, bocina)
+  socket.on('play_sound', (data) => {
+    if (data && data.sound) {
+      io.emit('play_sound', data);
+    }
+  });
+
+  socket.on('trigger_sound', (data) => {
+    if (data && data.sound) {
+      io.emit('play_sound', data);
+    }
+  });
+
   // Ambiente Continuo de Hinchada mientras se juega el partido
   socket.on('set_crowd_ambiance', (data) => {
     if (data) {
       if (typeof data.enabled === 'boolean') matchState.crowdAmbiance.enabled = data.enabled;
+      if (typeof data.isPlaying === 'boolean') matchState.crowdAmbiance.isPlaying = data.isPlaying;
+      if (typeof data.autoWithTimer === 'boolean') matchState.crowdAmbiance.autoWithTimer = data.autoWithTimer;
       if (typeof data.volume === 'number') matchState.crowdAmbiance.volume = Math.max(0, Math.min(1, data.volume));
       if (data.soundUrl) matchState.crowdAmbiance.soundUrl = data.soundUrl;
       io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
@@ -717,6 +742,7 @@ io.on('connection', (socket) => {
     matchState.timer.isRunning = false;
     matchState.timer.period = '1T';
     matchState.timer.extraTime = 0;
+    matchState.crowdAmbiance.isPlaying = false;
     matchState.penalties.enabled = false;
     matchState.penalties.team1 = ['pending', 'pending', 'pending', 'pending', 'pending'];
     matchState.penalties.team2 = ['pending', 'pending', 'pending', 'pending', 'pending'];
@@ -730,6 +756,7 @@ io.on('connection', (socket) => {
     matchState.penalties.currentRound = 1;
     io.emit('sync_state', matchState);
     io.emit('match_reset');
+    io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
   });
 
   // FINALIZAR PARTIDO OFICIALMENTE Y GENERAR REPORTES (EXCEL Y PDF)
@@ -737,6 +764,10 @@ io.on('connection', (socket) => {
     // 1. Detener cronómetro y cambiar periodo a Finalizado
     matchState.timer.isRunning = false;
     matchState.timer.period = 'Finalizado';
+    if (matchState.crowdAmbiance.isPlaying) {
+      matchState.crowdAmbiance.isPlaying = false;
+      io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
+    }
 
     // 2. Determinar ganador oficial
     let winner = null;

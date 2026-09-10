@@ -120,6 +120,25 @@ document.addEventListener('DOMContentLoaded', () => {
   let uploadedLogo2 = null;
   let uploadedCustomAudio = null;
 
+  // Audio local en el dispositivo del control remoto (para que suene en el celular al tocar)
+  const localCrowdAudio = new Audio('/assets/sounds/ambiente-estadio-continuo.mp3');
+  localCrowdAudio.loop = true;
+  localCrowdAudio.volume = 0.35;
+
+  function playLocalClip(url) {
+    if (!url) return;
+    try {
+      if (window.SoundEffects) {
+        window.SoundEffects.playAudioFile(url);
+      } else {
+        const audio = new Audio(url);
+        audio.play().catch(e => console.log('Local audio:', e));
+      }
+    } catch (e) {
+      console.warn('Local play error:', e);
+    }
+  }
+
   const statusIndicator = document.querySelector('.status-indicator');
   const statusLabel = document.getElementById('statusLabel');
 
@@ -632,15 +651,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCrowdUI(crowd) {
     if (!crowd) return;
+    if (currentState) currentState.crowdAmbiance = crowd;
+    const isPlaying = !!crowd.isPlaying;
     if (btnToggleCrowd) {
-      btnToggleCrowd.classList.toggle('active', !!crowd.enabled);
-      if (crowdToggleIcon) crowdToggleIcon.textContent = crowd.enabled ? '🔊' : '🔇';
-      if (crowdToggleText) crowdToggleText.textContent = crowd.enabled ? 'Hinchada Activada' : 'Hinchada Silenciada';
+      btnToggleCrowd.classList.toggle('active', isPlaying);
+      if (crowdToggleIcon) crowdToggleIcon.textContent = isPlaying ? '⏸' : '▶';
+      if (crowdToggleText) crowdToggleText.textContent = isPlaying ? 'Pausar Hinchada' : 'Activar Hinchada';
     }
     if (rangeCrowdVolume && typeof crowd.volume === 'number') {
       const pct = Math.round(crowd.volume * 100);
       rangeCrowdVolume.value = pct;
       if (crowdVolumeDisplay) crowdVolumeDisplay.textContent = `${pct}%`;
+      localCrowdAudio.volume = crowd.volume;
+    }
+    if (isPlaying) {
+      if (localCrowdAudio.paused) {
+        localCrowdAudio.play().catch(() => {});
+      }
+    } else {
+      if (!localCrowdAudio.paused) {
+        localCrowdAudio.pause();
+      }
     }
   }
 
@@ -841,29 +872,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Soundboard Mariano Closs (Disparar clips auténticos en directo)
+  // Soundboard Mariano Closs y Cánticos (Disparar clips auténticos en directo)
   if (soundboardButtons) {
     soundboardButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         haptic(50);
         const clip = btn.dataset.clip;
         if (clip) {
+          playLocalClip(clip);
           socket.emit('play_sound_clip', { url: clip });
         }
       });
     });
   }
 
-  // Hinchada de Fondo Continua (Toggle y Volumen)
+  // Hinchada de Fondo Continua (Toggle Inmediato y Volumen)
   if (btnToggleCrowd) {
     btnToggleCrowd.addEventListener('click', () => {
       haptic(30);
-      const isCurrentlyEnabled = btnToggleCrowd.classList.contains('active');
-      const nextEnabled = !isCurrentlyEnabled;
-      btnToggleCrowd.classList.toggle('active', nextEnabled);
-      if (crowdToggleIcon) crowdToggleIcon.textContent = nextEnabled ? '🔊' : '🔇';
-      if (crowdToggleText) crowdToggleText.textContent = nextEnabled ? 'Hinchada Activada' : 'Hinchada Silenciada';
-      socket.emit('set_crowd_ambiance', { enabled: nextEnabled });
+      const isCurrentlyPlaying = currentState && currentState.crowdAmbiance && currentState.crowdAmbiance.isPlaying;
+      const nextPlaying = !isCurrentlyPlaying;
+
+      if (nextPlaying) {
+        localCrowdAudio.volume = (currentState && currentState.crowdAmbiance && typeof currentState.crowdAmbiance.volume === 'number') ? currentState.crowdAmbiance.volume : 0.35;
+        localCrowdAudio.play().catch(err => console.log('Reproducción en celular:', err));
+      } else {
+        localCrowdAudio.pause();
+      }
+
+      socket.emit('set_crowd_ambiance', {
+        enabled: true,
+        isPlaying: nextPlaying
+      });
     });
   }
 
@@ -932,12 +972,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // SONIDOS
   btnSoundWhistleShort.addEventListener('click', () => {
     haptic(40);
-    socket.emit('trigger_sound', { sound: 'whistle_short' });
+    if (window.SoundEffects) window.SoundEffects.playWhistleShort();
+    socket.emit('play_sound', { sound: 'whistle_short' });
   });
 
   btnSoundWhistleLong.addEventListener('click', () => {
     haptic(40);
-    socket.emit('trigger_sound', { sound: 'whistle_long' });
+    if (window.SoundEffects) window.SoundEffects.playWhistleLong();
+    socket.emit('play_sound', { sound: 'whistle_long' });
   });
 
   btnSoundGoalHorn.addEventListener('click', () => {

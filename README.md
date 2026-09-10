@@ -11,12 +11,12 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
 - 🎙️ **Narraciones Reales de Mariano Closs (100% Locales, Sin IA - Exclusivamente Goles)**:
   - Rotación aleatoria de relatos auténticos de gol (*"¡Cántalo, cántalo, Gol!"*, *"¡Messi lo hizo, Gol!"*, *"¡Golazo de Enzo Fernández!"*, *"¡Y lo va a ganar!"*, *"¡Benzemaaa Gol!"*).
   - Soundboard en vivo en el celular para lanzar los 5 gritos de gol en cualquier momento.
-- 🏟️ **Ambiente de Hinchada en Vivo (Continuo mientras se juega)**:
-  - Sonido ambiental de estadio con cantos y aliento continuo que suena automáticamente de fondo en el marcador mientras el cronómetro esté corriendo.
-  - Se pausa automáticamente al pausar el partido y se atenúa durante los festejos de gol.
-  - Control de volumen (0% a 100%) y botón para activar o silenciar la hinchada desde el celular.
+- 🏟️ **Ambiente de Hinchada en Vivo (Marcador y Celular)**:
+  - Sonido ambiental de estadio con cantos y aliento continuo que puedes encender o pausar en cualquier momento, o sincronizar automáticamente con el cronómetro de juego.
+  - Suena en vivo tanto en la pantalla del marcador como en el altavoz del celular del operador.
+  - Control de volumen (0% a 100%) y botón de encendido/pausa inmediato.
 - 🎺 **Botonera de Cánticos de Hinchada en Vivo**:
-  - Lanzamiento instantáneo de cánticos populares de cancha: *"¡Jugadores, la concha de su madre, a ver si ponen huevos que no juegan con nadie!"*, *"¡Muchachos, ahora nos volvimos a ilusionar!"*, *"¡Esta es la banda loca de la Argentina!"*, *"¡Dale, dale Bo!"* y ovaciones de tribuna.
+  - Lanzamiento instantáneo de cánticos populares de cancha: *"¡Jugadores, la concha de su madre, a ver si ponen huevos que no juegan con nadie!"*, *"¡Muchachos, ahora nos volvimos a ilusionar!"*, *"¡Esta es la banda loca de la Argentina!"*, *"¡Dale, dale Bo!"* y ovaciones de tribuna (reproducibles al instante desde el celular y en la pantalla).
 - 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
   - 🌙 **Noche**: Iluminación de estadio clásico.
   - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.
@@ -24,8 +24,8 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
   - 🌅 **Atardecer**: Atmósfera crepuscular dorada.
   - 🌱 **Césped**: Textura de pasto deportivo y líneas de cancha.
   - ⚡ **Alto Contraste Solar**: Fondo 100% negro puro con dígitos LED amarillo neón y verde eléctrico para máxima legibilidad bajo sol directo a mediodía.
-- ⚽ **Tanda de Penales Oficial FIFA (Ubicada Debajo del Marcador)**:
-  - Tablero central de transmisión con 5 tiros numerados para cada equipo ubicado estratégicamente debajo de las placas de goles y nombres.
+- ⚽ **Único Tablero de Penales Oficial FIFA (Ubicado Debajo del Marcador)**:
+  - Panel oficial de transmisión broadcast con 5 tiros numerados para cada equipo ubicado estratégicamente debajo de las placas de goles y nombres (sin marcadores duplicados).
   - Control de turnos alternos estrictos (bloquea tiros fuera de turno con aviso sonoro y toast).
   - Sorteo inicial de quién patea primero.
   - Detección matemática de ganador antes del 5to tiro si ya no hay alcance posible.

@@ -1510,3 +1510,51 @@ body[data-theme="high-contrast"] .pen-total-number {
   letter-spacing: 0.5px;
 }
 
+/* Banner flotante de activación de audio para políticas de autoplay */
+.audio-unlock-banner {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.95), rgba(3, 105, 161, 0.95));
+  border: 2px solid #38bdf8;
+  color: #ffffff;
+  padding: 0.65rem 1.3rem;
+  border-radius: 999px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  cursor: pointer;
+  animation: pulseAudioUnlock 2s infinite ease-in-out;
+}
+
+@keyframes pulseAudioUnlock {
+  0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+  50% { transform: translateX(-50%) scale(1.03); box-shadow: 0 0 25px rgba(56, 189, 248, 0.8); }
+  100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+}
+
+.btn-unlock-audio {
+  background: #ffffff;
+  color: #0369a1;
+  border: none;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.btn-unlock-audio:hover {
+  background: #f0f9ff;
+  transform: scale(1.05);
+}
+
+

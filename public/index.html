@@ -27,6 +27,12 @@
       </div>
     </header>
 
+    <!-- Banner flotante de activación de audio (por si el navegador bloquea autoplay) -->
+    <div id="audioUnlockBanner" class="audio-unlock-banner" style="display: none;">
+      <span>🔊 Toca la pantalla o presiona cualquier tecla para habilitar el sonido</span>
+      <button type="button" id="btnUnlockAudio" class="btn-unlock-audio">Activar Sonido</button>
+    </div>
+
     <!-- CRONÓMETRO DEL TIEMPO (ARRIBA AL CENTRO) -->
     <section class="clock-top-section">
       <div class="match-center-board" id="matchCenterBoard">
@@ -67,14 +73,6 @@
           <!-- Nombre completo sin truncar -->
           <h2 class="team-name" id="nameTeam1">EQUIPO LOCAL</h2>
           <span class="team-tag">LOCAL</span>
-
-          <!-- TANDA DE PENALES (5 BOLITAS) EQUIPO 1 -->
-          <div class="penalty-dots-container" id="penaltyContainerTeam1" style="display: none;">
-            <div class="penalty-dots-label">PENALES: <strong id="penaltyScoreTeam1">0</strong></div>
-            <div class="penalty-dots-row" id="dotsTeam1">
-              <!-- Bolitas inyectadas por JS -->
-            </div>
-          </div>
         </div>
         <div class="score-box">
           <span class="score-number" id="scoreTeam1">0</span>
@@ -99,14 +97,6 @@
           <!-- Nombre completo sin truncar -->
           <h2 class="team-name" id="nameTeam2">EQUIPO VISITA</h2>
           <span class="team-tag">VISITA</span>
-
-          <!-- TANDA DE PENALES (5 BOLITAS) EQUIPO 2 -->
-          <div class="penalty-dots-container" id="penaltyContainerTeam2" style="display: none;">
-            <div class="penalty-dots-label">PENALES: <strong id="penaltyScoreTeam2">0</strong></div>
-            <div class="penalty-dots-row" id="dotsTeam2">
-              <!-- Bolitas inyectadas por JS -->
-            </div>
-          </div>
         </div>
         <div class="logo-wrapper">
           <img src="/assets/team-visita.svg" alt="Escudo Visita" id="logoTeam2" class="team-logo">

@@ -44,12 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const turnTagTeam1 = document.getElementById('turnTagTeam1');
   const turnTagTeam2 = document.getElementById('turnTagTeam2');
-  const penaltyContainerTeam1 = document.getElementById('penaltyContainerTeam1');
-  const penaltyScoreTeam1 = document.getElementById('penaltyScoreTeam1');
-  const dotsTeam1 = document.getElementById('dotsTeam1');
-  const penaltyContainerTeam2 = document.getElementById('penaltyContainerTeam2');
-  const penaltyScoreTeam2 = document.getElementById('penaltyScoreTeam2');
-  const dotsTeam2 = document.getElementById('dotsTeam2');
 
   // Selector de Tema / Clima
   const btnCycleTheme = document.getElementById('btnCycleTheme');
@@ -128,7 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Audio continuo de Hinchada
   const stadiumAmbianceAudio = document.getElementById('stadiumAmbianceAudio');
-  let crowdAmbianceConfig = { enabled: true, volume: 0.35 };
+  let crowdAmbianceConfig = { enabled: true, isPlaying: false, autoWithTimer: true, volume: 0.35 };
+
+  // Banner flotante de activación de audio (para políticas de autoplay de navegadores)
+  const audioUnlockBanner = document.getElementById('audioUnlockBanner');
+  const btnUnlockAudio = document.getElementById('btnUnlockAudio');
 
   // Cargar info de red para el QR privado
   async function loadNetworkInfo() {
@@ -155,19 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const secs = totalSecs % 60;
     timerMinutes.textContent = String(mins).padStart(2, '0');
     timerSeconds.textContent = String(secs).padStart(2, '0');
-  }
-
-  // Renderizar bolitas de penales en las tarjetas individuales
-  function renderPenaltyDots(dotsEl, scoreEl, shotsArray, score) {
-    if (!dotsEl || !scoreEl) return;
-    scoreEl.textContent = score || 0;
-    dotsEl.innerHTML = '';
-    shotsArray.forEach((st, idx) => {
-      const dot = document.createElement('span');
-      dot.className = `pen-dot ${st}`;
-      dot.dataset.idx = idx;
-      dotsEl.appendChild(dot);
-    });
   }
 
   // Renderizar la tira principal numerada (1 a 5+) en el panel de transmisión
@@ -202,9 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!penalties) return;
     const show = penalties.enabled;
 
+    // Solo un tablero de penales: el panel broadcast oficial abajo del marcador
     if (penaltyMainBoard) penaltyMainBoard.style.display = show ? 'flex' : 'none';
-    if (penaltyContainerTeam1) penaltyContainerTeam1.style.display = show ? 'flex' : 'none';
-    if (penaltyContainerTeam2) penaltyContainerTeam2.style.display = show ? 'flex' : 'none';
 
     if (show) {
       // Sincronizar datos de equipos con el tablero central de penales
@@ -251,10 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Renderizar tiros numerados 1..5 en el tablero principal
       renderNumberedShotsStrip(penShotsStrip1, penalties.team1, isTeam1Turn);
       renderNumberedShotsStrip(penShotsStrip2, penalties.team2, isTeam2Turn);
-
-      // Renderizar bolitas en tarjetas de equipos
-      renderPenaltyDots(dotsTeam1, penaltyScoreTeam1, penalties.team1, penalties.score1);
-      renderPenaltyDots(dotsTeam2, penaltyScoreTeam2, penalties.team2, penalties.score2);
 
       // Indicadores de turno en las tarjetas de equipos
       cardTeam1.classList.toggle('kicking-turn', isTeam1Turn);
@@ -369,12 +349,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCrowdAmbiance() {
     if (!stadiumAmbianceAudio) return;
-    if (crowdAmbianceConfig && crowdAmbianceConfig.enabled && isTimerRunning) {
+    const shouldPlay = crowdAmbianceConfig && (
+      crowdAmbianceConfig.isPlaying === true || 
+      (crowdAmbianceConfig.enabled && isTimerRunning && crowdAmbianceConfig.autoWithTimer !== false)
+    );
+    if (shouldPlay) {
       stadiumAmbianceAudio.volume = (typeof crowdAmbianceConfig.volume === 'number') ? crowdAmbianceConfig.volume : 0.35;
       if (stadiumAmbianceAudio.paused) {
-        stadiumAmbianceAudio.play().catch(() => {
-          // Autoplay policy: iniciará al primer clic
-        });
+        const p = stadiumAmbianceAudio.play();
+        if (p !== undefined) {
+          p.then(() => {
+            if (audioUnlockBanner) audioUnlockBanner.style.display = 'none';
+          }).catch((err) => {
+            console.warn('Autoplay bloqueado por el navegador en pantalla:', err);
+            if (audioUnlockBanner) audioUnlockBanner.style.display = 'flex';
+          });
+        }
       }
     } else {
       if (!stadiumAmbianceAudio.paused) {
@@ -596,7 +586,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.body.addEventListener('click', () => {
+  // Desbloqueo universal de audio para cumplir con las políticas de autoplay
+  function unlockAllAudio() {
     if (window.SoundEffects) window.SoundEffects.init();
-  }, { once: true });
+    if (stadiumAmbianceAudio) {
+      stadiumAmbianceAudio.play().then(() => {
+        const shouldStayPlaying = crowdAmbianceConfig && (
+          crowdAmbianceConfig.isPlaying === true || 
+          (crowdAmbianceConfig.enabled && isTimerRunning && crowdAmbianceConfig.autoWithTimer !== false)
+        );
+        if (!shouldStayPlaying) {
+          stadiumAmbianceAudio.pause();
+        }
+      }).catch(() => {});
+    }
+    if (audioUnlockBanner) audioUnlockBanner.style.display = 'none';
+  }
+
+  if (btnUnlockAudio) btnUnlockAudio.addEventListener('click', unlockAllAudio);
+  if (audioUnlockBanner) audioUnlockBanner.addEventListener('click', unlockAllAudio);
+  document.body.addEventListener('click', unlockAllAudio, { once: true });
+  document.addEventListener('keydown', unlockAllAudio, { once: true });
+  document.addEventListener('touchstart', unlockAllAudio, { once: true });
 });
