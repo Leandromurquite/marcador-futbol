@@ -16,6 +16,8 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 
+const { generateMatchExcel, generateMatchPdf } = require('./reports');
+
 // Configurar carpetas estáticas
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -27,10 +29,26 @@ if (!fs.existsSync(soundsDir)) {
   fs.mkdirSync(soundsDir, { recursive: true });
 }
 
+const reportsDir = path.join(__dirname, 'reports');
+if (!fs.existsSync(reportsDir)) {
+  fs.mkdirSync(reportsDir, { recursive: true });
+}
+
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const historyFilePath = path.join(dataDir, 'historial_partidos.json');
+if (!fs.existsSync(historyFilePath)) {
+  fs.writeFileSync(historyFilePath, JSON.stringify([], null, 2), 'utf8');
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadsDir));
+app.use('/reports', express.static(reportsDir));
 
 // Configuración de Multer para logos y audios
 const storage = multer.diskStorage({
@@ -323,6 +341,20 @@ app.post('/api/upload-audio', upload.single('audio'), (req, res) => {
 
   io.emit('goal_audio_updated', matchState.goalAudio);
   res.json({ success: true, url: audioUrl, filename: req.file.originalname });
+});
+
+// Historial de partidos terminados
+app.get('/api/history', (req, res) => {
+  try {
+    if (fs.existsSync(historyFilePath)) {
+      const list = JSON.parse(fs.readFileSync(historyFilePath, 'utf8'));
+      res.json({ success: true, history: list });
+    } else {
+      res.json({ success: true, history: [] });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Error al leer historial de partidos' });
+  }
 });
 
 // Rutas directas
@@ -691,6 +723,108 @@ io.on('connection', (socket) => {
     matchState.penalties.currentRound = 1;
     io.emit('sync_state', matchState);
     io.emit('match_reset');
+  });
+
+  // FINALIZAR PARTIDO OFICIALMENTE Y GENERAR REPORTES (EXCEL Y PDF)
+  socket.on('finish_match', async () => {
+    // 1. Detener cronómetro y cambiar periodo a Finalizado
+    matchState.timer.isRunning = false;
+    matchState.timer.period = 'Finalizado';
+
+    // 2. Determinar ganador oficial
+    let winner = null;
+    let winnerName = null;
+    let winnerType = 'regular'; // 'regular' | 'penalties' | 'draw'
+
+    const p = matchState.penalties;
+    if (p && p.enabled && p.winner) {
+      winner = p.winner;
+      winnerName = p.winnerName || matchState[p.winner].name;
+      winnerType = 'penalties';
+    } else if (matchState.team1.score > matchState.team2.score) {
+      winner = 'team1';
+      winnerName = matchState.team1.name;
+      winnerType = 'regular';
+    } else if (matchState.team2.score > matchState.team1.score) {
+      winner = 'team2';
+      winnerName = matchState.team2.name;
+      winnerType = 'regular';
+    } else {
+      winner = 'draw';
+      winnerName = 'Empate';
+      winnerType = 'draw';
+    }
+
+    const timestamp = Date.now();
+    const now = new Date();
+    const dateFormatted = now.toLocaleDateString('es-AR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }) + ' ' + now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+    const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
+    const filenameBase = `partido_${timestamp}_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}`;
+    const xlsxFilename = `${filenameBase}.xlsx`;
+    const pdfFilename = `${filenameBase}.pdf`;
+
+    const xlsxPath = path.join(reportsDir, xlsxFilename);
+    const pdfPath = path.join(reportsDir, pdfFilename);
+
+    const matchRecord = {
+      id: 'match-' + timestamp,
+      timestamp: now.toISOString(),
+      dateFormatted: dateFormatted,
+      tournament: matchState.tournament,
+      team1: { ...matchState.team1 },
+      team2: { ...matchState.team2 },
+      timer: { ...matchState.timer },
+      penalties: JSON.parse(JSON.stringify(matchState.penalties)),
+      winner,
+      winnerName,
+      winnerType,
+      files: {
+        xlsx: `/reports/${xlsxFilename}`,
+        pdf: `/reports/${pdfFilename}`
+      }
+    };
+
+    try {
+      generateMatchExcel(matchRecord, xlsxPath);
+      await generateMatchPdf(matchRecord, pdfPath);
+
+      let history = [];
+      if (fs.existsSync(historyFilePath)) {
+        try {
+          history = JSON.parse(fs.readFileSync(historyFilePath, 'utf8'));
+        } catch (e) {
+          history = [];
+        }
+      }
+      history.unshift(matchRecord);
+      if (history.length > 50) history = history.slice(0, 50);
+      fs.writeFileSync(historyFilePath, JSON.stringify(history, null, 2), 'utf8');
+
+      console.log(`[PARTIDO TERMINADO] ${matchState.team1.name} ${matchState.team1.score} - ${matchState.team2.score} ${matchState.team2.name}`);
+      console.log(`✓ Reporte PDF: ${pdfFilename}`);
+      console.log(`✓ Planilla Excel: ${xlsxFilename}`);
+    } catch (err) {
+      console.error('Error al generar actas del partido:', err);
+    }
+
+    io.emit('timer_state', {
+      seconds: matchState.timer.seconds,
+      isRunning: false
+    });
+    io.emit('period_updated', {
+      period: 'Finalizado',
+      seconds: matchState.timer.seconds,
+      isRunning: false,
+      penalties: matchState.penalties
+    });
+    io.emit('play_sound', { sound: 'whistle_long' });
+    io.emit('match_finished', matchRecord);
   });
 
   socket.on('trigger_sound', (data) => {

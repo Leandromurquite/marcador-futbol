@@ -221,6 +221,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSoundGoalHorn = document.getElementById('btnSoundGoalHorn');
   const btnResetAllMatch = document.getElementById('btnResetAllMatch');
 
+  // Finalizar Partido Oficial y Modal de Reportes
+  const btnFinishMatch = document.getElementById('btnFinishMatch');
+  const modalMatchFinished = document.getElementById('modalMatchFinished');
+  const finishedModalTournament = document.getElementById('finishedModalTournament');
+  const finishedTeam1Name = document.getElementById('finishedTeam1Name');
+  const finishedScore1 = document.getElementById('finishedScore1');
+  const finishedTeam2Name = document.getElementById('finishedTeam2Name');
+  const finishedScore2 = document.getElementById('finishedScore2');
+  const finishedPenaltiesNote = document.getElementById('finishedPenaltiesNote');
+  const finishedPenaltiesScore = document.getElementById('finishedPenaltiesScore');
+  const finishedWinnerBanner = document.getElementById('finishedWinnerBanner');
+  const finishedWinnerText = document.getElementById('finishedWinnerText');
+  const btnDownloadPdf = document.getElementById('btnDownloadPdf');
+  const btnDownloadXlsx = document.getElementById('btnDownloadXlsx');
+  const btnModalResetMatch = document.getElementById('btnModalResetMatch');
+  const btnModalCloseFinished = document.getElementById('btnModalCloseFinished');
+  const matchHistoryList = document.getElementById('matchHistoryList');
+  const btnRefreshHistory = document.getElementById('btnRefreshHistory');
+
   // Formulario Equipos y Audios
   const formTeamsConfig = document.getElementById('formTeamsConfig');
   const inputTournament = document.getElementById('inputTournament');
@@ -615,6 +634,46 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('teams_updated', (state) => updateUI(state));
   socket.on('half_duration_updated', (data) => updateJumpButtons(data.halfDurationMinutes));
 
+  // Partido Finalizado y Generación de Reportes
+  socket.on('match_finished', (record) => {
+    haptic([70, 70, 100]);
+    if (finishedModalTournament) finishedModalTournament.textContent = record.tournament || 'TORNEO DE FÚTBOL';
+    if (finishedTeam1Name) finishedTeam1Name.textContent = record.team1.name;
+    if (finishedScore1) finishedScore1.textContent = record.team1.score;
+    if (finishedTeam2Name) finishedTeam2Name.textContent = record.team2.name;
+    if (finishedScore2) finishedScore2.textContent = record.team2.score;
+
+    if (finishedPenaltiesNote && finishedPenaltiesScore) {
+      if (record.penalties && (record.penalties.enabled || record.penalties.score1 > 0 || record.penalties.score2 > 0)) {
+        finishedPenaltiesNote.style.display = 'block';
+        finishedPenaltiesScore.textContent = `${record.penalties.score1} - ${record.penalties.score2}`;
+      } else {
+        finishedPenaltiesNote.style.display = 'none';
+      }
+    }
+
+    if (finishedWinnerText) {
+      if (record.winnerName && record.winnerName !== 'Empate') {
+        finishedWinnerText.textContent = `🏆 ¡GANADOR: ${record.winnerName.toUpperCase()}!`;
+      } else {
+        finishedWinnerText.textContent = `🤝 ¡RESULTADO: EMPATE!`;
+      }
+    }
+
+    if (btnDownloadPdf && record.files && record.files.pdf) {
+      btnDownloadPdf.href = record.files.pdf;
+    }
+    if (btnDownloadXlsx && record.files && record.files.xlsx) {
+      btnDownloadXlsx.href = record.files.xlsx;
+    }
+
+    if (modalMatchFinished) {
+      modalMatchFinished.style.display = 'flex';
+    }
+
+    loadHistory();
+  });
+
   // ACCIONES GOLES
   btnAddGoal1.addEventListener('click', () => {
     haptic(60);
@@ -833,6 +892,90 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // FINALIZAR PARTIDO OFICIAL Y GENERAR PLANILLAS EXCEL Y PDF
+  if (btnFinishMatch) {
+    btnFinishMatch.addEventListener('click', () => {
+      haptic(60);
+      const ok = confirm(
+        "⚠️ ¿Confirmar finalización del partido?\n\n" +
+        "Al presionar Aceptar:\n" +
+        "• Se detendrá el cronómetro oficial en el tiempo actual.\n" +
+        "• El periodo cambiará a 'Finalizado'.\n" +
+        "• Se generará y guardará automáticamente el acta en PDF y planilla en Excel (.xlsx).\n" +
+        "• Podrás descargar ambos archivos de inmediato en tu celular o PC."
+      );
+      if (ok) {
+        socket.emit('finish_match');
+      }
+    });
+  }
+
+  if (btnModalCloseFinished) {
+    btnModalCloseFinished.addEventListener('click', () => {
+      if (modalMatchFinished) modalMatchFinished.style.display = 'none';
+    });
+  }
+
+  if (btnModalResetMatch) {
+    btnModalResetMatch.addEventListener('click', () => {
+      if (confirm('¿Deseas reiniciar e iniciar un nuevo partido desde 0-0?')) {
+        socket.emit('reset_match');
+        if (modalMatchFinished) modalMatchFinished.style.display = 'none';
+      }
+    });
+  }
+
+  // Cargar Historial de Partidos Archivados
+  async function loadHistory() {
+    if (!matchHistoryList) return;
+    try {
+      const res = await fetch('/api/history');
+      const data = await res.json();
+      if (data && data.success && data.history && data.history.length > 0) {
+        matchHistoryList.innerHTML = data.history.map(m => `
+          <div class="history-item">
+            <div class="history-item-top">
+              <span class="history-item-tournament">${m.tournament || 'TORNEO'}</span>
+              <span class="history-item-date">${m.dateFormatted || ''}</span>
+            </div>
+            <div class="history-item-matchup">
+              <span>${m.team1.name}</span>
+              <span class="history-item-scores">${m.team1.score} - ${m.team2.score}</span>
+              <span>${m.team2.name}</span>
+            </div>
+            ${m.penalties && (m.penalties.enabled || m.penalties.score1 > 0 || m.penalties.score2 > 0) ? `
+              <div style="font-size:0.75rem; color:#38bdf8; font-weight:700;">Penales: ${m.penalties.score1} - ${m.penalties.score2}</div>
+            ` : ''}
+            <div class="history-item-winner">
+              ${m.winnerName ? (m.winnerName === 'Empate' ? '🤝 Empate' : `🏆 Ganador: ${m.winnerName}`) : ''}
+            </div>
+            <div class="history-item-downloads">
+              <a href="${m.files.pdf}" target="_blank" download class="btn-history-dl pdf">📄 Descargar PDF</a>
+              <a href="${m.files.xlsx}" target="_blank" download class="btn-history-dl xlsx">📊 Planilla Excel</a>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        matchHistoryList.innerHTML = '<div class="history-empty">No hay partidos finalizados aún. Al presionar "Terminar Partido", se guardarán aquí automáticamente.</div>';
+      }
+    } catch (e) {
+      matchHistoryList.innerHTML = '<div class="history-empty">Error al cargar historial.</div>';
+    }
+  }
+
+  if (btnRefreshHistory) {
+    btnRefreshHistory.addEventListener('click', () => {
+      haptic(30);
+      loadHistory();
+    });
+  }
+
+  if (tabBtnTeams) {
+    tabBtnTeams.addEventListener('click', () => {
+      loadHistory();
+    });
+  }
 
   // REINICIO COMPLETO
   btnResetAllMatch.addEventListener('click', () => {

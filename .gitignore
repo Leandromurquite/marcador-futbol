@@ -1,4 +1,4 @@
-﻿# Dependencias
+# Dependencias
 node_modules/
 
 # Logs
@@ -17,3 +17,13 @@ uploads/*
 Thumbs.db
 .vscode/
 .idea/
+
+# Reportes y actas generadas
+reports/*
+!reports/.gitkeep
+
+# Historial local
+data/*
+!data/.gitkeep
+!data/historial_partidos.json
+

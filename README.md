@@ -1,4 +1,4 @@
-﻿# ⚽ Marcador de Fútbol en Tiempo Real (PC/TV + Control Remoto Móvil)
+# ⚽ Marcador de Fútbol en Tiempo Real (PC/TV + Control Remoto Móvil)
 
 Sistema web profesional para transmisión y control de marcadores de fútbol en tiempo real. Diseñado para proyectar en monitores, televisores o pantallas LED en canchas deportivas y operarlo de forma privada y segura desde cualquier teléfono celular (iPhone / Android) vía Wi-Fi o Hotspot móvil.
 
@@ -26,6 +26,12 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
   - Detección matemática de ganador antes del 5to tiro si ya no hay alcance posible.
   - Muerte súbita automática en caso de empate a 5.
 - ⏱️ **Cronómetro y Duración Adaptable**: Ajuste para Fútbol 5 (15-20 min), Fútbol 7 (25 min), Fútbol 8 (30 min) o Fútbol 11 (45 min).
+- 🏁 **Terminar Partido y Generación de Reportes Oficiales (PDF y Excel .xlsx)**:
+  - Al pulsar el botón dedicado **🏁 Terminar Partido**, se detiene el reloj y se generan al instante las actas oficiales del encuentro.
+  - **Planilla Excel (.xlsx)**: Hoja estructurada con datos del torneo, fecha, resultado final, duración, desglose tiro por tiro de penales y firmas oficiales.
+  - **Acta PDF Oficial**: Vectorial con diseño de alta calidad listo para imprimir o enviar por WhatsApp/correo, con placa de resultado, detalle y firmas de árbitro y capitanes.
+  - **Descarga Inmediata**: Botones de descarga directa en el celular del árbitro y en la pantalla principal.
+  - **Historial Completo**: Registro histórico persistente en el servidor para consultar y descargar actas de partidos anteriores en cualquier momento.
 - 📷 **Personalización Total**: Carga escudos, nombres y colores de ambos clubes directamente desde el celular o la computadora.
 
 ---
@@ -97,7 +103,8 @@ Si el navegador del celular dice *"No se puede conectar"* o *"Página no disponi
 - **Comunicación en Tiempo Real**: [Socket.io](https://socket.io/) (WebSockets bidireccionales con sincronización inferior a 10ms)
 - **Frontend Marcador y Control**: HTML5 semántico, CSS3 moderno con variables CSS y Flexbox/Grid, JavaScript Vanilla ES6+ (sin frameworks pesados para garantizar carga instantánea en cualquier celular).
 - **Audio Engine**: Integración con Web Audio API y reproductor HTML5 de clips MP3 auténticos almacenados localmente.
-- **Códigos QR Dinámicos**: Generación automática con biblioteca qrcode.
+- **Códigos QR Dinámicos**: Generación automática con biblioteca `qrcode`.
+- **Motor de Reportes Excel y PDF**: Generación 100% local con `xlsx` (SheetJS) y `pdfkit` (documentos vectoriales profesionales sin dependencias externas ni nube).
 
 ---
 

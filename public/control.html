@@ -366,6 +366,22 @@
         </div>
       </section>
 
+      <!-- FINALIZAR PARTIDO Y GENERAR INFORMES EXCEL / PDF -->
+      <section class="section-container finish-match-section">
+        <div class="finish-match-banner">
+          <div class="finish-match-info">
+            <span class="finish-match-icon">🏁</span>
+            <div>
+              <h3 class="finish-match-title">Finalizar Encuentro Oficial</h3>
+              <p class="finish-match-desc">Detiene el partido y genera de inmediato las actas en PDF y Excel para descargar.</p>
+            </div>
+          </div>
+          <button type="button" class="btn-finish-match" id="btnFinishMatch">
+            🏁 TERMINAR PARTIDO
+          </button>
+        </div>
+      </section>
+
       <!-- REINICIAR PARTIDO -->
       <section class="section-container danger-zone">
         <button class="btn-danger-reset" id="btnResetAllMatch">
@@ -557,6 +573,16 @@
           </div>
         </div>
 
+        <!-- HISTORIAL DE PARTIDOS Y REPORTES -->
+        <div class="team-config-card history-card">
+          <div class="team-config-badge" style="color: #10b981; border-color: #10b981;">📜 HISTORIAL DE PARTIDOS TERMINADOS</div>
+          <p class="form-help-text">Descarga reportes oficiales y planillas de partidos anteriores:</p>
+          <div id="matchHistoryList" class="match-history-list">
+            <div class="history-empty">Cargando historial...</div>
+          </div>
+          <button type="button" class="btn-refresh-history" id="btnRefreshHistory">🔄 Actualizar Historial</button>
+        </div>
+
         <!-- Botón Guardar Cambios -->
         <button type="submit" class="btn-save-teams" id="btnSaveTeams">
           💾 Guardar Todo y Volver al Partido
@@ -566,6 +592,73 @@
 
     </main>
 
+  </div>
+
+  <!-- MODAL DE PARTIDO FINALIZADO Y DESCARGA DE REPORTES -->
+  <div class="match-finished-overlay" id="modalMatchFinished" style="display: none;">
+    <div class="match-finished-card">
+      <div class="finished-trophy">🏁</div>
+      <div class="finished-badge">ENCUENTRO FINALIZADO</div>
+      <h2 class="finished-title" id="finishedModalTitle">¡PARTIDO FINALIZADO!</h2>
+      <div class="finished-tournament" id="finishedModalTournament">TORNEO DE FÚTBOL</div>
+
+      <!-- Placa de Resultados en Modal -->
+      <div class="finished-score-plate">
+        <div class="finished-team-box">
+          <span class="finished-team-name" id="finishedTeam1Name">LOCAL</span>
+          <span class="finished-team-score" id="finishedScore1">0</span>
+        </div>
+        <div class="finished-vs">-</div>
+        <div class="finished-team-box">
+          <span class="finished-team-score" id="finishedScore2">0</span>
+          <span class="finished-team-name" id="finishedTeam2Name">VISITA</span>
+        </div>
+      </div>
+
+      <!-- Resultado Penales si aplica -->
+      <div class="finished-penalties-note" id="finishedPenaltiesNote" style="display: none;">
+        ⚽ Definición por Penales: <strong id="finishedPenaltiesScore">0 - 0</strong>
+      </div>
+
+      <!-- Ganador -->
+      <div class="finished-winner-banner" id="finishedWinnerBanner">
+        <span class="finished-winner-icon">🏆</span>
+        <span class="finished-winner-text" id="finishedWinnerText">GANADOR: LOCAL</span>
+      </div>
+
+      <p class="finished-subtitle">
+        Las actas del partido se han generado y archivado en el servidor. Descárgalas directamente en tu dispositivo:
+      </p>
+
+      <!-- Botones de Descarga -->
+      <div class="finished-download-actions">
+        <a href="#" id="btnDownloadPdf" class="btn-download-report pdf" target="_blank" download>
+          <span class="btn-dl-icon">📄</span>
+          <div class="btn-dl-text">
+            <strong>Descargar Acta Oficial en PDF</strong>
+            <small>Listo para imprimir, archivar y firmar</small>
+          </div>
+        </a>
+
+        <a href="#" id="btnDownloadXlsx" class="btn-download-report xlsx" target="_blank" download>
+          <span class="btn-dl-icon">📊</span>
+          <div class="btn-dl-text">
+            <strong>Descargar Planilla Excel (.xlsx)</strong>
+            <small>Tabla estructurada con detalles y tiros</small>
+          </div>
+        </a>
+      </div>
+
+      <!-- Acciones de Cierre -->
+      <div class="finished-footer-actions">
+        <button type="button" class="btn-modal-new-match" id="btnModalResetMatch">
+          🔄 Iniciar Nuevo Partido
+        </button>
+        <button type="button" class="btn-modal-close" id="btnModalCloseFinished">
+          ✕ Seguir en este Partido
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->

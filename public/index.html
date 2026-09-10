@@ -238,6 +238,50 @@
     </div>
   </div>
 
+  <!-- OVERLAY DE PARTIDO FINALIZADO (TV BROADCAST) -->
+  <div class="match-concluded-overlay" id="matchFinishedOverlay" style="display: none;">
+    <div class="concluded-content">
+      <button type="button" class="btn-close-concluded" id="btnCloseConcluded">&times;</button>
+      <div class="concluded-top-badge">🏁 RESULTADO FINAL • PARTIDO CONCLUIDO</div>
+      <div class="concluded-tournament" id="concludedTournament">TORNEO DE FÚTBOL</div>
+      
+      <div class="concluded-scoreboard-card">
+        <!-- Local -->
+        <div class="concluded-team">
+          <img src="/assets/team-local.svg" alt="" id="concludedLogo1" class="concluded-logo">
+          <span class="concluded-team-name" id="concludedName1">LOCAL</span>
+          <span class="concluded-score" id="concludedScore1">0</span>
+        </div>
+
+        <div class="concluded-vs-badge">FINAL</div>
+
+        <!-- Visita -->
+        <div class="concluded-team">
+          <span class="concluded-score" id="concludedScore2">0</span>
+          <span class="concluded-team-name" id="concludedName2">VISITA</span>
+          <img src="/assets/team-visita.svg" alt="" id="concludedLogo2" class="concluded-logo">
+        </div>
+      </div>
+
+      <!-- Penales si aplica -->
+      <div class="concluded-penalties-pill" id="concludedPenaltiesPill" style="display: none;">
+        <span>DEFINICIÓN POR PENALES:</span>
+        <strong id="concludedPenaltiesScore">0 - 0</strong>
+      </div>
+
+      <!-- Ganador -->
+      <div class="concluded-winner-banner" id="concludedWinnerBanner">
+        <span class="concluded-trophy">🏆</span>
+        <span class="concluded-winner-title" id="concludedWinnerTitle">¡GANADOR: EQUIPO LOCAL!</span>
+        <span class="concluded-trophy">🏆</span>
+      </div>
+
+      <div class="concluded-reports-tag">
+        <span>📄 Reporte Oficial en PDF y Planilla Excel generados</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio-synth.js"></script>

@@ -107,6 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const goalTeamName = document.getElementById('goalTeamName');
   const goalScorePill = document.getElementById('goalScorePill');
 
+  // Overlay de Partido Concluido (TV)
+  const matchFinishedOverlay = document.getElementById('matchFinishedOverlay');
+  const concludedTournament = document.getElementById('concludedTournament');
+  const concludedLogo1 = document.getElementById('concludedLogo1');
+  const concludedName1 = document.getElementById('concludedName1');
+  const concludedScore1 = document.getElementById('concludedScore1');
+  const concludedLogo2 = document.getElementById('concludedLogo2');
+  const concludedName2 = document.getElementById('concludedName2');
+  const concludedScore2 = document.getElementById('concludedScore2');
+  const concludedPenaltiesPill = document.getElementById('concludedPenaltiesPill');
+  const concludedPenaltiesScore = document.getElementById('concludedPenaltiesScore');
+  const concludedWinnerTitle = document.getElementById('concludedWinnerTitle');
+  const btnCloseConcluded = document.getElementById('btnCloseConcluded');
+
   let currentSeconds = 0;
   let isTimerRunning = false;
   let goalTimeout = null;
@@ -436,6 +450,53 @@ document.addEventListener('DOMContentLoaded', () => {
       window.SoundEffects.playGoal(data.url);
     }
   });
+
+  // Evento Oficial de Partido Finalizado (TV Broadcast Overlay)
+  socket.on('match_finished', (record) => {
+    if (concludedTournament) concludedTournament.textContent = record.tournament || 'TORNEO DE FÚTBOL';
+    if (concludedLogo1) concludedLogo1.src = record.team1.logo || '/assets/team-local.svg';
+    if (concludedName1) concludedName1.textContent = record.team1.name;
+    if (concludedScore1) concludedScore1.textContent = record.team1.score;
+
+    if (concludedLogo2) concludedLogo2.src = record.team2.logo || '/assets/team-visita.svg';
+    if (concludedName2) concludedName2.textContent = record.team2.name;
+    if (concludedScore2) concludedScore2.textContent = record.team2.score;
+
+    if (concludedPenaltiesPill && concludedPenaltiesScore) {
+      if (record.penalties && (record.penalties.enabled || record.penalties.score1 > 0 || record.penalties.score2 > 0)) {
+        concludedPenaltiesPill.style.display = 'inline-block';
+        concludedPenaltiesScore.textContent = `${record.penalties.score1} - ${record.penalties.score2}`;
+      } else {
+        concludedPenaltiesPill.style.display = 'none';
+      }
+    }
+
+    if (concludedWinnerTitle) {
+      if (record.winnerName && record.winnerName !== 'Empate') {
+        concludedWinnerTitle.textContent = `¡GANADOR: ${record.winnerName.toUpperCase()}!`;
+      } else {
+        concludedWinnerTitle.textContent = `¡RESULTADO: EMPATE!`;
+      }
+    }
+
+    if (matchFinishedOverlay) {
+      matchFinishedOverlay.style.display = 'flex';
+    }
+  });
+
+  socket.on('match_reset', () => {
+    if (matchFinishedOverlay) {
+      matchFinishedOverlay.style.display = 'none';
+    }
+  });
+
+  if (btnCloseConcluded) {
+    btnCloseConcluded.addEventListener('click', () => {
+      if (matchFinishedOverlay) {
+        matchFinishedOverlay.style.display = 'none';
+      }
+    });
+  }
 
   // Atajo 'Q' para ver código QR privado
   document.addEventListener('keydown', (e) => {
