@@ -92,7 +92,7 @@
       <!-- MINI MARCADOR EN VIVO -->
       <section class="live-preview-card">
         <div class="mini-tournament-bar" id="miniTournamentBar">
-          <img src="/assets/tournament-default.svg" alt="Torneo" id="miniTournamentLogo" class="mini-tournament-logo">
+          <img src="/assets/tournament-default.png" alt="Torneo" id="miniTournamentLogo" class="mini-tournament-logo">
           <span id="miniTournamentName">TORNEO DE FÚTBOL</span>
         </div>
         <div class="mini-scoreboard-row">
@@ -157,100 +157,102 @@
       </section>
 
       <!-- TANDA DE PENALES CON LÓGICA FIFA Y DECLARACIÓN DE GANADOR -->
-      <!-- TANDA DE PENALES CON LÓGICA FIFA Y TURNOS ALTERNADOS -->
-      <section class="section-container penalty-section-card">
+      <!-- TANDA DE PENALES (PLEGABLE EN EL CELULAR PARA NO MOLESTAR) -->
+      <section class="section-container penalty-section-card" id="penaltyControlSection">
         <div class="section-title-row pen-title-row">
           <div class="pen-title-col">
-            <h2 class="section-title">⚽ Tanda de Penales (Turno Alterno)</h2>
-            <span class="pen-tv-status-badge" id="penTvStatusBadge">📺 En Pantalla TV: OCULTO</span>
+            <h2 class="section-title">⚽ Tanda de Penales</h2>
+            <span class="pen-tv-status-badge" id="penTvStatusBadge">📱 Celular: Plegado</span>
           </div>
           <button type="button" class="btn-toggle-penalties" id="btnTogglePenaltiesView">
-            👁️ Mostrar en Pantalla TV
+            👁️ Desplegar en Celular
           </button>
         </div>
 
-        <!-- Alerta de Turno de Patear -->
-        <div class="ctrl-turn-banner" id="ctrlTurnBanner">
-          <span class="ctrl-turn-icon">🎯</span>
-          <span class="ctrl-turn-text" id="ctrlTurnText">TURNO DE PATEAR: EQUIPO LOCAL (Ronda 1)</span>
-        </div>
-
-        <!-- Alerta de Error de Turno (Tiro fuera de turno) -->
-        <div class="ctrl-penalty-error-toast" id="ctrlPenErrorToast" style="display: none;">
-          <div class="error-toast-icon">⛔</div>
-          <div class="error-toast-body">
-            <strong class="error-toast-title">ACCIÓN BLOQUEADA</strong>
-            <span class="error-toast-msg" id="ctrlPenErrorMsg">No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal</span>
-          </div>
-          <button type="button" class="btn-close-toast" id="btnClosePenToast">&times;</button>
-        </div>
-
-        <!-- Alerta de Ganador cuando concluyen los penales -->
-        <div class="ctrl-winner-alert" id="ctrlWinnerAlert" style="display: none;">
-          <span class="trophy-icon">🏆</span>
-          <div class="winner-alert-content">
-            <strong id="ctrlWinnerAlertTitle">¡GANADOR POR PENALES!</strong>
-            <span id="ctrlWinnerAlertSubtitle">Serie matemáticamente terminada</span>
-          </div>
-        </div>
-
-        <!-- Sorteo de Primer Pateador (Solo antes de iniciar la tanda) -->
-        <div class="ctrl-coin-toss-bar" id="ctrlCoinTossBar">
-          <span class="coin-label">🪙 Sorteo (Quién patea 1°):</span>
-          <div class="coin-buttons">
-            <button type="button" class="btn-coin-team active" id="btnCoinTossTeam1">Inicia Local</button>
-            <button type="button" class="btn-coin-team" id="btnCoinTossTeam2">Inicia Visita</button>
-          </div>
-        </div>
-
-        <div class="penalties-score-banner">
-          <span>Marcador de Penales:</span>
-          <strong id="ctrlPenaltyBannerScore">0 - 0</strong>
-        </div>
-
-        <!-- Penales Equipo 1 -->
-        <div class="penalty-team-box team-1-penalties" id="penBoxTeam1">
-          <div class="penalty-team-header">
-            <span class="pen-team-name" id="penName1">LOCAL</span>
-            <span class="pen-team-turn-tag" id="penTurnTag1">🎯 PATEANDO</span>
-            <span class="pen-team-score" id="penScore1">0</span>
-          </div>
-          
-          <div class="ctrl-pen-dots" id="ctrlDots1">
-            <!-- Inyectado por JS -->
+        <div class="penalty-collapsible-body" id="penaltyControlBody" style="display: none;">
+          <!-- Alerta de Turno de Patear -->
+          <div class="ctrl-turn-banner" id="ctrlTurnBanner">
+            <span class="ctrl-turn-icon">🎯</span>
+            <span class="ctrl-turn-text" id="ctrlTurnText">TURNO DE PATEAR: EQUIPO LOCAL (Ronda 1)</span>
           </div>
 
-          <div class="pen-quick-actions">
-            <button class="btn-pen-scored" id="btnPenGoal1">🟢 + GOL</button>
-            <button class="btn-pen-missed" id="btnPenMiss1">🔴 + FALLÓ</button>
-            <button class="btn-pen-post" id="btnPenPost1" title="Pega en el poste">🥅 ¡Al Palo!</button>
-            <button class="btn-pen-undo" id="btnPenUndo1">↩ Deshacer</button>
-          </div>
-        </div>
-
-        <!-- Penales Equipo 2 -->
-        <div class="penalty-team-box team-2-penalties" id="penBoxTeam2">
-          <div class="penalty-team-header">
-            <span class="pen-team-name" id="penName2">VISITA</span>
-            <span class="pen-team-turn-tag" id="penTurnTag2">⏳ ESPERANDO</span>
-            <span class="pen-team-score" id="penScore2">0</span>
-          </div>
-          
-          <div class="ctrl-pen-dots" id="ctrlDots2">
-            <!-- Inyectado por JS -->
+          <!-- Alerta de Error de Turno (Tiro fuera de turno) -->
+          <div class="ctrl-penalty-error-toast" id="ctrlPenErrorToast" style="display: none;">
+            <div class="error-toast-icon">⛔</div>
+            <div class="error-toast-body">
+              <strong class="error-toast-title">ACCIÓN BLOQUEADA</strong>
+              <span class="error-toast-msg" id="ctrlPenErrorMsg">No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal</span>
+            </div>
+            <button type="button" class="btn-close-toast" id="btnClosePenToast">&times;</button>
           </div>
 
-          <div class="pen-quick-actions">
-            <button class="btn-pen-scored" id="btnPenGoal2">🟢 + GOL</button>
-            <button class="btn-pen-missed" id="btnPenMiss2">🔴 + FALLÓ</button>
-            <button class="btn-pen-post" id="btnPenPost2" title="Pega en el poste">🥅 ¡Al Palo!</button>
-            <button class="btn-pen-undo" id="btnPenUndo2">↩ Deshacer</button>
+          <!-- Alerta de Ganador cuando concluyen los penales -->
+          <div class="ctrl-winner-alert" id="ctrlWinnerAlert" style="display: none;">
+            <span class="trophy-icon">🏆</span>
+            <div class="winner-alert-content">
+              <strong id="ctrlWinnerAlertTitle">¡GANADOR POR PENALES!</strong>
+              <span id="ctrlWinnerAlertSubtitle">Serie matemáticamente terminada</span>
+            </div>
           </div>
-        </div>
 
-        <div class="pen-reset-row">
-          <button class="btn-pen-undo-global" id="btnPenUndoGlobal">↩ Deshacer Último Tiro</button>
-          <button class="btn-pen-reset" id="btnResetPenalties">🔄 Reiniciar Penales a 0-0</button>
+          <!-- Sorteo de Primer Pateador (Solo antes de iniciar la tanda) -->
+          <div class="ctrl-coin-toss-bar" id="ctrlCoinTossBar">
+            <span class="coin-label">🪙 Sorteo (Quién patea 1°):</span>
+            <div class="coin-buttons">
+              <button type="button" class="btn-coin-team active" id="btnCoinTossTeam1">Inicia Local</button>
+              <button type="button" class="btn-coin-team" id="btnCoinTossTeam2">Inicia Visita</button>
+            </div>
+          </div>
+
+          <div class="penalties-score-banner">
+            <span>Marcador de Penales:</span>
+            <strong id="ctrlPenaltyBannerScore">0 - 0</strong>
+          </div>
+
+          <!-- Penales Equipo 1 -->
+          <div class="penalty-team-box team-1-penalties" id="penBoxTeam1">
+            <div class="penalty-team-header">
+              <span class="pen-team-name" id="penName1">LOCAL</span>
+              <span class="pen-team-turn-tag" id="penTurnTag1">🎯 PATEANDO</span>
+              <span class="pen-team-score" id="penScore1">0</span>
+            </div>
+            
+            <div class="ctrl-pen-dots" id="ctrlDots1">
+              <!-- Inyectado por JS -->
+            </div>
+
+            <div class="pen-quick-actions">
+              <button class="btn-pen-scored" id="btnPenGoal1">🟢 + GOL</button>
+              <button class="btn-pen-missed" id="btnPenMiss1">🔴 + FALLÓ</button>
+              <button class="btn-pen-post" id="btnPenPost1" title="Pega en el poste">🥅 ¡Al Palo!</button>
+              <button class="btn-pen-undo" id="btnPenUndo1">↩ Deshacer</button>
+            </div>
+          </div>
+
+          <!-- Penales Equipo 2 -->
+          <div class="penalty-team-box team-2-penalties" id="penBoxTeam2">
+            <div class="penalty-team-header">
+              <span class="pen-team-name" id="penName2">VISITA</span>
+              <span class="pen-team-turn-tag" id="penTurnTag2">⏳ ESPERANDO</span>
+              <span class="pen-team-score" id="penScore2">0</span>
+            </div>
+            
+            <div class="ctrl-pen-dots" id="ctrlDots2">
+              <!-- Inyectado por JS -->
+            </div>
+
+            <div class="pen-quick-actions">
+              <button class="btn-pen-scored" id="btnPenGoal2">🟢 + GOL</button>
+              <button class="btn-pen-missed" id="btnPenMiss2">🔴 + FALLÓ</button>
+              <button class="btn-pen-post" id="btnPenPost2" title="Pega en el poste">🥅 ¡Al Palo!</button>
+              <button class="btn-pen-undo" id="btnPenUndo2">↩ Deshacer</button>
+            </div>
+          </div>
+
+          <div class="pen-reset-row">
+            <button class="btn-pen-undo-global" id="btnPenUndoGlobal">↩ Deshacer Último Tiro</button>
+            <button class="btn-pen-reset" id="btnResetPenalties">🔄 Reiniciar Penales a 0-0</button>
+          </div>
         </div>
       </section>
 
@@ -298,32 +300,24 @@
         <div class="extra-header-row">
           <div>
             <h2 class="section-title">⏱️ Tiempo Añadido (Descuento)</h2>
-            <p class="section-help-sub">Añade los minutos exactos si se demoró el juego buscando la pelota afuera:</p>
+            <p class="section-help-sub">Suma o resta minutos si se demoró el partido buscando la pelota:</p>
           </div>
-          <div class="extra-current-badge">
+        </div>
+
+        <!-- Control único: Suma +1 y Resta -1 directo -->
+        <div class="single-extra-stepper">
+          <button type="button" class="btn-extra-step minus" id="btnExtraMinus" title="Restar 1 minuto">
+            <span class="step-symbol">−</span>
+            <span class="step-label">1 min</span>
+          </button>
+          <div class="extra-value-display">
             <span id="displayCurrentExtra">+0'</span>
+            <small>adicional</small>
           </div>
-        </div>
-
-        <!-- Chips de acceso rápido para pérdidas de tiempo -->
-        <div class="extra-time-chips">
-          <button type="button" class="btn-extra active" data-extra="0">0'</button>
-          <button type="button" class="btn-extra" data-extra="2">+2'</button>
-          <button type="button" class="btn-extra" data-extra="5">+5'</button>
-          <button type="button" class="btn-extra" data-extra="8">+8'</button>
-          <button type="button" class="btn-extra" data-extra="10">+10'</button>
-          <button type="button" class="btn-extra" data-extra="15">+15'</button>
-        </div>
-
-        <!-- Stepper interactivo de minutos libres -->
-        <div class="custom-extra-stepper">
-          <button type="button" class="btn-stepper-extra" id="btnExtraMinus" title="Restar 1 minuto">- 1'</button>
-          <div class="extra-input-wrap">
-            <input type="number" id="inputCustomExtra" min="0" max="60" value="0" class="input-custom-extra">
-            <span class="extra-unit-label">min</span>
-          </div>
-          <button type="button" class="btn-stepper-extra" id="btnExtraPlus" title="Sumar 1 minuto">+ 1'</button>
-          <button type="button" class="btn-apply-extra" id="btnApplyExtra">Aplicar Descuento</button>
+          <button type="button" class="btn-extra-step plus" id="btnExtraPlus" title="Sumar 1 minuto">
+            <span class="step-symbol">+</span>
+            <span class="step-label">1 min</span>
+          </button>
         </div>
       </section>
 
@@ -427,6 +421,10 @@
               <span class="clip-btn-title">🔥 "¡Y lo va a ganar, Gol!"</span>
               <small class="clip-btn-sub">Definición Épica</small>
             </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-gol-quintero.mp3">
+              <span class="clip-btn-title">⚽ "¡Golazo de Quintero!"</span>
+              <small class="clip-btn-sub">Mariano Closs</small>
+            </button>
             <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/relato-vignolo-gol.mp3">
               <span class="clip-btn-title">🎙️ "¡Gooool Pollo Vignolo!"</span>
               <small class="clip-btn-sub">Sebastián Vignolo</small>
@@ -439,43 +437,39 @@
               <span class="clip-btn-title">👑 "¡Golazo Histórico!"</span>
               <small class="clip-btn-sub">Grito de Gol</small>
             </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/gol-caracol.mp3">
+              <span class="clip-btn-title">📢 "¡Gol, Gol, Gol Caracol!"</span>
+              <small class="clip-btn-sub">Relato de TV</small>
+            </button>
           </div>
         </div>
 
         <!-- Categoría 2: Cánticos de Hinchada (Tribuna) -->
         <div class="sound-cat-panel" id="soundCatPanelChants" style="display: none;">
           <div class="soundboard-grid hinchada-grid">
-            <button type="button" class="btn-soundboard-clip chant-fire" data-clip="/assets/sounds/hinchada-jugadores-huevos.mp3">
-              <span class="clip-btn-title">🔥 "¡Jugadores, l.c.d.s.m., pongan huevos!"</span>
-              <small class="clip-btn-sub">Tribuna Popular</small>
-            </button>
             <button type="button" class="btn-soundboard-clip chant-cumbia" data-clip="/assets/sounds/hinchada-cumbia-de-los-trapos.mp3">
               <span class="clip-btn-title">🥁 "Yerba Brava: Cumbia de los Trapos"</span>
-              <small class="clip-btn-sub">Himno de Cancha</small>
+              <small class="clip-btn-sub">Audio Completo (4:11)</small>
             </button>
             <button type="button" class="btn-soundboard-clip chant-anthem" data-clip="/assets/sounds/hinchada-muchachos.mp3">
               <span class="clip-btn-title">🏆 "¡Muchachos, nos volvimos a ilusionar!"</span>
-              <small class="clip-btn-sub">Mundial / Selección</small>
+              <small class="clip-btn-sub">Audio Completo Oficial</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip chant-fire" data-clip="/assets/sounds/hinchada-jugadores-huevos.mp3">
+              <span class="clip-btn-title">🔥 "¡Jugadores, l.c.d.s.m., pongan huevos!"</span>
+              <small class="clip-btn-sub">Tribuna Popular</small>
             </button>
             <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-vamos-argentina.mp3">
               <span class="clip-btn-title">🇦🇷 "¡Vamos Vamos Argentina a Ganar!"</span>
               <small class="clip-btn-sub">Cántico de Hinchada</small>
             </button>
-            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-ole-ole.mp3">
-              <span class="clip-btn-title">🎶 "¡Olé, Olé, Olé... Campeón!"</span>
-              <small class="clip-btn-sub">Fiesta de Campeón</small>
-            </button>
             <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-dale-boca.mp3">
               <span class="clip-btn-title">💙💛 "¡Dale, dale Bo!"</span>
-              <small class="clip-btn-sub">Aliento Xeneize</small>
+              <small class="clip-btn-sub">Aliento de Tribuna</small>
             </button>
             <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-banda-loca.mp3">
               <span class="clip-btn-title">🎺 "¡Esta es la banda loca!"</span>
-              <small class="clip-btn-sub">Hinchada Argentina</small>
-            </button>
-            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/ambiente-estadio-cheering.mp3">
-              <span class="clip-btn-title">👏 "¡Ovación y Aplausos de Cancha!"</span>
-              <small class="clip-btn-sub">Estadio Completo</small>
+              <small class="clip-btn-sub">Hinchada Popular</small>
             </button>
           </div>
         </div>
@@ -493,6 +487,13 @@
               🎺 Probar Audio de Gol Actual
             </button>
           </div>
+        </div>
+
+        <!-- Barra para detener audio en cualquier momento -->
+        <div class="soundboard-stop-bar">
+          <button type="button" class="btn-stop-audio" id="btnStopCurrentAudio">
+            ⏹️ Detener Audio en Reproducción
+          </button>
         </div>
       </section>
 
@@ -665,15 +666,15 @@
             <div class="form-group flex-1">
               <label class="form-label">Escudo / Logo Oficial</label>
               <div class="logo-preview-box">
-                <img src="/assets/tournament-default.svg" id="previewTournamentLogo" class="logo-preview-img" alt="Logo Torneo">
+                <img src="/assets/tournament-default.png" id="previewTournamentLogo" class="logo-preview-img" alt="Logo Torneo">
               </div>
             </div>
 
             <div class="form-group flex-1" style="display:flex; flex-direction:column; justify-content:center;">
               <input type="file" id="fileTournamentLogo" accept="image/*" class="file-input-hidden">
-              <button type="button" class="btn-upload-logo" id="btnTriggerUploadTournament">
+              <label for="fileTournamentLogo" class="btn-upload-logo" id="btnTriggerUploadTournament" style="display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">
                 📷 Subir Logo del Torneo
-              </button>
+              </label>
               <button type="button" class="btn-reset-logo" id="btnResetTournamentLogo" style="margin-top:6px;">
                 🔄 Restaurar Predeterminado
               </button>

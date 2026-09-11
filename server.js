@@ -97,9 +97,11 @@ const CLOSS_CLIPS = [
   { id: 'closs-gol-messi', name: '¡Messi lo Hizo, Gol!', file: '/assets/sounds/closs-gol-messi.mp3' },
   { id: 'closs-gol-enzo', name: '¡Golazo de Enzo Fernández!', file: '/assets/sounds/closs-gol-enzo.mp3' },
   { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' },
+  { id: 'closs-gol-quintero', name: '¡Golazo de Quintero!', file: '/assets/sounds/closs-gol-quintero.mp3' },
   { id: 'relato-vignolo-gol', name: '¡Gooool Pollo Vignolo!', file: '/assets/sounds/relato-vignolo-gol.mp3' },
   { id: 'relato-golazo-azo', name: '¡Golazo, azo, azo, azo!', file: '/assets/sounds/relato-golazo-azo.mp3' },
-  { id: 'relato-maradona-golazo', name: '¡Golazo Histórico!', file: '/assets/sounds/relato-maradona-golazo.mp3' }
+  { id: 'relato-maradona-golazo', name: '¡Golazo Histórico!', file: '/assets/sounds/relato-maradona-golazo.mp3' },
+  { id: 'gol-caracol', name: '¡Gol, Gol, Gol Caracol!', file: '/assets/sounds/gol-caracol.mp3' }
 ];
 
 function getRandomGoalClip() {
@@ -109,9 +111,11 @@ function getRandomGoalClip() {
     '/assets/sounds/closs-gol-messi.mp3',
     '/assets/sounds/closs-gol-enzo.mp3',
     '/assets/sounds/closs-lo-va-a-ganar.mp3',
+    '/assets/sounds/closs-gol-quintero.mp3',
     '/assets/sounds/relato-vignolo-gol.mp3',
     '/assets/sounds/relato-golazo-azo.mp3',
-    '/assets/sounds/relato-maradona-golazo.mp3'
+    '/assets/sounds/relato-maradona-golazo.mp3',
+    '/assets/sounds/gol-caracol.mp3'
   ];
   return goalClips[Math.floor(Math.random() * goalClips.length)];
 }
@@ -119,7 +123,7 @@ function getRandomGoalClip() {
 // Estado global del partido
 let matchState = {
   tournament: 'TORNEO DE FÚTBOL',
-  tournamentLogo: '/assets/tournament-default.svg',
+  tournamentLogo: '/assets/tournament-default.png',
   pin: '1234',
   halfDurationMinutes: 12,
   theme: 'night', // 'night' | 'sunny' | 'cloudy' | 'sunset' | 'grass' | 'high-contrast'
@@ -770,6 +774,11 @@ io.on('connection', (socket) => {
     if (data && data.url) {
       io.emit('play_sound_clip', { url: data.url });
     }
+  });
+
+  // Detener clip de audio en curso
+  socket.on('stop_sound_clip', () => {
+    io.emit('stop_sound_clip');
   });
 
   // Reproducir efectos (silbato, bocina)

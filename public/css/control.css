@@ -2418,4 +2418,122 @@ body {
   background: #475569;
 }
 
+/* ==========================================================================
+   PENALES PLEGABLES EN EL CELULAR
+   ========================================================================== */
+.penalty-collapsible-body {
+  margin-top: 0.8rem;
+  animation: fadeInPanel 0.25s ease-out;
+}
+
+/* ==========================================================================
+   CONTROL ÚNICO DE TIEMPO EXTRA (+1 / -1)
+   ========================================================================== */
+.single-extra-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 0.6rem;
+}
+
+.btn-extra-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.6rem;
+  border-radius: 12px;
+  border: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.15s, background 0.2s;
+}
+
+.btn-extra-step.minus {
+  background: #334155;
+  color: #f1f5f9;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.btn-extra-step.plus {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-extra-step:active {
+  transform: scale(0.95);
+  filter: brightness(1.2);
+}
+
+.step-symbol {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.extra-value-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+}
+
+.extra-value-display span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: #34d399;
+  text-shadow: 0 0 12px rgba(52, 211, 153, 0.45);
+}
+
+.extra-value-display small {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   BARRA PARA DETENER AUDIO EN REPRODUCCIÓN
+   ========================================================================== */
+.soundboard-stop-bar {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.btn-stop-audio {
+  width: 100%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 0.7rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-stop-audio:active {
+  background: #ef4444;
+  color: #ffffff;
+  transform: scale(0.98);
+}
+
 

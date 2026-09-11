@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tournamentName.textContent = state.tournament || 'TORNEO DE FÚTBOL';
     if (tournamentLogo) {
-      tournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
+      tournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.png';
     }
     if (state.goalAudio) currentGoalAudio = state.goalAudio;
 
@@ -496,6 +496,12 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('play_sound_clip', (data) => {
     if (data && data.url && window.SoundEffects) {
       window.SoundEffects.playGoal(data.url);
+    }
+  });
+
+  socket.on('stop_sound_clip', () => {
+    if (window.SoundEffects) {
+      window.SoundEffects.stopAudio();
     }
   });
 

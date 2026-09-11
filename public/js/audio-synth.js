@@ -43,6 +43,19 @@ class SoundEffects {
     }
   }
 
+  // Detener inmediatamente cualquier audio en reproducción
+  stopAudio() {
+    try {
+      if (this.currentAudioElement) {
+        this.currentAudioElement.pause();
+        this.currentAudioElement.currentTime = 0;
+        this.currentAudioElement = null;
+      }
+    } catch (e) {
+      console.warn('Error al detener audio:', e);
+    }
+  }
+
   // Celebración de gol: reproduce el audio real de Mariano Closs guardado localmente o customUrl
   playGoal(customUrl) {
     if (!this.enabled) return;

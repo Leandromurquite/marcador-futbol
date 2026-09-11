@@ -120,7 +120,11 @@ function generateMatchPdf(match, filePath) {
       // Embed logo del torneo si es PNG o JPG raster
       if (match.tournamentLogo) {
         try {
-          const logoDiskPath = path.join(__dirname, match.tournamentLogo.startsWith('/') ? match.tournamentLogo.slice(1) : match.tournamentLogo);
+          const relPath = match.tournamentLogo.startsWith('/') ? match.tournamentLogo.slice(1) : match.tournamentLogo;
+          let logoDiskPath = path.join(__dirname, relPath);
+          if (!fs.existsSync(logoDiskPath)) {
+            logoDiskPath = path.join(__dirname, 'public', relPath);
+          }
           const ext = path.extname(logoDiskPath).toLowerCase();
           if (fs.existsSync(logoDiskPath) && (ext === '.png' || ext === '.jpg' || ext === '.jpeg')) {
             doc.image(logoDiskPath, 495, 46, { fit: [48, 48], align: 'center', valign: 'center' });

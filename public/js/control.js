@@ -188,18 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnJumpHalf = document.getElementById('btnJumpHalf');
   const btnJumpEnd = document.getElementById('btnJumpEnd');
 
-  // Periodos y Tiempo Extra Personalizado
+  // Periodos y Tiempo Extra (+1 y -1)
   const periodButtons = document.querySelectorAll('.btn-period');
-  const extraButtons = document.querySelectorAll('.btn-extra');
   const displayCurrentExtra = document.getElementById('displayCurrentExtra');
-  const inputCustomExtra = document.getElementById('inputCustomExtra');
   const btnExtraMinus = document.getElementById('btnExtraMinus');
   const btnExtraPlus = document.getElementById('btnExtraPlus');
-  const btnApplyExtra = document.getElementById('btnApplyExtra');
+  let currentExtraMinutes = 0;
 
-  // Tanda de Penales
+  // Tanda de Penales (Plegable en Celular)
+  const penaltyControlBody = document.getElementById('penaltyControlBody');
   const btnTogglePenaltiesView = document.getElementById('btnTogglePenaltiesView');
   const penTvStatusBadge = document.getElementById('penTvStatusBadge');
+  let isPenaltiesExpandedOnMobile = false;
+  const btnStopCurrentAudio = document.getElementById('btnStopCurrentAudio');
   const ctrlWinnerAlert = document.getElementById('ctrlWinnerAlert');
   const ctrlWinnerAlertTitle = document.getElementById('ctrlWinnerAlertTitle');
   const ctrlWinnerAlertSubtitle = document.getElementById('ctrlWinnerAlertSubtitle');
@@ -632,9 +633,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    if (state.tournamentLogo) {
+      uploadedTournamentLogo = state.tournamentLogo;
+    }
     if (miniTournamentName) miniTournamentName.textContent = state.tournament || 'TORNEO DE FÚTBOL';
-    if (miniTournamentLogo) miniTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
-    if (previewTournamentLogo) previewTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
+    if (miniTournamentLogo) miniTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.png';
+    if (previewTournamentLogo) previewTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.png';
     if (document.activeElement !== inputTournament) inputTournament.value = state.tournament || '';
     if (document.activeElement !== inputTeam1Name) {
       inputTeam1Name.value = state.team1.name || '';
@@ -677,22 +681,43 @@ document.addEventListener('DOMContentLoaded', () => {
     periodButtons.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.period === period);
     });
+
+    // Auto-plegado / auto-despliegue de penales en el celular
+    if (period === 'Penales') {
+      setPenaltiesMobileExpansion(true);
+    } else {
+      setPenaltiesMobileExpansion(false);
+    }
   }
 
   function updateExtraButtons(mins) {
-    const m = mins || 0;
-    if (displayCurrentExtra) displayCurrentExtra.textContent = `+${m}'`;
-    if (inputCustomExtra && document.activeElement !== inputCustomExtra) inputCustomExtra.value = m;
+    currentExtraMinutes = Math.max(0, Math.min(60, parseInt(mins) || 0));
+    if (displayCurrentExtra) displayCurrentExtra.textContent = `+${currentExtraMinutes}'`;
 
-    if (m > 0) {
-      miniExtra.textContent = `+${m}'`;
-      miniExtra.style.display = 'inline-block';
-    } else {
-      miniExtra.style.display = 'none';
+    if (miniExtra) {
+      if (currentExtraMinutes > 0) {
+        miniExtra.textContent = `+${currentExtraMinutes}'`;
+        miniExtra.style.display = 'inline-block';
+      } else {
+        miniExtra.style.display = 'none';
+      }
     }
-    extraButtons.forEach(btn => {
-      btn.classList.toggle('active', parseInt(btn.dataset.extra) === m);
-    });
+  }
+
+  function setPenaltiesMobileExpansion(expanded) {
+    isPenaltiesExpandedOnMobile = !!expanded;
+    if (penaltyControlBody) {
+      penaltyControlBody.style.display = isPenaltiesExpandedOnMobile ? 'block' : 'none';
+    }
+    if (btnTogglePenaltiesView) {
+      btnTogglePenaltiesView.textContent = isPenaltiesExpandedOnMobile ? '🙈 Plegar del Celular' : '👁️ Desplegar en Celular';
+      btnTogglePenaltiesView.classList.toggle('active', isPenaltiesExpandedOnMobile);
+    }
+    if (penTvStatusBadge) {
+      penTvStatusBadge.textContent = isPenaltiesExpandedOnMobile ? '📱 Celular: Visible' : '📱 Celular: Plegado';
+      penTvStatusBadge.style.background = isPenaltiesExpandedOnMobile ? 'rgba(56, 189, 248, 0.2)' : 'rgba(148, 163, 184, 0.15)';
+      penTvStatusBadge.style.color = isPenaltiesExpandedOnMobile ? '#38bdf8' : '#94a3b8';
+    }
   }
 
   function updateCrowdUI(crowd) {
@@ -1053,42 +1078,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // TIEMPO EXTRA (CHIPS RÁPIDOS Y STEPPER PERSONALIZADO)
-  function setExtraTimeMinutes(mins) {
-    haptic(30);
-    const num = Math.max(0, Math.min(60, parseInt(mins) || 0));
-    socket.emit('set_extra_time', { minutes: num });
-  }
-
-  extraButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      setExtraTimeMinutes(btn.dataset.extra);
-    });
-  });
-
+  // TIEMPO EXTRA (+1 / -1 CONTROL DIRECTO)
   if (btnExtraMinus) {
     btnExtraMinus.addEventListener('click', () => {
-      const cur = parseInt(inputCustomExtra ? inputCustomExtra.value : 0) || 0;
-      setExtraTimeMinutes(Math.max(0, cur - 1));
+      haptic(35);
+      const nextVal = Math.max(0, currentExtraMinutes - 1);
+      updateExtraButtons(nextVal);
+      socket.emit('set_extra_time', { minutes: nextVal });
     });
   }
 
   if (btnExtraPlus) {
     btnExtraPlus.addEventListener('click', () => {
-      const cur = parseInt(inputCustomExtra ? inputCustomExtra.value : 0) || 0;
-      setExtraTimeMinutes(Math.min(60, cur + 1));
+      haptic(35);
+      const nextVal = Math.min(60, currentExtraMinutes + 1);
+      updateExtraButtons(nextVal);
+      socket.emit('set_extra_time', { minutes: nextVal });
     });
   }
 
-  if (btnApplyExtra) {
-    btnApplyExtra.addEventListener('click', () => {
-      if (inputCustomExtra) setExtraTimeMinutes(inputCustomExtra.value);
-    });
-  }
-
-  if (inputCustomExtra) {
-    inputCustomExtra.addEventListener('change', (e) => {
-      setExtraTimeMinutes(e.target.value);
+  // TANDA DE PENALES (PLEGABLE EN EL CELULAR)
+  if (btnTogglePenaltiesView) {
+    btnTogglePenaltiesView.addEventListener('click', () => {
+      haptic(35);
+      setPenaltiesMobileExpansion(!isPenaltiesExpandedOnMobile);
     });
   }
 
@@ -1120,6 +1133,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  if (btnStopCurrentAudio) {
+    btnStopCurrentAudio.addEventListener('click', () => {
+      haptic(40);
+      if (window.SoundEffects) {
+        window.SoundEffects.stopAudio();
+      }
+      socket.emit('stop_sound_clip');
+    });
+  }
 
   // FINALIZAR PARTIDO OFICIAL Y GENERAR PLANILLAS EXCEL Y PDF
   if (btnFinishMatch) {
@@ -1384,7 +1407,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnResetTournamentLogo) {
     btnResetTournamentLogo.addEventListener('click', () => {
       haptic(30);
-      uploadedTournamentLogo = '/assets/tournament-default.svg';
+      uploadedTournamentLogo = '/assets/tournament-default.png';
       if (previewTournamentLogo) previewTournamentLogo.src = uploadedTournamentLogo;
       if (miniTournamentLogo) miniTournamentLogo.src = uploadedTournamentLogo;
       if (feedbackTournamentLogo) feedbackTournamentLogo.textContent = '✓ Restaurado logo predeterminado';
@@ -1445,7 +1468,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updatedData = {
       tournament: inputTournament.value.trim() || 'TORNEO DE FÚTBOL',
-      tournamentLogo: uploadedTournamentLogo || (currentState ? currentState.tournamentLogo : '/assets/tournament-default.svg'),
+      tournamentLogo: uploadedTournamentLogo || (currentState ? currentState.tournamentLogo : '/assets/tournament-default.png'),
       team1: {
         name: inputTeam1Name.value.trim() || 'LOCAL',
         shortName: (inputTeam1Name.value.trim() || 'LOC').substring(0, 3).toUpperCase(),
