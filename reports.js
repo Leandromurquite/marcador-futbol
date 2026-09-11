@@ -115,7 +115,18 @@ function generateMatchPdf(match, filePath) {
          .text((match.tournament || 'TORNEO DE FÚTBOL').toUpperCase(), 58, 76, { width: 280, ellipsis: true });
 
       doc.fillColor('#cbd5e1').fontSize(9).font('Helvetica')
-         .text(match.dateFormatted || new Date().toLocaleString('es-AR'), 330, 64, { width: 215, align: 'right' });
+         .text(match.dateFormatted || new Date().toLocaleString('es-AR'), 300, 64, { width: 245, align: 'right' });
+
+      // Embed logo del torneo si es PNG o JPG raster
+      if (match.tournamentLogo) {
+        try {
+          const logoDiskPath = path.join(__dirname, match.tournamentLogo.startsWith('/') ? match.tournamentLogo.slice(1) : match.tournamentLogo);
+          const ext = path.extname(logoDiskPath).toLowerCase();
+          if (fs.existsSync(logoDiskPath) && (ext === '.png' || ext === '.jpg' || ext === '.jpeg')) {
+            doc.image(logoDiskPath, 495, 46, { fit: [48, 48], align: 'center', valign: 'center' });
+          }
+        } catch (e) {}
+      }
 
       // 2. Placa Central de Marcador (Scoreboard Card)
       const scoreCardY = 125;

@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSeconds = 0;
   let isTimerRunning = false;
   let currentHalfMinutes = 12;
+  let uploadedTournamentLogo = null;
   let uploadedLogo1 = null;
   let uploadedLogo2 = null;
   let uploadedCustomAudio = null;
@@ -149,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabTeams = document.getElementById('tabTeams');
 
   // Mini Marcador
+  const miniTournamentBar = document.getElementById('miniTournamentBar');
+  const miniTournamentLogo = document.getElementById('miniTournamentLogo');
+  const miniTournamentName = document.getElementById('miniTournamentName');
   const miniLogo1 = document.getElementById('miniLogo1');
   const miniName1 = document.getElementById('miniName1');
   const miniScore1 = document.getElementById('miniScore1');
@@ -184,12 +188,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnJumpHalf = document.getElementById('btnJumpHalf');
   const btnJumpEnd = document.getElementById('btnJumpEnd');
 
-  // Periodos y Tiempo Extra
+  // Periodos y Tiempo Extra Personalizado
   const periodButtons = document.querySelectorAll('.btn-period');
   const extraButtons = document.querySelectorAll('.btn-extra');
+  const displayCurrentExtra = document.getElementById('displayCurrentExtra');
+  const inputCustomExtra = document.getElementById('inputCustomExtra');
+  const btnExtraMinus = document.getElementById('btnExtraMinus');
+  const btnExtraPlus = document.getElementById('btnExtraPlus');
+  const btnApplyExtra = document.getElementById('btnApplyExtra');
 
   // Tanda de Penales
   const btnTogglePenaltiesView = document.getElementById('btnTogglePenaltiesView');
+  const penTvStatusBadge = document.getElementById('penTvStatusBadge');
   const ctrlWinnerAlert = document.getElementById('ctrlWinnerAlert');
   const ctrlWinnerAlertTitle = document.getElementById('ctrlWinnerAlertTitle');
   const ctrlWinnerAlertSubtitle = document.getElementById('ctrlWinnerAlertSubtitle');
@@ -288,6 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Formulario Equipos y Audios
   const formTeamsConfig = document.getElementById('formTeamsConfig');
   const inputTournament = document.getElementById('inputTournament');
+  const previewTournamentLogo = document.getElementById('previewTournamentLogo');
+  const fileTournamentLogo = document.getElementById('fileTournamentLogo');
+  const btnTriggerUploadTournament = document.getElementById('btnTriggerUploadTournament');
+  const btnResetTournamentLogo = document.getElementById('btnResetTournamentLogo');
+  const feedbackTournamentLogo = document.getElementById('feedbackTournamentLogo');
   const inputTeam1Name = document.getElementById('inputTeam1Name');
   const inputTeam1Color = document.getElementById('inputTeam1Color');
   const team1ColorLabel = document.getElementById('team1ColorLabel');
@@ -448,8 +463,13 @@ document.addEventListener('DOMContentLoaded', () => {
     penScore2.textContent = penalties.score2 || 0;
     ctrlPenaltyBannerScore.textContent = `${penalties.score1 || 0} - ${penalties.score2 || 0}`;
 
-    btnTogglePenaltiesView.classList.toggle('active', penalties.enabled);
-    btnTogglePenaltiesView.textContent = penalties.enabled ? 'Ocultar en Pantalla' : 'Activar en Pantalla';
+    const isPenEnabled = !!penalties.enabled;
+    btnTogglePenaltiesView.classList.toggle('active', isPenEnabled);
+    btnTogglePenaltiesView.textContent = isPenEnabled ? '🙈 Ocultar de Pantalla TV' : '👁️ Mostrar en Pantalla TV';
+    if (penTvStatusBadge) {
+      penTvStatusBadge.classList.toggle('active', isPenEnabled);
+      penTvStatusBadge.textContent = isPenEnabled ? '📺 En Pantalla TV: MOSTRANDO' : '📺 En Pantalla TV: OCULTO';
+    }
 
     // Banner de turno y resaltado de cajas
     const roundNum = penalties.currentRound || 1;
@@ -612,6 +632,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    if (miniTournamentName) miniTournamentName.textContent = state.tournament || 'TORNEO DE FÚTBOL';
+    if (miniTournamentLogo) miniTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
+    if (previewTournamentLogo) previewTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
     if (document.activeElement !== inputTournament) inputTournament.value = state.tournament || '';
     if (document.activeElement !== inputTeam1Name) {
       inputTeam1Name.value = state.team1.name || '';
@@ -657,14 +680,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateExtraButtons(mins) {
-    if (mins && mins > 0) {
-      miniExtra.textContent = `+${mins}'`;
+    const m = mins || 0;
+    if (displayCurrentExtra) displayCurrentExtra.textContent = `+${m}'`;
+    if (inputCustomExtra && document.activeElement !== inputCustomExtra) inputCustomExtra.value = m;
+
+    if (m > 0) {
+      miniExtra.textContent = `+${m}'`;
       miniExtra.style.display = 'inline-block';
     } else {
       miniExtra.style.display = 'none';
     }
     extraButtons.forEach(btn => {
-      btn.classList.toggle('active', parseInt(btn.dataset.extra) === (mins || 0));
+      btn.classList.toggle('active', parseInt(btn.dataset.extra) === m);
     });
   }
 
@@ -834,8 +861,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   btnTogglePenaltiesView.addEventListener('click', () => {
-    haptic(30);
-    socket.emit('toggle_penalties_visibility', {});
+    haptic(40);
+    const currentlyEnabled = !!(currentState && currentState.penalties && currentState.penalties.enabled);
+    const nextVal = !currentlyEnabled;
+    socket.emit('toggle_penalties_visibility', { enabled: nextVal });
   });
 
   // Sorteo de Penales (Quién patea primero)
@@ -914,19 +943,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Soundboard Mariano Closs y Cánticos (Disparar clips auténticos en directo)
-  if (soundboardButtons) {
-    soundboardButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        haptic(50);
-        const clip = btn.dataset.clip;
-        if (clip) {
-          playLocalClip(clip);
-          socket.emit('play_sound_clip', { url: clip });
-        }
+  // Selector de Categorías de Sonido (Pestañas Pills)
+  const soundCatPills = document.querySelectorAll('.sound-cat-pill');
+  const soundCatPanels = document.querySelectorAll('.sound-cat-panel');
+
+  if (soundCatPills.length > 0) {
+    soundCatPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        haptic(25);
+        const cat = pill.dataset.soundCat;
+        soundCatPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        soundCatPanels.forEach(panel => {
+          if (cat === 'goals' && panel.id === 'soundCatPanelGoals') panel.style.display = 'block';
+          else if (cat === 'chants' && panel.id === 'soundCatPanelChants') panel.style.display = 'block';
+          else if (cat === 'fx' && panel.id === 'soundCatPanelFx') panel.style.display = 'block';
+          else panel.style.display = 'none';
+        });
       });
     });
   }
+
+  // Soundboard en Vivo (Disparar clips auténticos en directo en pantalla y celular)
+  document.querySelectorAll('.btn-soundboard-clip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      haptic(50);
+      const clip = btn.dataset.clip;
+      if (clip) {
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 400);
+        playLocalClip(clip);
+        socket.emit('play_sound_clip', { url: clip });
+      }
+    });
+  });
 
   // Hinchada de Fondo Continua (Toggle Inmediato y Volumen)
   if (btnToggleCrowd) {
@@ -1002,14 +1053,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // TIEMPO EXTRA
+  // TIEMPO EXTRA (CHIPS RÁPIDOS Y STEPPER PERSONALIZADO)
+  function setExtraTimeMinutes(mins) {
+    haptic(30);
+    const num = Math.max(0, Math.min(60, parseInt(mins) || 0));
+    socket.emit('set_extra_time', { minutes: num });
+  }
+
   extraButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      haptic(30);
-      const mins = parseInt(btn.dataset.extra);
-      socket.emit('set_extra_time', { minutes: mins });
+      setExtraTimeMinutes(btn.dataset.extra);
     });
   });
+
+  if (btnExtraMinus) {
+    btnExtraMinus.addEventListener('click', () => {
+      const cur = parseInt(inputCustomExtra ? inputCustomExtra.value : 0) || 0;
+      setExtraTimeMinutes(Math.max(0, cur - 1));
+    });
+  }
+
+  if (btnExtraPlus) {
+    btnExtraPlus.addEventListener('click', () => {
+      const cur = parseInt(inputCustomExtra ? inputCustomExtra.value : 0) || 0;
+      setExtraTimeMinutes(Math.min(60, cur + 1));
+    });
+  }
+
+  if (btnApplyExtra) {
+    btnApplyExtra.addEventListener('click', () => {
+      if (inputCustomExtra) setExtraTimeMinutes(inputCustomExtra.value);
+    });
+  }
+
+  if (inputCustomExtra) {
+    inputCustomExtra.addEventListener('change', (e) => {
+      setExtraTimeMinutes(e.target.value);
+    });
+  }
 
   // SONIDOS
   btnSoundWhistleShort.addEventListener('click', () => {
@@ -1283,6 +1364,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // SUBIDA Y RESTAURACIÓN DE LOGO DEL TORNEO
+  if (btnTriggerUploadTournament && fileTournamentLogo) {
+    btnTriggerUploadTournament.addEventListener('click', () => fileTournamentLogo.click());
+
+    fileTournamentLogo.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = await uploadLogo(file, feedbackTournamentLogo, previewTournamentLogo);
+        if (url) {
+          uploadedTournamentLogo = url;
+          if (miniTournamentLogo) miniTournamentLogo.src = url;
+          socket.emit('update_teams', { tournamentLogo: url });
+        }
+      }
+    });
+  }
+
+  if (btnResetTournamentLogo) {
+    btnResetTournamentLogo.addEventListener('click', () => {
+      haptic(30);
+      uploadedTournamentLogo = '/assets/tournament-default.svg';
+      if (previewTournamentLogo) previewTournamentLogo.src = uploadedTournamentLogo;
+      if (miniTournamentLogo) miniTournamentLogo.src = uploadedTournamentLogo;
+      if (feedbackTournamentLogo) feedbackTournamentLogo.textContent = '✓ Restaurado logo predeterminado';
+      socket.emit('update_teams', { tournamentLogo: uploadedTournamentLogo });
+    });
+  }
+
   // Selector de Color
   inputTeam1Color.addEventListener('input', (e) => {
     team1ColorLabel.textContent = e.target.value.toUpperCase();
@@ -1303,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // GUARDAR EQUIPOS
+  // GUARDAR EQUIPOS Y CONFIGURACIÓN COMPLETA
   formTeamsConfig.addEventListener('submit', (e) => {
     e.preventDefault();
     haptic(50);
@@ -1336,6 +1445,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updatedData = {
       tournament: inputTournament.value.trim() || 'TORNEO DE FÚTBOL',
+      tournamentLogo: uploadedTournamentLogo || (currentState ? currentState.tournamentLogo : '/assets/tournament-default.svg'),
       team1: {
         name: inputTeam1Name.value.trim() || 'LOCAL',
         shortName: (inputTeam1Name.value.trim() || 'LOC').substring(0, 3).toUpperCase(),

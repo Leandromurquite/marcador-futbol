@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Elementos del DOM
   const tournamentName = document.getElementById('tournamentName');
+  const tournamentLogo = document.getElementById('tournamentLogo');
   
   // Equipos
   const cardTeam1 = document.getElementById('cardTeam1');
@@ -273,6 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state) return;
 
     tournamentName.textContent = state.tournament || 'TORNEO DE FÚTBOL';
+    if (tournamentLogo) {
+      tournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.svg';
+    }
     if (state.goalAudio) currentGoalAudio = state.goalAudio;
 
     // Equipo 1 - Nombre completo

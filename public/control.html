@@ -91,22 +91,28 @@
 
       <!-- MINI MARCADOR EN VIVO -->
       <section class="live-preview-card">
-        <div class="mini-team">
-          <img src="/assets/team-local.svg" alt="" id="miniLogo1" class="mini-logo">
-          <span class="mini-name" id="miniName1">LOCAL</span>
-          <span class="mini-score" id="miniScore1">0</span>
+        <div class="mini-tournament-bar" id="miniTournamentBar">
+          <img src="/assets/tournament-default.svg" alt="Torneo" id="miniTournamentLogo" class="mini-tournament-logo">
+          <span id="miniTournamentName">TORNEO DE FÚTBOL</span>
         </div>
+        <div class="mini-scoreboard-row">
+          <div class="mini-team">
+            <img src="/assets/team-local.svg" alt="" id="miniLogo1" class="mini-logo">
+            <span class="mini-name" id="miniName1">LOCAL</span>
+            <span class="mini-score" id="miniScore1">0</span>
+          </div>
 
-        <div class="mini-center">
-          <span class="mini-period" id="miniPeriod">1T</span>
-          <span class="mini-time" id="miniTimer">00:00</span>
-          <span class="mini-extra" id="miniExtra" style="display: none;">+3'</span>
-        </div>
+          <div class="mini-center">
+            <span class="mini-period" id="miniPeriod">1T</span>
+            <span class="mini-time" id="miniTimer">00:00</span>
+            <span class="mini-extra" id="miniExtra" style="display: none;">+3'</span>
+          </div>
 
-        <div class="mini-team">
-          <span class="mini-score" id="miniScore2">0</span>
-          <span class="mini-name" id="miniName2">VISITA</span>
-          <img src="/assets/team-visita.svg" alt="" id="miniLogo2" class="mini-logo">
+          <div class="mini-team">
+            <span class="mini-score" id="miniScore2">0</span>
+            <span class="mini-name" id="miniName2">VISITA</span>
+            <img src="/assets/team-visita.svg" alt="" id="miniLogo2" class="mini-logo">
+          </div>
         </div>
       </section>
 
@@ -153,10 +159,13 @@
       <!-- TANDA DE PENALES CON LÓGICA FIFA Y DECLARACIÓN DE GANADOR -->
       <!-- TANDA DE PENALES CON LÓGICA FIFA Y TURNOS ALTERNADOS -->
       <section class="section-container penalty-section-card">
-        <div class="section-title-row">
-          <h2 class="section-title">⚽ Tanda de Penales (Turno Alterno)</h2>
-          <button class="btn-toggle-penalties" id="btnTogglePenaltiesView">
-            Activar en Pantalla
+        <div class="section-title-row pen-title-row">
+          <div class="pen-title-col">
+            <h2 class="section-title">⚽ Tanda de Penales (Turno Alterno)</h2>
+            <span class="pen-tv-status-badge" id="penTvStatusBadge">📺 En Pantalla TV: OCULTO</span>
+          </div>
+          <button type="button" class="btn-toggle-penalties" id="btnTogglePenaltiesView">
+            👁️ Mostrar en Pantalla TV
           </button>
         </div>
 
@@ -284,17 +293,37 @@
         </div>
       </section>
 
-      <!-- TIEMPO EXTRA / AÑADIDO -->
-      <section class="section-container">
-        <h2 class="section-title">Tiempo Añadido (Extra Time)</h2>
+      <!-- TIEMPO EXTRA / AÑADIDO PERSONALIZADO -->
+      <section class="section-container extra-time-card">
+        <div class="extra-header-row">
+          <div>
+            <h2 class="section-title">⏱️ Tiempo Añadido (Descuento)</h2>
+            <p class="section-help-sub">Añade los minutos exactos si se demoró el juego buscando la pelota afuera:</p>
+          </div>
+          <div class="extra-current-badge">
+            <span id="displayCurrentExtra">+0'</span>
+          </div>
+        </div>
+
+        <!-- Chips de acceso rápido para pérdidas de tiempo -->
         <div class="extra-time-chips">
-          <button class="btn-extra active" data-extra="0">0'</button>
-          <button class="btn-extra" data-extra="1">+1'</button>
-          <button class="btn-extra" data-extra="2">+2'</button>
-          <button class="btn-extra" data-extra="3">+3'</button>
-          <button class="btn-extra" data-extra="4">+4'</button>
-          <button class="btn-extra" data-extra="5">+5'</button>
-          <button class="btn-extra" data-extra="6">+6'</button>
+          <button type="button" class="btn-extra active" data-extra="0">0'</button>
+          <button type="button" class="btn-extra" data-extra="2">+2'</button>
+          <button type="button" class="btn-extra" data-extra="5">+5'</button>
+          <button type="button" class="btn-extra" data-extra="8">+8'</button>
+          <button type="button" class="btn-extra" data-extra="10">+10'</button>
+          <button type="button" class="btn-extra" data-extra="15">+15'</button>
+        </div>
+
+        <!-- Stepper interactivo de minutos libres -->
+        <div class="custom-extra-stepper">
+          <button type="button" class="btn-stepper-extra" id="btnExtraMinus" title="Restar 1 minuto">- 1'</button>
+          <div class="extra-input-wrap">
+            <input type="number" id="inputCustomExtra" min="0" max="60" value="0" class="input-custom-extra">
+            <span class="extra-unit-label">min</span>
+          </div>
+          <button type="button" class="btn-stepper-extra" id="btnExtraPlus" title="Sumar 1 minuto">+ 1'</button>
+          <button type="button" class="btn-apply-extra" id="btnApplyExtra">Aplicar Descuento</button>
         </div>
       </section>
 
@@ -330,37 +359,14 @@
         </div>
       </section>
 
-      <!-- SOUNDBOARD EN VIVO MARIANO CLOSS (100% LOCAL SIN IA - SOLO GOLES) -->
-      <section class="section-container soundboard-card">
-        <h2 class="section-title">🎙️ Goles de Mariano Closs en Vivo</h2>
-        <p class="section-help-sub">Toca para reproducir relatos de gol auténticos en el parlante del marcador:</p>
-        <div class="soundboard-grid">
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-cantalo.mp3">
-            🗣️ "¡Cántalo, cántalo, Gol!"
-          </button>
-          <button type="button" class="btn-soundboard-clip primary" data-clip="/assets/sounds/mariano-closs-gol.mp3">
-            ⚽ "¡Benzemaaa Mariano Closs Gol!"
-          </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-gol-messi.mp3">
-            🇦🇷 "¡Messi lo hizo, Gol!"
-          </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-gol-enzo.mp3">
-            🌟 "¡Golazo de Enzo Fernández!"
-          </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-lo-va-a-ganar.mp3">
-            🔥 "¡Y lo va a ganar, Gol!"
-          </button>
-        </div>
-      </section>
-
       <!-- AMBIENTE DE HINCHADA EN VIVO (CONTINUO DURANTE EL PARTIDO) -->
       <section class="section-container crowd-ambiance-card">
         <div class="crowd-ambiance-header">
           <div class="crowd-ambiance-info">
             <span class="crowd-icon">🏟️</span>
             <div>
-              <h3 class="crowd-title">Hinchada de Fondo en Vivo</h3>
-              <p class="crowd-desc">Toca para activar o pausar el aliento de cancha (suena en vivo en el marcador y en tu celular).</p>
+              <h3 class="crowd-title">Aliento de Estadio de Fondo</h3>
+              <p class="crowd-desc">Ambiente continuo de cancha (suena en vivo en el marcador y en tu celular).</p>
             </div>
           </div>
           <button type="button" class="btn-toggle-crowd" id="btnToggleCrowd">
@@ -375,42 +381,118 @@
         </div>
       </section>
 
-      <!-- CÁNTICOS DE HINCHADA EN VIVO -->
-      <section class="section-container soundboard-card hinchada-card">
-        <h2 class="section-title">🎺 Cánticos de Hinchada en Vivo</h2>
-        <p class="section-help-sub">Toca para reproducir cantos y aliento de la tribuna en cualquier momento:</p>
-        <div class="soundboard-grid hinchada-grid">
-          <button type="button" class="btn-soundboard-clip chant-fire" data-clip="/assets/sounds/hinchada-jugadores-huevos.mp3">
-            🔥 "¡Jugadores, l.c.d.s.m., a ver si ponen huevos!"
+      <!-- BOTONERA ORGANIZADA DE SONIDOS Y RELATOS -->
+      <section class="section-container soundboard-unified-card">
+        <div class="soundboard-header-wrap">
+          <div>
+            <h2 class="section-title">🔊 Botonera de Cancha y Tribuna</h2>
+            <p class="section-help-sub">Toca para reproducir en vivo en la pantalla y en el celular:</p>
+          </div>
+          <span class="soundboard-live-pill">EN VIVO</span>
+        </div>
+
+        <!-- Selector de Categorías (Pills / Pestañas Limpias) -->
+        <div class="sound-category-pills">
+          <button type="button" class="sound-cat-pill active" data-sound-cat="goals">
+            🎙️ Relatos de Goles
           </button>
-          <button type="button" class="btn-soundboard-clip chant-anthem" data-clip="/assets/sounds/hinchada-muchachos.mp3">
-            🏆 "¡Muchachos, nos volvimos a ilusionar!"
+          <button type="button" class="sound-cat-pill" data-sound-cat="chants">
+            🎺 Hinchada y Cánticos
           </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-banda-loca.mp3">
-            🇦🇷 "¡Esta es la banda loca de Argentina!"
-          </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-dale-boca.mp3">
-            💙💛 "¡Dale, dale Bo!"
-          </button>
-          <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/ambiente-estadio-cheering.mp3">
-            👏 "¡Ovación y Aplausos de Cancha!"
+          <button type="button" class="sound-cat-pill" data-sound-cat="fx">
+            📢 Silbatos y Bocinas
           </button>
         </div>
-      </section>
 
-      <!-- EFECTOS DE SONIDO -->
-      <section class="section-container">
-        <h2 class="section-title">Efectos de Sonido</h2>
-        <div class="sound-buttons-grid">
-          <button class="btn-sound" id="btnSoundWhistleShort">
-            📢 Silbato (Falta / Reanudar)
-          </button>
-          <button class="btn-sound" id="btnSoundWhistleLong">
-            🏁 Silbato Final (Triple)
-          </button>
-          <button class="btn-sound horn" id="btnSoundGoalHorn">
-            🎺 Probar Audio de Gol
-          </button>
+        <!-- Categoría 1: Relatos de Gol (Mariano Closs, Vignolo, Golazos) -->
+        <div class="sound-cat-panel active" id="soundCatPanelGoals">
+          <div class="soundboard-grid">
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-cantalo.mp3">
+              <span class="clip-btn-title">🗣️ "¡Cántalo, Cántalo, Gol!"</span>
+              <small class="clip-btn-sub">Mariano Closs</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip primary" data-clip="/assets/sounds/mariano-closs-gol.mp3">
+              <span class="clip-btn-title">⚽ "¡Benzemaaa Gol!"</span>
+              <small class="clip-btn-sub">Champions League</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-gol-messi.mp3">
+              <span class="clip-btn-title">🇦🇷 "¡Messi lo hizo, Gol!"</span>
+              <small class="clip-btn-sub">Mariano Closs</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-gol-enzo.mp3">
+              <span class="clip-btn-title">🌟 "¡Golazo de Enzo Fernández!"</span>
+              <small class="clip-btn-sub">Mariano Closs</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/closs-lo-va-a-ganar.mp3">
+              <span class="clip-btn-title">🔥 "¡Y lo va a ganar, Gol!"</span>
+              <small class="clip-btn-sub">Definición Épica</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/relato-vignolo-gol.mp3">
+              <span class="clip-btn-title">🎙️ "¡Gooool Pollo Vignolo!"</span>
+              <small class="clip-btn-sub">Sebastián Vignolo</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/relato-golazo-azo.mp3">
+              <span class="clip-btn-title">🚀 "¡Golazo, azo, azo, azo!"</span>
+              <small class="clip-btn-sub">Relato Emocionante</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/relato-maradona-golazo.mp3">
+              <span class="clip-btn-title">👑 "¡Golazo Histórico!"</span>
+              <small class="clip-btn-sub">Grito de Gol</small>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categoría 2: Cánticos de Hinchada (Tribuna) -->
+        <div class="sound-cat-panel" id="soundCatPanelChants" style="display: none;">
+          <div class="soundboard-grid hinchada-grid">
+            <button type="button" class="btn-soundboard-clip chant-fire" data-clip="/assets/sounds/hinchada-jugadores-huevos.mp3">
+              <span class="clip-btn-title">🔥 "¡Jugadores, l.c.d.s.m., pongan huevos!"</span>
+              <small class="clip-btn-sub">Tribuna Popular</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip chant-cumbia" data-clip="/assets/sounds/hinchada-cumbia-de-los-trapos.mp3">
+              <span class="clip-btn-title">🥁 "Yerba Brava: Cumbia de los Trapos"</span>
+              <small class="clip-btn-sub">Himno de Cancha</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip chant-anthem" data-clip="/assets/sounds/hinchada-muchachos.mp3">
+              <span class="clip-btn-title">🏆 "¡Muchachos, nos volvimos a ilusionar!"</span>
+              <small class="clip-btn-sub">Mundial / Selección</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-vamos-argentina.mp3">
+              <span class="clip-btn-title">🇦🇷 "¡Vamos Vamos Argentina a Ganar!"</span>
+              <small class="clip-btn-sub">Cántico de Hinchada</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-ole-ole.mp3">
+              <span class="clip-btn-title">🎶 "¡Olé, Olé, Olé... Campeón!"</span>
+              <small class="clip-btn-sub">Fiesta de Campeón</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-dale-boca.mp3">
+              <span class="clip-btn-title">💙💛 "¡Dale, dale Bo!"</span>
+              <small class="clip-btn-sub">Aliento Xeneize</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/hinchada-banda-loca.mp3">
+              <span class="clip-btn-title">🎺 "¡Esta es la banda loca!"</span>
+              <small class="clip-btn-sub">Hinchada Argentina</small>
+            </button>
+            <button type="button" class="btn-soundboard-clip" data-clip="/assets/sounds/ambiente-estadio-cheering.mp3">
+              <span class="clip-btn-title">👏 "¡Ovación y Aplausos de Cancha!"</span>
+              <small class="clip-btn-sub">Estadio Completo</small>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categoría 3: Efectos de Cancha -->
+        <div class="sound-cat-panel" id="soundCatPanelFx" style="display: none;">
+          <div class="sound-buttons-grid">
+            <button type="button" class="btn-sound" id="btnSoundWhistleShort">
+              📢 Silbato Corto (Falta / Reanudar)
+            </button>
+            <button type="button" class="btn-sound" id="btnSoundWhistleLong">
+              🏁 Silbato Final (Triple Pitaso)
+            </button>
+            <button type="button" class="btn-sound horn" id="btnSoundGoalHorn">
+              🎺 Probar Audio de Gol Actual
+            </button>
+          </div>
         </div>
       </section>
 
@@ -570,10 +652,34 @@
           </div>
         </div>
         
-        <!-- Nombre del Torneo -->
-        <div class="form-group">
-          <label class="form-label" for="inputTournament">Nombre del Torneo / Competencia</label>
-          <input type="text" id="inputTournament" class="form-input" placeholder="Ej: Torneo Interbarrios, Copa Libre">
+        <!-- CONFIGURACIÓN DE TORNEO Y ESCUDO OFICIAL -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #c084fc; border-color: #c084fc;">🏆 LOGO Y NOMBRE DEL TORNEO</div>
+          
+          <div class="form-group">
+            <label class="form-label" for="inputTournament">Nombre de la Competencia / Torneo</label>
+            <input type="text" id="inputTournament" class="form-input" placeholder="Ej: Torneo Interbarrios, Copa Libre">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Escudo / Logo Oficial</label>
+              <div class="logo-preview-box">
+                <img src="/assets/tournament-default.svg" id="previewTournamentLogo" class="logo-preview-img" alt="Logo Torneo">
+              </div>
+            </div>
+
+            <div class="form-group flex-1" style="display:flex; flex-direction:column; justify-content:center;">
+              <input type="file" id="fileTournamentLogo" accept="image/*" class="file-input-hidden">
+              <button type="button" class="btn-upload-logo" id="btnTriggerUploadTournament">
+                📷 Subir Logo del Torneo
+              </button>
+              <button type="button" class="btn-reset-logo" id="btnResetTournamentLogo" style="margin-top:6px;">
+                🔄 Restaurar Predeterminado
+              </button>
+              <span class="upload-feedback" id="feedbackTournamentLogo"></span>
+            </div>
+          </div>
         </div>
 
         <!-- EQUIPO LOCAL -->

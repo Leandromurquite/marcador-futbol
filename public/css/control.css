@@ -2124,4 +2124,298 @@ body {
   margin-top: 0.1rem;
 }
 
+/* MINI BARRA DEL TORNEO EN EL PREVIEW */
+.mini-tournament-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  margin-bottom: 0.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fde047;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.mini-tournament-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.mini-scoreboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ENCABEZADO DE PENALES CON ESTADO TV */
+.pen-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pen-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pen-tv-status-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(100, 116, 139, 0.25);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  letter-spacing: 0.5px;
+  width: fit-content;
+  transition: all 0.25s ease;
+}
+
+.pen-tv-status-badge.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+.btn-toggle-penalties {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1.5px solid rgba(148, 163, 184, 0.4);
+  color: #cbd5e1;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-penalties.active {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  border-color: #f43f5e;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(225, 29, 72, 0.5);
+}
+
+/* TIEMPO EXTRA PERSONALIZADO */
+.extra-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.extra-current-badge {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid #22c55e;
+  color: #4ade80;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  padding: 0.1rem 0.7rem;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.custom-extra-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.btn-stepper-extra {
+  flex: 0 0 52px;
+  height: 44px;
+  background: #334155;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-stepper-extra:active {
+  transform: scale(0.92);
+  background: #475569;
+}
+
+.extra-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-custom-extra {
+  width: 100%;
+  height: 44px;
+  background: #0f172a;
+  border: 1.5px solid #38bdf8;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  padding: 0 2.5rem 0 1rem;
+  text-align: center;
+}
+
+.extra-unit-label {
+  position: absolute;
+  right: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.btn-apply-extra {
+  height: 44px;
+  padding: 0 1.2rem;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: 1px solid #38bdf8;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn-apply-extra:active {
+  transform: scale(0.95);
+  opacity: 0.85;
+}
+
+/* BOTONERA ORGANIZADA DE SONIDOS */
+.soundboard-unified-card {
+  background: #1e293b;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 1.2rem;
+}
+
+.soundboard-header-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.soundboard-live-pill {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #f87171;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.sound-category-pills {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  background: #0f172a;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sound-cat-pill {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.55rem 0.35rem;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sound-cat-pill.active {
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
+}
+
+.sound-cat-panel {
+  animation: fadeInPanel 0.25s ease-out;
+}
+
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-soundboard-clip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.65rem 0.85rem;
+  min-height: 56px;
+  text-align: left;
+}
+
+.clip-btn-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.clip-btn-sub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.btn-soundboard-clip.chant-cumbia {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.25) 0%, rgba(194, 65, 12, 0.15) 100%);
+  border-color: #f97316;
+}
+
+.btn-reset-logo {
+  background: #334155;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #cbd5e1;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-logo:active {
+  transform: scale(0.96);
+  background: #475569;
+}
+
 

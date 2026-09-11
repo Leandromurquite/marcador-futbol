@@ -17,6 +17,10 @@ Sistema web profesional para transmisión y control de marcadores de fútbol en 
   - Control de volumen (0% a 100%) y botón de encendido/pausa inmediato.
 - 🎺 **Botonera de Cánticos de Hinchada en Vivo**:
   - Lanzamiento instantáneo de cánticos populares de cancha: *"¡Jugadores, la concha de su madre, a ver si ponen huevos que no juegan con nadie!"*, *"¡Muchachos, ahora nos volvimos a ilusionar!"*, *"¡Esta es la banda loca de la Argentina!"*, *"¡Dale, dale Bo!"* y ovaciones de tribuna (reproducibles al instante desde el celular y en la pantalla).
+- 🏆 **Logo del Torneo Personalizable**: Sube y cambia el escudo oficial de la competencia desde la galería de tu celular o PC para exhibirlo en la cabecera del marcador TV, en el control remoto y en las actas generadas.
+- ⏱️ **Tiempo Añadido Personalizado (Descuento por Demoras)**: Stepper interactivo `[-]` `[+]`, campo numérico libre (1 a 60 min) y accesos rápidos (+2', +5', +8', +10', +15') para compensar el tiempo perdido cuando la pelota se va afuera o se demora en encontrarla.
+- 🙈/👁️ **Ocultar / Mostrar Penales en TV Confiable**: Botón con estados claros y badge en vivo (`📺 En Pantalla TV: MOSTRANDO` / `📺 En Pantalla TV: OCULTO`), con limpieza total del marcador en pantalla y auto-ocultamiento al regresar a periodos regulares (1T, 2T o Entretiempo).
+- 🔊 **Botonera de Cancha y Tribuna Organizada**: Selector de categorías por pestañas limpias (`🎙️ Relatos de Goles` | `🎺 Hinchada y Cánticos` | `📢 Silbatos y Bocinas`) con 17 audios auténticos de estadio (Closs, Vignolo, Golazos, Cumbia de los Trapos, Jugadores pongan huevos, Muchachos, etc.) que suenan en vivo en el marcador y en el celular sin desordenar la pantalla móvil.
 - 🌤️ **6 Fondos Climáticos para Canchas al Aire Libre**:
   - 🌙 **Noche**: Iluminación de estadio clásico.
   - ☀️ **Soleado**: Alta luminosidad y contraste para evitar el lavado por luz solar.
@@ -67,7 +71,7 @@ La consola mostrará una salida como esta:
        ⚽ MARCADOR DE FÚTBOL EN TIEMPO REAL ⚽        
 ======================================================
 💻 PANTALLA DEL MARCADOR (PC/TV): http://localhost:3000
-📱 CONTROL REMOTO PRIVADO:        http://192.168.1.50:3000/control
+📱 CONTROL REMOTO PRIVADO:        http://192.xxxxxxx/control
 🔑 PIN DE ACCESO CELULAR:         1234
 ======================================================
 `

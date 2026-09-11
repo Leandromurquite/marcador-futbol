@@ -96,7 +96,10 @@ const CLOSS_CLIPS = [
   { id: 'mariano-closs-gol', name: '¡Benzemaaa Mariano Closs Gol!', file: '/assets/sounds/mariano-closs-gol.mp3' },
   { id: 'closs-gol-messi', name: '¡Messi lo Hizo, Gol!', file: '/assets/sounds/closs-gol-messi.mp3' },
   { id: 'closs-gol-enzo', name: '¡Golazo de Enzo Fernández!', file: '/assets/sounds/closs-gol-enzo.mp3' },
-  { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' }
+  { id: 'closs-lo-va-a-ganar', name: '¡Y lo va a ganar, Gol!', file: '/assets/sounds/closs-lo-va-a-ganar.mp3' },
+  { id: 'relato-vignolo-gol', name: '¡Gooool Pollo Vignolo!', file: '/assets/sounds/relato-vignolo-gol.mp3' },
+  { id: 'relato-golazo-azo', name: '¡Golazo, azo, azo, azo!', file: '/assets/sounds/relato-golazo-azo.mp3' },
+  { id: 'relato-maradona-golazo', name: '¡Golazo Histórico!', file: '/assets/sounds/relato-maradona-golazo.mp3' }
 ];
 
 function getRandomGoalClip() {
@@ -105,7 +108,10 @@ function getRandomGoalClip() {
     '/assets/sounds/mariano-closs-gol.mp3',
     '/assets/sounds/closs-gol-messi.mp3',
     '/assets/sounds/closs-gol-enzo.mp3',
-    '/assets/sounds/closs-lo-va-a-ganar.mp3'
+    '/assets/sounds/closs-lo-va-a-ganar.mp3',
+    '/assets/sounds/relato-vignolo-gol.mp3',
+    '/assets/sounds/relato-golazo-azo.mp3',
+    '/assets/sounds/relato-maradona-golazo.mp3'
   ];
   return goalClips[Math.floor(Math.random() * goalClips.length)];
 }
@@ -113,6 +119,7 @@ function getRandomGoalClip() {
 // Estado global del partido
 let matchState = {
   tournament: 'TORNEO DE FÚTBOL',
+  tournamentLogo: '/assets/tournament-default.svg',
   pin: '1234',
   halfDurationMinutes: 12,
   theme: 'night', // 'night' | 'sunny' | 'cloudy' | 'sunset' | 'grass' | 'high-contrast'
@@ -400,6 +407,7 @@ function buildCurrentMatchRecord() {
     timestamp: now.toISOString(),
     dateFormatted,
     tournament: matchState.tournament,
+    tournamentLogo: matchState.tournamentLogo,
     team1: { ...matchState.team1 },
     team2: { ...matchState.team2 },
     timer: { ...matchState.timer },
@@ -548,10 +556,13 @@ io.on('connection', (socket) => {
 
       if (data.period === 'Penales') {
         matchState.penalties.enabled = true;
+      } else {
+        // Al regresar a periodos regulares o finalizar, ocultar tablero de penales de la TV
+        matchState.penalties.enabled = false;
       }
 
       if (data.autoSetTime) {
-        const halfSeconds = (matchState.halfDurationMinutes || 45) * 60;
+        const halfSeconds = (matchState.halfDurationMinutes || 12) * 60;
         if (data.period === '2T' && matchState.timer.seconds < halfSeconds) {
           matchState.timer.seconds = halfSeconds;
         } else if (data.period === '1T' && matchState.timer.seconds === 0) {
@@ -565,6 +576,7 @@ io.on('connection', (socket) => {
         isRunning: matchState.timer.isRunning,
         penalties: matchState.penalties
       });
+      io.emit('penalties_updated', matchState.penalties);
     }
   });
 
@@ -578,10 +590,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Tiempo extra
+  // Tiempo extra (personalizado para demoras / pelota perdida)
   socket.on('set_extra_time', (data) => {
     if (typeof data.minutes === 'number') {
-      matchState.timer.extraTime = Math.max(0, data.minutes);
+      matchState.timer.extraTime = Math.max(0, Math.min(60, Math.round(data.minutes)));
       io.emit('extra_time_updated', {
         extraTime: matchState.timer.extraTime
       });
@@ -804,9 +816,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Actualizar nombres y colores
+  // Actualizar nombres, colores y logo del torneo
   socket.on('update_teams', (data) => {
-    if (data.tournament) matchState.tournament = data.tournament;
+    if (data.tournament !== undefined) matchState.tournament = data.tournament;
+    if (data.tournamentLogo !== undefined) matchState.tournamentLogo = data.tournamentLogo;
     if (data.team1) {
       matchState.team1 = { ...matchState.team1, ...data.team1 };
     }
@@ -901,6 +914,7 @@ io.on('connection', (socket) => {
       timestamp: now.toISOString(),
       dateFormatted: dateFormatted,
       tournament: matchState.tournament,
+      tournamentLogo: matchState.tournamentLogo,
       team1: { ...matchState.team1 },
       team2: { ...matchState.team2 },
       timer: { ...matchState.timer },
