@@ -112,7 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
   // ESTADO Y ELEMENTOS
   // =========================================================================
+  let fullServerState = null;
   let currentState = null;
+  let activeCourt = 'cancha1'; // 'cancha1' | 'cancha2'
+  let editingCourt = 'cancha1'; // 'cancha1' | 'cancha2'
   let currentSeconds = 0;
   let isTimerRunning = false;
   let currentHalfMinutes = 12;
@@ -120,6 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let uploadedLogo1 = null;
   let uploadedLogo2 = null;
   let uploadedCustomAudio = null;
+
+  // Detección de cancha por parámetro URL (?cancha=1 o ?cancha=2)
+  const urlParams = new URLSearchParams(window.location.search);
+  const courtParam = urlParams.get('cancha');
+  if (courtParam === '2' || courtParam === 'cancha2') {
+    activeCourt = 'cancha2';
+    editingCourt = 'cancha2';
+  } else if (courtParam === '1' || courtParam === 'cancha1') {
+    activeCourt = 'cancha1';
+    editingCourt = 'cancha1';
+  }
 
   // Audio local en el dispositivo del control remoto (para que suene en el celular al tocar)
   const localCrowdAudio = new Audio('/assets/sounds/ambiente-estadio-continuo.mp3');
@@ -148,6 +162,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabBtnTeams = document.getElementById('tabBtnTeams');
   const tabLive = document.getElementById('tabLive');
   const tabTeams = document.getElementById('tabTeams');
+
+  // Selector de Canchas en Vivo (Celular)
+  const courtActiveTag = document.getElementById('courtActiveTag');
+  const btnPillCancha1 = document.getElementById('btnPillCancha1');
+  const btnPillCancha2 = document.getElementById('btnPillCancha2');
+  const pillMatchC1 = document.getElementById('pillMatchC1');
+  const pillTimeC1 = document.getElementById('pillTimeC1');
+  const pillMatchC2 = document.getElementById('pillMatchC2');
+  const pillTimeC2 = document.getElementById('pillTimeC2');
+
+  // Modo de TV y Selector de Edición de Cancha
+  const btnTvDual = document.getElementById('btnTvDual');
+  const btnTvCancha1 = document.getElementById('btnTvCancha1');
+  const btnTvCancha2 = document.getElementById('btnTvCancha2');
+  const btnEditCourt1 = document.getElementById('btnEditCourt1');
+  const btnEditCourt2 = document.getElementById('btnEditCourt2');
+  const editingCourtLabel = document.getElementById('editingCourtLabel');
+  const badgeTeam1Court = document.getElementById('badgeTeam1Court');
+  const badgeTeam2Court = document.getElementById('badgeTeam2Court');
 
   // Mini Marcador
   const miniTournamentBar = document.getElementById('miniTournamentBar');
@@ -370,6 +403,132 @@ document.addEventListener('DOMContentLoaded', () => {
     tabLive.style.display = 'none';
   });
 
+  // =========================================================================
+  // GESTIÓN DE CANCHAS SIMULTÁNEAS Y SELECTOR DE PANTALLA TV
+  // =========================================================================
+  function updateCourtPills(state) {
+    if (!state) return;
+    const c1 = state.cancha1;
+    const c2 = state.cancha2;
+
+    if (c1 && c1.team1 && c1.team2) {
+      const t1Name = (c1.team1.name || 'LOC').substring(0, 4).toUpperCase();
+      const t2Name = (c1.team2.name || 'VIS').substring(0, 4).toUpperCase();
+      const s1 = c1.team1.score ?? 0;
+      const s2 = c1.team2.score ?? 0;
+      if (pillMatchC1) pillMatchC1.textContent = `${t1Name} ${s1} - ${s2} ${t2Name}`;
+
+      if (pillTimeC1 && c1.timer) {
+        const mins = Math.floor((c1.timer.seconds || 0) / 60);
+        const secs = (c1.timer.seconds || 0) % 60;
+        const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        pillTimeC1.textContent = `${c1.timer.period || '1T'} • ${fmt} ${c1.timer.isRunning ? '▶' : '⏸'}`;
+      }
+    }
+
+    if (c2 && c2.team1 && c2.team2) {
+      const t1Name = (c2.team1.name || 'LOC').substring(0, 4).toUpperCase();
+      const t2Name = (c2.team2.name || 'VIS').substring(0, 4).toUpperCase();
+      const s1 = c2.team1.score ?? 0;
+      const s2 = c2.team2.score ?? 0;
+      if (pillMatchC2) pillMatchC2.textContent = `${t1Name} ${s1} - ${s2} ${t2Name}`;
+
+      if (pillTimeC2 && c2.timer) {
+        const mins = Math.floor((c2.timer.seconds || 0) / 60);
+        const secs = (c2.timer.seconds || 0) % 60;
+        const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        pillTimeC2.textContent = `${c2.timer.period || '1T'} • ${fmt} ${c2.timer.isRunning ? '▶' : '⏸'}`;
+      }
+    }
+
+    if (btnPillCancha1) btnPillCancha1.classList.toggle('active', activeCourt === 'cancha1');
+    if (btnPillCancha2) btnPillCancha2.classList.toggle('active', activeCourt === 'cancha2');
+
+    if (courtActiveTag) {
+      courtActiveTag.textContent = activeCourt === 'cancha1' ? '🏟️ CANCHA 1' : '🏟️ CANCHA 2';
+      courtActiveTag.classList.toggle('cancha2', activeCourt === 'cancha2');
+    }
+  }
+
+  function switchActiveCourt(courtKey) {
+    activeCourt = courtKey;
+    haptic(30);
+    if (btnPillCancha1) btnPillCancha1.classList.toggle('active', activeCourt === 'cancha1');
+    if (btnPillCancha2) btnPillCancha2.classList.toggle('active', activeCourt === 'cancha2');
+    if (courtActiveTag) {
+      courtActiveTag.textContent = activeCourt === 'cancha1' ? '🏟️ CANCHA 1' : '🏟️ CANCHA 2';
+      courtActiveTag.classList.toggle('cancha2', activeCourt === 'cancha2');
+    }
+
+    // Actualizar links de descarga directa de reportes
+    if (btnDirectPdf) btnDirectPdf.href = `/api/report/pdf?cancha=${activeCourt}`;
+    if (btnDirectXlsx) btnDirectXlsx.href = `/api/report/excel?cancha=${activeCourt}`;
+    if (btnDownloadPdf) btnDownloadPdf.href = `/api/report/pdf?cancha=${activeCourt}`;
+    if (btnDownloadXlsx) btnDownloadXlsx.href = `/api/report/excel?cancha=${activeCourt}`;
+
+    if (fullServerState) {
+      updateUI(fullServerState);
+    }
+  }
+
+  function populateTeamEditFields(courtState) {
+    if (!courtState) return;
+    if (inputTeam1Name && document.activeElement !== inputTeam1Name) {
+      inputTeam1Name.value = courtState.team1?.name || '';
+    }
+    if (inputTeam1Color) {
+      inputTeam1Color.value = courtState.team1?.color || '#00d2ff';
+      if (team1ColorLabel) team1ColorLabel.textContent = (courtState.team1?.color || '#00d2ff').toUpperCase();
+    }
+    if (previewTeam1Logo) {
+      previewTeam1Logo.src = courtState.team1?.logo || '/assets/team-local.svg';
+    }
+
+    if (inputTeam2Name && document.activeElement !== inputTeam2Name) {
+      inputTeam2Name.value = courtState.team2?.name || '';
+    }
+    if (inputTeam2Color) {
+      inputTeam2Color.value = courtState.team2?.color || '#ff3366';
+      if (team2ColorLabel) team2ColorLabel.textContent = (courtState.team2?.color || '#ff3366').toUpperCase();
+    }
+    if (previewTeam2Logo) {
+      previewTeam2Logo.src = courtState.team2?.logo || '/assets/team-visita.svg';
+    }
+  }
+
+  function switchEditingCourt(courtKey) {
+    editingCourt = courtKey;
+    haptic(25);
+    if (btnEditCourt1) btnEditCourt1.classList.toggle('active', editingCourt === 'cancha1');
+    if (btnEditCourt2) btnEditCourt2.classList.toggle('active', editingCourt === 'cancha2');
+
+    if (editingCourtLabel) editingCourtLabel.textContent = editingCourt === 'cancha1' ? '🏟️ CANCHA 1' : '🏟️ CANCHA 2';
+    if (badgeTeam1Court) badgeTeam1Court.textContent = editingCourt === 'cancha1' ? 'EQUIPO LOCAL (CANCHA 1)' : 'EQUIPO LOCAL (CANCHA 2)';
+    if (badgeTeam2Court) badgeTeam2Court.textContent = editingCourt === 'cancha1' ? 'EQUIPO VISITA (CANCHA 1)' : 'EQUIPO VISITA (CANCHA 2)';
+
+    if (fullServerState && fullServerState[editingCourt]) {
+      populateTeamEditFields(fullServerState[editingCourt]);
+    }
+  }
+
+  if (btnPillCancha1) btnPillCancha1.addEventListener('click', () => switchActiveCourt('cancha1'));
+  if (btnPillCancha2) btnPillCancha2.addEventListener('click', () => switchActiveCourt('cancha2'));
+  if (btnEditCourt1) btnEditCourt1.addEventListener('click', () => switchEditingCourt('cancha1'));
+  if (btnEditCourt2) btnEditCourt2.addEventListener('click', () => switchEditingCourt('cancha2'));
+
+  // Modos de TV
+  [btnTvDual, btnTvCancha1, btnTvCancha2].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        haptic(30);
+        const mode = btn.dataset.mode;
+        socket.emit('set_view_mode', { mode });
+        [btnTvDual, btnTvCancha1, btnTvCancha2].forEach(b => b?.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    }
+  });
+
   // Actualizar Botones de Salto de Tiempo
   function updateJumpButtons(halfMins) {
     currentHalfMinutes = halfMins || 12;
@@ -443,7 +602,8 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('set_penalty_shot', {
           team: teamKey,
           index: index,
-          state: nextState
+          state: nextState,
+          cancha: activeCourt
         });
       });
 
@@ -563,43 +723,64 @@ document.addEventListener('DOMContentLoaded', () => {
   // Renderizar estado general
   function updateUI(state) {
     if (!state) return;
-    currentState = state;
+    fullServerState = state;
 
-    // Nombres completos
-    miniName1.textContent = state.team1.name;
-    miniScore1.textContent = state.team1.score;
-    miniLogo1.src = state.team1.logo || '/assets/team-local.svg';
-    ctrlName1.textContent = state.team1.name;
-    ctrlScore1.textContent = state.team1.score;
-    penName1.textContent = state.team1.name;
+    // Resuelve la cancha activa que este control remoto está manipulando
+    const courtState = state[activeCourt] || state;
+    currentState = {
+      ...courtState,
+      tournament: state.tournament,
+      tournamentLogo: state.tournamentLogo,
+      goalAudio: state.goalAudio,
+      crowdAmbiance: state.crowdAmbiance,
+      viewMode: state.viewMode,
+      halfDurationMinutes: state.halfDurationMinutes
+    };
 
-    miniName2.textContent = state.team2.name;
-    miniScore2.textContent = state.team2.score;
-    miniLogo2.src = state.team2.logo || '/assets/team-visita.svg';
-    ctrlName2.textContent = state.team2.name;
-    ctrlScore2.textContent = state.team2.score;
-    penName2.textContent = state.team2.name;
+    // Actualizar pills y selector de cancha
+    updateCourtPills(state);
+
+    // Nombres y resultados de la cancha activa
+    miniName1.textContent = courtState.team1.name;
+    miniScore1.textContent = courtState.team1.score;
+    miniLogo1.src = courtState.team1.logo || '/assets/team-local.svg';
+    ctrlName1.textContent = courtState.team1.name;
+    ctrlScore1.textContent = courtState.team1.score;
+    penName1.textContent = courtState.team1.name;
+
+    miniName2.textContent = courtState.team2.name;
+    miniScore2.textContent = courtState.team2.score;
+    miniLogo2.src = courtState.team2.logo || '/assets/team-visita.svg';
+    ctrlName2.textContent = courtState.team2.name;
+    ctrlScore2.textContent = courtState.team2.score;
+    penName2.textContent = courtState.team2.name;
 
     // Actualizar selector de tema/clima
-    if (state.theme && themeButtons) {
+    if (courtState.theme && themeButtons) {
       themeButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.theme === state.theme);
+        btn.classList.toggle('active', btn.dataset.theme === courtState.theme);
       });
     }
 
-    if (state.timer) {
-      updateTimer(state.timer.seconds);
-      setTimerButtonState(state.timer.isRunning);
-      updatePeriodButtons(state.timer.period);
-      updateExtraButtons(state.timer.extraTime);
+    // Actualizar selector de modo de TV
+    const curViewMode = state.viewMode || 'dual';
+    if (btnTvDual) btnTvDual.classList.toggle('active', curViewMode === 'dual');
+    if (btnTvC1) btnTvC1.classList.toggle('active', curViewMode === 'cancha1');
+    if (btnTvC2) btnTvC2.classList.toggle('active', curViewMode === 'cancha2');
+
+    if (courtState.timer) {
+      updateTimer(courtState.timer.seconds);
+      setTimerButtonState(courtState.timer.isRunning);
+      updatePeriodButtons(courtState.timer.period);
+      updateExtraButtons(courtState.timer.extraTime);
     }
 
     if (state.halfDurationMinutes) {
       updateJumpButtons(state.halfDurationMinutes);
     }
 
-    if (state.penalties) {
-      updatePenaltiesUI(state.penalties);
+    if (courtState.penalties) {
+      updatePenaltiesUI(courtState.penalties);
     }
 
     if (state.crowdAmbiance) {
@@ -636,22 +817,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.tournamentLogo) {
       uploadedTournamentLogo = state.tournamentLogo;
     }
-    if (miniTournamentName) miniTournamentName.textContent = state.tournament || 'TORNEO DE FÚTBOL';
+    if (miniTournamentName) miniTournamentName.textContent = state.tournament || 'IES NUEVO HORIZONTE';
     if (miniTournamentLogo) miniTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.png';
     if (previewTournamentLogo) previewTournamentLogo.src = state.tournamentLogo || '/assets/tournament-default.png';
     if (document.activeElement !== inputTournament) inputTournament.value = state.tournament || '';
-    if (document.activeElement !== inputTeam1Name) {
-      inputTeam1Name.value = state.team1.name || '';
-      inputTeam1Color.value = state.team1.color || '#00d2ff';
-      team1ColorLabel.textContent = (state.team1.color || '#00d2ff').toUpperCase();
-      previewTeam1Logo.src = state.team1.logo || '/assets/team-local.svg';
-    }
-    if (document.activeElement !== inputTeam2Name) {
-      inputTeam2Name.value = state.team2.name || '';
-      inputTeam2Color.value = state.team2.color || '#ff3366';
-      team2ColorLabel.textContent = (state.team2.color || '#ff3366').toUpperCase();
-      previewTeam2Logo.src = state.team2.logo || '/assets/team-visita.svg';
-    }
+
+    // Poblar formulario de edición de equipos para editingCourt
+    const editCourtState = state[editingCourt] || courtState;
+    populateTeamEditFields(editCourtState);
   }
 
   function updateTimer(secs) {
@@ -755,44 +928,108 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCrowdUI(cfg);
   });
   socket.on('timer_tick', (data) => {
-    updateTimer(data.seconds);
-    setTimerButtonState(data.isRunning);
+    if (data.cancha1 && data.cancha2) {
+      if (fullServerState) {
+        fullServerState.cancha1.timer.seconds = data.cancha1.seconds;
+        fullServerState.cancha1.timer.isRunning = data.cancha1.isRunning;
+        fullServerState.cancha2.timer.seconds = data.cancha2.seconds;
+        fullServerState.cancha2.timer.isRunning = data.cancha2.isRunning;
+        updateCourtPills(fullServerState);
+      }
+      const myCourtData = data[activeCourt] || (activeCourt === 'cancha1' ? data.cancha1 : data.cancha2);
+      if (myCourtData) {
+        updateTimer(myCourtData.seconds);
+        setTimerButtonState(myCourtData.isRunning);
+      }
+    } else {
+      updateTimer(data.seconds);
+      setTimerButtonState(data.isRunning);
+    }
   });
   socket.on('timer_state', (data) => {
-    updateTimer(data.seconds);
-    setTimerButtonState(data.isRunning);
+    if (data.cancha1 && data.cancha2 && fullServerState) {
+      fullServerState.cancha1.timer.seconds = data.cancha1.seconds;
+      fullServerState.cancha1.timer.isRunning = data.cancha1.isRunning;
+      fullServerState.cancha2.timer.seconds = data.cancha2.seconds;
+      fullServerState.cancha2.timer.isRunning = data.cancha2.isRunning;
+      updateCourtPills(fullServerState);
+    }
+    if (!data.cancha || data.cancha === activeCourt) {
+      updateTimer(data.seconds);
+      setTimerButtonState(data.isRunning);
+    }
   });
-  socket.on('score_updated', (data) => updateUI(data.state));
+  socket.on('score_updated', (data) => {
+    if (data.state) {
+      updateUI(data.state);
+    }
+  });
   socket.on('goal_celebration', (data) => {
     if (data && data.goalAudio && data.goalAudio.customUrl) {
       playLocalClip(data.goalAudio.customUrl);
     }
     haptic(140);
-    showMobileGoalToast(data.teamName || 'EQUIPO', data.score1, data.score2);
+    const courtBadge = data.courtName ? `[${data.courtName}] ` : '';
+    showMobileGoalToast(`${courtBadge}${data.teamName || 'EQUIPO'}`, data.score1, data.score2);
   });
   socket.on('period_updated', (data) => {
-    updatePeriodButtons(data.period);
-    if (typeof data.seconds === 'number') updateTimer(data.seconds);
-    if (typeof data.isRunning === 'boolean') setTimerButtonState(data.isRunning);
-    if (data.penalties) updatePenaltiesUI(data.penalties);
-  });
-  socket.on('penalties_updated', (penalties) => {
-    if (currentState) {
-      currentState.penalties = penalties;
-    } else {
-      currentState = { penalties };
+    if (fullServerState && data.cancha && fullServerState[data.cancha]) {
+      fullServerState[data.cancha].timer.period = data.period;
+      if (typeof data.seconds === 'number') fullServerState[data.cancha].timer.seconds = data.seconds;
+      if (typeof data.isRunning === 'boolean') fullServerState[data.cancha].timer.isRunning = data.isRunning;
+      if (data.penalties) fullServerState[data.cancha].penalties = data.penalties;
+      updateCourtPills(fullServerState);
     }
-    updatePenaltiesUI(penalties);
+    if (!data.cancha || data.cancha === activeCourt) {
+      updatePeriodButtons(data.period);
+      if (typeof data.seconds === 'number') updateTimer(data.seconds);
+      if (typeof data.isRunning === 'boolean') setTimerButtonState(data.isRunning);
+      if (data.penalties) updatePenaltiesUI(data.penalties);
+    }
   });
-  socket.on('penalty_turn_error', (data) => showPenaltyError(data.message));
-  socket.on('extra_time_updated', (data) => updateExtraButtons(data.extraTime));
+  socket.on('penalties_updated', (data) => {
+    const pen = (data && data.penalties) ? data.penalties : data;
+    const cKey = data && data.cancha ? data.cancha : null;
+    if (fullServerState && cKey && fullServerState[cKey]) {
+      fullServerState[cKey].penalties = pen;
+    }
+    if (!cKey || cKey === activeCourt) {
+      if (currentState) {
+        currentState.penalties = pen;
+      }
+      updatePenaltiesUI(pen);
+    }
+  });
+  socket.on('penalty_turn_error', (data) => {
+    if (!data.cancha || data.cancha === activeCourt) {
+      showPenaltyError(data.message);
+    }
+  });
+  socket.on('extra_time_updated', (data) => {
+    if (fullServerState && data.cancha && fullServerState[data.cancha]) {
+      fullServerState[data.cancha].timer.extraTime = data.extraTime;
+    }
+    if (!data.cancha || data.cancha === activeCourt) {
+      updateExtraButtons(data.extraTime);
+    }
+  });
+  socket.on('view_mode_updated', (data) => {
+    if (fullServerState && data && data.viewMode) {
+      fullServerState.viewMode = data.viewMode;
+      const curViewMode = data.viewMode;
+      if (btnTvDual) btnTvDual.classList.toggle('active', curViewMode === 'dual');
+      if (btnTvC1) btnTvC1.classList.toggle('active', curViewMode === 'cancha1');
+      if (btnTvC2) btnTvC2.classList.toggle('active', curViewMode === 'cancha2');
+    }
+  });
   socket.on('teams_updated', (state) => updateUI(state));
   socket.on('half_duration_updated', (data) => updateJumpButtons(data.halfDurationMinutes));
 
   // Partido Finalizado y Generación de Reportes
   socket.on('match_finished', (record) => {
     haptic([70, 70, 100]);
-    if (finishedModalTournament) finishedModalTournament.textContent = record.tournament || 'TORNEO DE FÚTBOL';
+    const courtTitle = record.courtName ? `[${record.courtName}] ` : '';
+    if (finishedModalTournament) finishedModalTournament.textContent = `${courtTitle}${record.tournament || 'IES NUEVO HORIZONTE'}`;
     if (finishedTeam1Name) finishedTeam1Name.textContent = record.team1.name;
     if (finishedScore1) finishedScore1.textContent = record.team1.score;
     if (finishedTeam2Name) finishedTeam2Name.textContent = record.team2.name;
@@ -840,38 +1077,40 @@ document.addEventListener('DOMContentLoaded', () => {
     haptic(80);
     const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
     playLocalClip(clip);
-    showMobileGoalToast(ctrlName1.textContent, (parseInt(ctrlScore1.textContent) || 0) + 1, parseInt(ctrlScore2.textContent) || 0);
-    socket.emit('update_score', { team: 'team1', delta: 1 });
+    const courtBadge = activeCourt === 'cancha1' ? '[CANCHA 1] ' : '[CANCHA 2] ';
+    showMobileGoalToast(`${courtBadge}${ctrlName1.textContent}`, (parseInt(ctrlScore1.textContent) || 0) + 1, parseInt(ctrlScore2.textContent) || 0);
+    socket.emit('update_score', { team: 'team1', delta: 1, cancha: activeCourt });
   });
   btnMinusGoal1.addEventListener('click', () => {
     haptic(30);
-    socket.emit('update_score', { team: 'team1', delta: -1 });
+    socket.emit('update_score', { team: 'team1', delta: -1, cancha: activeCourt });
   });
   btnZeroGoal1.addEventListener('click', () => {
     haptic(30);
-    socket.emit('update_score', { team: 'team1', score: 0 });
+    socket.emit('update_score', { team: 'team1', score: 0, cancha: activeCourt });
   });
 
   btnAddGoal2.addEventListener('click', () => {
     haptic(80);
     const clip = currentState?.goalAudio?.selectedClip || currentState?.goalAudio?.customUrl || '/assets/sounds/closs-cantalo.mp3';
     playLocalClip(clip);
-    showMobileGoalToast(ctrlName2.textContent, parseInt(ctrlScore1.textContent) || 0, (parseInt(ctrlScore2.textContent) || 0) + 1);
-    socket.emit('update_score', { team: 'team2', delta: 1 });
+    const courtBadge = activeCourt === 'cancha1' ? '[CANCHA 1] ' : '[CANCHA 2] ';
+    showMobileGoalToast(`${courtBadge}${ctrlName2.textContent}`, parseInt(ctrlScore1.textContent) || 0, (parseInt(ctrlScore2.textContent) || 0) + 1);
+    socket.emit('update_score', { team: 'team2', delta: 1, cancha: activeCourt });
   });
   btnMinusGoal2.addEventListener('click', () => {
     haptic(30);
-    socket.emit('update_score', { team: 'team2', delta: -1 });
+    socket.emit('update_score', { team: 'team2', delta: -1, cancha: activeCourt });
   });
   btnZeroGoal2.addEventListener('click', () => {
     haptic(30);
-    socket.emit('update_score', { team: 'team2', score: 0 });
+    socket.emit('update_score', { team: 'team2', score: 0, cancha: activeCourt });
   });
 
   // ACCIONES PENALES CON CONTROL DE TURNOS
   function handlePenaltyAction(team, action, reason = null) {
     if (action === 'undo') {
-      socket.emit('quick_penalty_action', { team, action: 'undo' });
+      socket.emit('quick_penalty_action', { team, action: 'undo', cancha: activeCourt });
       return;
     }
     if (currentState && currentState.penalties) {
@@ -882,27 +1121,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     // Enviar directamente al servidor; el servidor tiene la autoridad oficial y valida turnos
-    socket.emit('quick_penalty_action', { team, action, reason });
+    socket.emit('quick_penalty_action', { team, action, reason, cancha: activeCourt });
   }
 
   btnTogglePenaltiesView.addEventListener('click', () => {
     haptic(40);
     const currentlyEnabled = !!(currentState && currentState.penalties && currentState.penalties.enabled);
     const nextVal = !currentlyEnabled;
-    socket.emit('toggle_penalties_visibility', { enabled: nextVal });
+    socket.emit('toggle_penalties_visibility', { enabled: nextVal, cancha: activeCourt });
   });
 
   // Sorteo de Penales (Quién patea primero)
   if (btnCoinTossTeam1) {
     btnCoinTossTeam1.addEventListener('click', () => {
       haptic(30);
-      socket.emit('set_first_kicker', { team: 'team1' });
+      socket.emit('set_first_kicker', { team: 'team1', cancha: activeCourt });
     });
   }
   if (btnCoinTossTeam2) {
     btnCoinTossTeam2.addEventListener('click', () => {
       haptic(30);
-      socket.emit('set_first_kicker', { team: 'team2' });
+      socket.emit('set_first_kicker', { team: 'team2', cancha: activeCourt });
     });
   }
 
@@ -951,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnPenUndoGlobal) {
     btnPenUndoGlobal.addEventListener('click', () => {
       haptic(30);
-      socket.emit('quick_penalty_action', { team: 'team1', action: 'undo' });
+      socket.emit('quick_penalty_action', { team: 'team1', action: 'undo', cancha: activeCourt });
     });
   }
 
@@ -963,7 +1202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const theme = btn.dataset.theme;
         themeButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        socket.emit('set_theme', { theme });
+        socket.emit('set_theme', { theme, cancha: activeCourt });
       });
     });
   }
@@ -1035,37 +1274,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnResetPenalties.addEventListener('click', () => {
     haptic(40);
-    if (confirm('¿Reiniciar la tanda de penales a 0-0?')) {
-      socket.emit('reset_penalties');
+    const courtTitle = activeCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2';
+    if (confirm(`¿Reiniciar la tanda de penales de ${courtTitle} a 0-0?`)) {
+      socket.emit('reset_penalties', { cancha: activeCourt });
     }
   });
 
   // CRONÓMETRO
   btnTimerToggle.addEventListener('click', () => {
     haptic(40);
-    socket.emit('timer_toggle');
+    socket.emit('timer_toggle', { cancha: activeCourt });
   });
 
   btnResetTimer.addEventListener('click', () => {
     haptic(40);
-    socket.emit('timer_reset');
+    socket.emit('timer_reset', { cancha: activeCourt });
   });
 
   btnPlusMinute.addEventListener('click', () => {
     haptic(30);
-    socket.emit('timer_set', { seconds: currentSeconds + 60 });
+    socket.emit('timer_set', { seconds: currentSeconds + 60, cancha: activeCourt });
   });
 
   btnMinusMinute.addEventListener('click', () => {
     haptic(30);
-    socket.emit('timer_set', { seconds: Math.max(0, currentSeconds - 60) });
+    socket.emit('timer_set', { seconds: Math.max(0, currentSeconds - 60), cancha: activeCourt });
   });
 
   [btnJumpStart, btnJumpHalf, btnJumpEnd].forEach(btn => {
     btn.addEventListener('click', () => {
       haptic(30);
       const secs = parseInt(btn.dataset.setSec);
-      socket.emit('timer_set', { seconds: secs });
+      socket.emit('timer_set', { seconds: secs, cancha: activeCourt });
     });
   });
 
@@ -1074,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       haptic(30);
       const p = btn.dataset.period;
-      socket.emit('set_period', { period: p, autoSetTime: true });
+      socket.emit('set_period', { period: p, autoSetTime: true, cancha: activeCourt });
     });
   });
 
@@ -1084,7 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
       haptic(35);
       const nextVal = Math.max(0, currentExtraMinutes - 1);
       updateExtraButtons(nextVal);
-      socket.emit('set_extra_time', { minutes: nextVal });
+      socket.emit('set_extra_time', { minutes: nextVal, cancha: activeCourt });
     });
   }
 
@@ -1093,7 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       haptic(35);
       const nextVal = Math.min(60, currentExtraMinutes + 1);
       updateExtraButtons(nextVal);
-      socket.emit('set_extra_time', { minutes: nextVal });
+      socket.emit('set_extra_time', { minutes: nextVal, cancha: activeCourt });
     });
   }
 
@@ -1122,6 +1362,8 @@ document.addEventListener('DOMContentLoaded', () => {
     haptic(80);
     const selectedType = document.querySelector('input[name="goalAudioType"]:checked').value;
     socket.emit('goal_celebration', {
+      cancha: activeCourt,
+      courtName: activeCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2',
       teamKey: 'team1',
       teamName: ctrlName1.textContent,
       teamLogo: previewTeam1Logo.src,
@@ -1148,16 +1390,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnFinishMatch) {
     btnFinishMatch.addEventListener('click', () => {
       haptic(60);
+      const courtTitle = activeCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2';
       const ok = confirm(
-        "⚠️ ¿Confirmar finalización del partido?\n\n" +
+        `⚠️ ¿Confirmar finalización del partido en ${courtTitle}?\n\n` +
         "Al presionar Aceptar:\n" +
-        "• Se detendrá el cronómetro oficial en el tiempo actual.\n" +
+        "• Se detendrá el cronómetro oficial de esta cancha.\n" +
         "• El periodo cambiará a 'Finalizado'.\n" +
         "• Se generará y guardará automáticamente el acta en PDF y planilla en Excel (.xlsx).\n" +
         "• Podrás descargar ambos archivos de inmediato en tu celular o PC."
       );
       if (ok) {
-        socket.emit('finish_match');
+        socket.emit('finish_match', { cancha: activeCourt });
       }
     });
   }
@@ -1170,8 +1413,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnModalResetMatch) {
     btnModalResetMatch.addEventListener('click', () => {
-      if (confirm('¿Deseas reiniciar e iniciar un nuevo partido desde 0-0?')) {
-        socket.emit('reset_match');
+      const courtTitle = activeCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2';
+      if (confirm(`¿Deseas reiniciar e iniciar un nuevo partido en ${courtTitle} desde 0-0?`)) {
+        socket.emit('reset_match', { cancha: activeCourt });
         if (modalMatchFinished) modalMatchFinished.style.display = 'none';
       }
     });
@@ -1231,8 +1475,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // REINICIO COMPLETO
   btnResetAllMatch.addEventListener('click', () => {
     haptic(80);
-    if (confirm('¿Estás seguro de reiniciar todo el partido a 0-0 y el reloj a 00:00?')) {
-      socket.emit('reset_match');
+    const courtTitle = activeCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2';
+    if (confirm(`¿Estás seguro de reiniciar todo el partido de ${courtTitle} a 0-0 y el reloj a 00:00?`)) {
+      socket.emit('reset_match', { cancha: activeCourt });
     }
   });
 
@@ -1241,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       haptic(30);
       const mins = parseInt(btn.dataset.min);
-      socket.emit('set_half_duration', { minutes: mins });
+      socket.emit('set_half_duration', { minutes: mins, cancha: activeCourt });
       updateJumpButtons(mins);
     });
   });
@@ -1250,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     haptic(30);
     const mins = parseInt(inputHalfDuration.value);
     if (mins && mins > 0) {
-      socket.emit('set_half_duration', { minutes: mins });
+      socket.emit('set_half_duration', { minutes: mins, cancha: activeCourt });
       updateJumpButtons(mins);
       alert(`Duración fijada en ${mins} minutos por tiempo.`);
     }
@@ -1398,7 +1643,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (url) {
           uploadedTournamentLogo = url;
           if (miniTournamentLogo) miniTournamentLogo.src = url;
-          socket.emit('update_teams', { tournamentLogo: url });
+          socket.emit('update_teams', { tournamentLogo: url, cancha: editingCourt });
         }
       }
     });
@@ -1411,7 +1656,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (previewTournamentLogo) previewTournamentLogo.src = uploadedTournamentLogo;
       if (miniTournamentLogo) miniTournamentLogo.src = uploadedTournamentLogo;
       if (feedbackTournamentLogo) feedbackTournamentLogo.textContent = '✓ Restaurado logo predeterminado';
-      socket.emit('update_teams', { tournamentLogo: uploadedTournamentLogo });
+      socket.emit('update_teams', { tournamentLogo: uploadedTournamentLogo, cancha: editingCourt });
     });
   }
 
@@ -1467,16 +1712,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const updatedData = {
-      tournament: inputTournament.value.trim() || 'TORNEO DE FÚTBOL',
-      tournamentLogo: uploadedTournamentLogo || (currentState ? currentState.tournamentLogo : '/assets/tournament-default.png'),
+      cancha: editingCourt,
+      tournament: inputTournament.value.trim() || 'IES NUEVO HORIZONTE',
+      tournamentLogo: uploadedTournamentLogo || (fullServerState ? fullServerState.tournamentLogo : '/assets/tournament-default.png'),
       team1: {
         name: inputTeam1Name.value.trim() || 'LOCAL',
-        shortName: (inputTeam1Name.value.trim() || 'LOC').substring(0, 3).toUpperCase(),
+        shortName: (inputTeam1Name.value.trim() || 'LOC').substring(0, 4).toUpperCase(),
         color: inputTeam1Color.value
       },
       team2: {
         name: inputTeam2Name.value.trim() || 'VISITA',
-        shortName: (inputTeam2Name.value.trim() || 'VIS').substring(0, 3).toUpperCase(),
+        shortName: (inputTeam2Name.value.trim() || 'VIS').substring(0, 4).toUpperCase(),
         color: inputTeam2Color.value
       }
     };
@@ -1487,7 +1733,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('update_teams', updatedData);
     socket.emit('set_goal_audio', audioPayload);
 
-    alert('¡Configuración guardada con éxito!');
+    alert(`¡Configuración de ${editingCourt === 'cancha1' ? 'Cancha 1' : 'Cancha 2'} guardada con éxito!`);
     tabBtnLive.click();
   });
 });

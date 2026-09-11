@@ -80,6 +80,29 @@
     <!-- PESTAÑA 1: CONTROL EN VIVO -->
     <main class="tab-content active" id="tabLive">
       
+      <!-- SELECTOR DE CANCHA ACTIVA EN EL CELULAR (CAMBIO DE 1 TOQUE) -->
+      <section class="court-selector-container" id="courtSelectorContainer">
+        <div class="court-selector-header">
+          <div class="court-sel-info">
+            <span class="court-sel-title">ESTÁS CONTROLANDO:</span>
+            <strong class="court-active-tag" id="courtActiveTag">🏟️ CANCHA 1</strong>
+          </div>
+          <span class="court-op-mode" id="courtOpMode">2 Canchas Simultáneas</span>
+        </div>
+        <div class="court-selector-pills">
+          <button type="button" class="btn-court-pill active" id="btnPillCancha1" data-court="cancha1">
+            <div class="pill-court-title">🏟️ Cancha 1</div>
+            <div class="pill-court-match" id="pillMatchC1">LOC 0 - 0 VIS</div>
+            <div class="pill-court-time" id="pillTimeC1">1T • 00:00</div>
+          </button>
+          <button type="button" class="btn-court-pill" id="btnPillCancha2" data-court="cancha2">
+            <div class="pill-court-title">🏟️ Cancha 2</div>
+            <div class="pill-court-match" id="pillMatchC2">LOC 0 - 0 VIS</div>
+            <div class="pill-court-time" id="pillTimeC2">1T • 00:00</div>
+          </button>
+        </div>
+      </section>
+
       <!-- Banner Flotante de Celebración de Gol en el Celular -->
       <div id="mobileGoalBanner" class="mobile-goal-banner" style="display: none;">
         <span class="mobile-goal-ball">⚽</span>
@@ -93,7 +116,7 @@
       <section class="live-preview-card">
         <div class="mini-tournament-bar" id="miniTournamentBar">
           <img src="/assets/tournament-default.png" alt="Torneo" id="miniTournamentLogo" class="mini-tournament-logo">
-          <span id="miniTournamentName">TORNEO DE FÚTBOL</span>
+          <span id="miniTournamentName">IES NUEVO HORIZONTE</span>
         </div>
         <div class="mini-scoreboard-row">
           <div class="mini-team">
@@ -548,6 +571,23 @@
       
       <form id="formTeamsConfig" class="teams-form">
 
+        <!-- MODO DE VISUALIZACIÓN EN LA PANTALLA TV (DUAL O INDIVIDUAL) -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #38bdf8; border-color: #38bdf8;">📺 PANTALLA PRINCIPAL (TV / PROYECTOR)</div>
+          <p class="form-help-text">Elige cómo se muestra el marcador en la pantalla grande:</p>
+          <div class="tv-viewmode-presets">
+            <button type="button" class="btn-tv-viewmode active" id="btnTvDual" data-mode="dual">
+              🏟️ 2 Canchas Simultáneas<br><small>Pantalla Dividida</small>
+            </button>
+            <button type="button" class="btn-tv-viewmode" id="btnTvCancha1" data-mode="cancha1">
+              🏟️ Solo Cancha 1<br><small>Pantalla Completa</small>
+            </button>
+            <button type="button" class="btn-tv-viewmode" id="btnTvCancha2" data-mode="cancha2">
+              🏟️ Solo Cancha 2<br><small>Pantalla Completa</small>
+            </button>
+          </div>
+        </div>
+
         <!-- CONFIGURACIÓN DE AUDIO DE GOL REAL (MARIANO CLOSS / MP3) -->
         <div class="team-config-card">
           <div class="team-config-badge" style="color: #fbbf24; border-color: #fbbf24;">🎙️ AUDIO DE GOL (MARIANO CLOSS)</div>
@@ -683,9 +723,26 @@
           </div>
         </div>
 
+        <!-- SELECTOR DE CANCHA PARA EDITAR EQUIPOS -->
+        <div class="team-config-card">
+          <div class="team-config-badge" style="color: #10b981; border-color: #10b981;">⚽ CONFIGURAR EQUIPOS POR CANCHA</div>
+          <p class="form-help-text">Selecciona qué cancha deseas nombrar y personalizar:</p>
+          <div class="edit-court-selector">
+            <button type="button" class="btn-edit-court active" id="btnEditCourt1" data-court="cancha1">
+              🏟️ Cancha 1 (Local y Visita)
+            </button>
+            <button type="button" class="btn-edit-court" id="btnEditCourt2" data-court="cancha2">
+              🏟️ Cancha 2 (Local y Visita)
+            </button>
+          </div>
+          <div class="editing-court-indicator" id="editingCourtIndicator">
+            Configurando actualmente: <strong id="editingCourtLabel">🏟️ CANCHA 1</strong>
+          </div>
+        </div>
+
         <!-- EQUIPO LOCAL -->
         <div class="team-config-card">
-          <div class="team-config-badge">EQUIPO LOCAL</div>
+          <div class="team-config-badge" id="badgeTeam1Court">EQUIPO LOCAL (CANCHA 1)</div>
           
           <div class="form-group">
             <label class="form-label" for="inputTeam1Name">Nombre del Equipo (Nombre Completo)</label>
@@ -720,7 +777,7 @@
 
         <!-- EQUIPO VISITA -->
         <div class="team-config-card">
-          <div class="team-config-badge visitor">EQUIPO VISITA</div>
+          <div class="team-config-badge visitor" id="badgeTeam2Court">EQUIPO VISITA (CANCHA 1)</div>
           
           <div class="form-group">
             <label class="form-label" for="inputTeam2Name">Nombre del Equipo (Nombre Completo)</label>

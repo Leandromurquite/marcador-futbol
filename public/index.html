@@ -21,8 +21,16 @@
     <header class="top-bar">
       <div class="tournament-badge" id="tournamentBadge" title="Presiona 'Q' en el teclado para abrir QR privado">
         <img src="/assets/tournament-default.png" id="tournamentLogo" class="tournament-logo" alt="Logo Torneo">
-        <span id="tournamentName">TORNEO DE FÚTBOL</span>
+        <span id="tournamentName">IES NUEVO HORIZONTE</span>
       </div>
+
+      <!-- Selector de Modo de Visualización en TV -->
+      <div class="view-mode-selector" id="viewModeSelector">
+        <button type="button" class="btn-view-mode active" data-mode="dual" id="btnViewDual">🏟️ 2 Canchas</button>
+        <button type="button" class="btn-view-mode" data-mode="cancha1" id="btnViewCancha1">Cancha 1</button>
+        <button type="button" class="btn-view-mode" data-mode="cancha2" id="btnViewCancha2">Cancha 2</button>
+      </div>
+
       <div class="broadcast-live">
         <span class="live-dot"></span> EN VIVO
       </div>
@@ -34,143 +42,272 @@
       <button type="button" id="btnUnlockAudio" class="btn-unlock-audio">Activar Sonido</button>
     </div>
 
-    <!-- CRONÓMETRO DEL TIEMPO (ARRIBA AL CENTRO) -->
-    <section class="clock-top-section">
-      <div class="match-center-board" id="matchCenterBoard">
-        <!-- Indicador de Periodo -->
-        <div class="period-badge" id="periodBadge">1T</div>
+    <!-- ESCENARIO PRINCIPAL: 2 CANCHAS SIMULTÁNEAS O PANTALLA COMPLETA -->
+    <div class="courts-stage-wrapper mode-dual" id="courtsStageWrapper">
 
-        <!-- Cronómetro de Juego Principal -->
-        <div class="timer-display" id="timerDisplay">
-          <span class="timer-minutes" id="timerMinutes">00</span>
-          <span class="timer-colon">:</span>
-          <span class="timer-seconds" id="timerSeconds">00</span>
-        </div>
-
-        <!-- Placa de Tiempo Extra / Añadido -->
-        <div class="extra-time-badge" id="extraTimeBadge" style="display: none;">
-          <span class="extra-label">+</span><span id="extraMinutes">3</span>'
-        </div>
-
-        <!-- Estado de tiempo (Pausado / En Juego) -->
-        <div class="timer-status" id="timerStatusText">PAUSADO</div>
-      </div>
-    </section>
-
-    <!-- TARJETAS DE EQUIPOS (MARCADOR PRINCIPAL DEL ENCUENTRO) -->
-    <main class="main-scoreboard">
-      
-      <!-- EQUIPO 1 (LOCAL) -->
-      <div class="team-card team-home" id="cardTeam1">
-        <div class="team-accent" id="accentTeam1"></div>
-        <div class="logo-wrapper">
-          <img src="/assets/team-local.svg" alt="Escudo Local" id="logoTeam1" class="team-logo">
-        </div>
-        <div class="team-info">
-          <!-- Insignia de turno de penal -->
-          <div class="turn-kicking-tag" id="turnTagTeam1" style="display: none;">
-            <span class="pulse-fire">⚡</span> PATEANDO
+      <!-- ==================== CANCHA 1 ==================== -->
+      <div class="court-arena-box" id="courtBox1" data-court="cancha1">
+        
+        <!-- Cabecera de Cancha 1 con Cronómetro -->
+        <div class="court-top-strip">
+          <div class="court-identity-pill pill-c1">
+            <span class="court-dot dot-c1"></span>
+            <span class="court-title-text" id="courtTitle1">CANCHA 1</span>
           </div>
-          <!-- Nombre completo sin truncar -->
-          <h2 class="team-name" id="nameTeam1">EQUIPO LOCAL</h2>
-          <span class="team-tag">LOCAL</span>
-        </div>
-        <div class="score-box">
-          <span class="score-number" id="scoreTeam1">0</span>
-        </div>
-      </div>
 
-      <!-- SEPARADOR CENTRAL VS -->
-      <div class="match-vs-divider">
-        <span class="vs-text">VS</span>
-      </div>
-
-      <!-- EQUIPO 2 (VISITA) -->
-      <div class="team-card team-away" id="cardTeam2">
-        <div class="score-box">
-          <span class="score-number" id="scoreTeam2">0</span>
-        </div>
-        <div class="team-info">
-          <!-- Insignia de turno de penal -->
-          <div class="turn-kicking-tag" id="turnTagTeam2" style="display: none;">
-            <span class="pulse-fire">⚡</span> PATEANDO
+          <div class="court-clock-pill" id="matchCenterBoard1">
+            <div class="period-badge" id="periodBadge1">1T</div>
+            <div class="timer-display" id="timerDisplay1">
+              <span class="timer-minutes" id="timerMinutes1">00</span>
+              <span class="timer-colon">:</span>
+              <span class="timer-seconds" id="timerSeconds1">00</span>
+            </div>
+            <div class="extra-time-badge" id="extraTimeBadge1" style="display: none;">
+              <span class="extra-label">+</span><span id="extraMinutes1">3</span>'
+            </div>
+            <div class="timer-status" id="timerStatusText1">PAUSADO</div>
           </div>
-          <!-- Nombre completo sin truncar -->
-          <h2 class="team-name" id="nameTeam2">EQUIPO VISITA</h2>
-          <span class="team-tag">VISITA</span>
         </div>
-        <div class="logo-wrapper">
-          <img src="/assets/team-visita.svg" alt="Escudo Visita" id="logoTeam2" class="team-logo">
-        </div>
-        <div class="team-accent" id="accentTeam2"></div>
-      </div>
 
-    </main>
-
-    <!-- TABLERO DE TANDA DE PENALES (ABAJO DEL MARCADOR DEL ENCUENTRO) -->
-    <section class="penalty-broadcast-board" id="penaltyMainBoard" style="display: none;">
-      <div class="pen-board-header">
-        <div class="pen-header-left">
-          <span class="pen-live-pulse-badge">⚡ DEFINICIÓN POR PENALES</span>
-          <span class="pen-rules-tag">REGLAMENTO FIFA (5 TIROS)</span>
-        </div>
-        <div class="pen-status-line" id="penaltyStatusLine">RONDA 1 DE 5 • TURNO DE: EQUIPO LOCAL</div>
-        <div class="pen-header-right">
-          <span class="pen-aggregate-label">PENALES:</span>
-          <span class="pen-aggregate-value" id="penaltyAggregateScore">0 - 0</span>
-        </div>
-      </div>
-
-      <div class="pen-teams-shootout">
-        <!-- Fila Equipo 1 (Local) -->
-        <div class="pen-team-row" id="penRowTeam1">
-          <div class="pen-team-identity">
-            <div class="pen-row-accent" id="penAccent1"></div>
-            <img src="/assets/team-local.svg" alt="" id="penBoardLogo1" class="pen-board-logo">
-            <div class="pen-name-wrap">
-              <span class="pen-board-name" id="penBoardName1">EQUIPO LOCAL</span>
-              <span class="pen-kicker-indicator" id="penKickerTag1" style="display: none;">⚡ PATEANDO AHORA</span>
+        <!-- Marcador Principal Cancha 1 -->
+        <div class="main-scoreboard court-scoreboard" id="scoreboardC1">
+          <!-- Cancha 1 - Equipo 1 (Local) -->
+          <div class="team-card team-home" id="cardC1Team1">
+            <div class="team-accent" id="accentC1Team1"></div>
+            <div class="logo-wrapper">
+              <img src="/assets/team-local.svg" alt="Local" id="logoC1Team1" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="turn-kicking-tag" id="turnTagC1Team1" style="display: none;">
+                <span class="pulse-fire">⚡</span> PATEANDO
+              </div>
+              <h2 class="team-name" id="nameC1Team1">EQUIPO A (C1)</h2>
+              <span class="team-tag">LOCAL</span>
+            </div>
+            <div class="score-box">
+              <span class="score-number" id="scoreC1Team1">0</span>
             </div>
           </div>
-          <div class="pen-shots-strip" id="penShotsStrip1">
-            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+
+          <!-- Separador VS Cancha 1 -->
+          <div class="match-vs-divider">
+            <span class="vs-text">VS</span>
           </div>
-          <div class="pen-total-box">
-            <span class="pen-total-label">GOLES</span>
-            <span class="pen-total-number" id="penBoardScore1">0</span>
+
+          <!-- Cancha 1 - Equipo 2 (Visita) -->
+          <div class="team-card team-away" id="cardC1Team2">
+            <div class="score-box">
+              <span class="score-number" id="scoreC1Team2">0</span>
+            </div>
+            <div class="team-info">
+              <div class="turn-kicking-tag" id="turnTagC1Team2" style="display: none;">
+                <span class="pulse-fire">⚡</span> PATEANDO
+              </div>
+              <h2 class="team-name" id="nameC1Team2">EQUIPO B (C1)</h2>
+              <span class="team-tag">VISITA</span>
+            </div>
+            <div class="logo-wrapper">
+              <img src="/assets/team-visita.svg" alt="Visita" id="logoC1Team2" class="team-logo">
+            </div>
+            <div class="team-accent" id="accentC1Team2"></div>
           </div>
         </div>
 
-        <!-- Fila Equipo 2 (Visita) -->
-        <div class="pen-team-row" id="penRowTeam2">
-          <div class="pen-team-identity">
-            <div class="pen-row-accent" id="penAccent2"></div>
-            <img src="/assets/team-visita.svg" alt="" id="penBoardLogo2" class="pen-board-logo">
-            <div class="pen-name-wrap">
-              <span class="pen-board-name" id="penBoardName2">EQUIPO VISITA</span>
-              <span class="pen-kicker-indicator" id="penKickerTag2" style="display: none;">⚡ PATEANDO AHORA</span>
+        <!-- Tablero de Penales Cancha 1 -->
+        <section class="penalty-broadcast-board" id="penaltyBoard1" style="display: none;">
+          <div class="pen-board-header">
+            <div class="pen-header-left">
+              <span class="pen-live-pulse-badge">⚡ PENALES C1</span>
+              <span class="pen-rules-tag">REGLAMENTO FIFA</span>
+            </div>
+            <div class="pen-status-line" id="penStatusLine1">RONDA 1 DE 5 • TURNO DE: LOCAL</div>
+            <div class="pen-header-right">
+              <span class="pen-aggregate-label">PENALES:</span>
+              <span class="pen-aggregate-value" id="penAggregateScore1">0 - 0</span>
             </div>
           </div>
-          <div class="pen-shots-strip" id="penShotsStrip2">
-            <!-- 5 bolitas/cajas numeradas inyectadas dinámicamente por JS -->
+
+          <div class="pen-teams-shootout">
+            <!-- Fila Local Cancha 1 -->
+            <div class="pen-team-row" id="penRowC1Team1">
+              <div class="pen-team-identity">
+                <div class="pen-row-accent" id="penAccentC1Team1"></div>
+                <img src="/assets/team-local.svg" alt="" id="penLogoC1Team1" class="pen-board-logo">
+                <div class="pen-name-wrap">
+                  <span class="pen-board-name" id="penNameC1Team1">EQUIPO A (C1)</span>
+                  <span class="pen-kicker-indicator" id="penKickerTagC1Team1" style="display: none;">⚡ PATEANDO</span>
+                </div>
+              </div>
+              <div class="pen-shots-strip" id="penShotsStripC1Team1"></div>
+              <div class="pen-total-box">
+                <span class="pen-total-label">GOLES</span>
+                <span class="pen-total-number" id="penScoreC1Team1">0</span>
+              </div>
+            </div>
+
+            <!-- Fila Visita Cancha 1 -->
+            <div class="pen-team-row" id="penRowC1Team2">
+              <div class="pen-team-identity">
+                <div class="pen-row-accent" id="penAccentC1Team2"></div>
+                <img src="/assets/team-visita.svg" alt="" id="penLogoC1Team2" class="pen-board-logo">
+                <div class="pen-name-wrap">
+                  <span class="pen-board-name" id="penNameC1Team2">EQUIPO B (C1)</span>
+                  <span class="pen-kicker-indicator" id="penKickerTagC1Team2" style="display: none;">⚡ PATEANDO</span>
+                </div>
+              </div>
+              <div class="pen-shots-strip" id="penShotsStripC1Team2"></div>
+              <div class="pen-total-box">
+                <span class="pen-total-label">GOLES</span>
+                <span class="pen-total-number" id="penScoreC1Team2">0</span>
+              </div>
+            </div>
           </div>
-          <div class="pen-total-box">
-            <span class="pen-total-label">GOLES</span>
-            <span class="pen-total-number" id="penBoardScore2">0</span>
+
+          <!-- Ganador Penales Cancha 1 -->
+          <div class="penalty-winner-banner" id="penWinnerBanner1" style="display: none;">
+            <span class="trophy-emoji">🏆</span>
+            <div class="winner-info-wrap">
+              <span class="winner-title-text" id="penWinnerMsg1">¡GANADOR POR PENALES: EQUIPO A!</span>
+              <span class="winner-sub-text" id="penWinnerSub1">Serie finalizada matemáticamente</span>
+            </div>
+            <span class="trophy-emoji">🏆</span>
           </div>
-        </div>
+        </section>
+
       </div>
 
-      <!-- Banner de Ganador Definido -->
-      <div class="penalty-winner-banner" id="penaltyWinnerBanner" style="display: none;">
-        <span class="trophy-emoji">🏆</span>
-        <div class="winner-info-wrap">
-          <span class="winner-title-text" id="penaltyWinnerMessage">¡GANADOR POR PENALES: EQUIPO LOCAL!</span>
-          <span class="winner-sub-text" id="penaltyWinnerSub">Serie finalizada matemáticamente • ¡Campeón / Clasificado!</span>
+      <!-- ==================== CANCHA 2 ==================== -->
+      <div class="court-arena-box" id="courtBox2" data-court="cancha2">
+        
+        <!-- Cabecera de Cancha 2 con Cronómetro -->
+        <div class="court-top-strip">
+          <div class="court-identity-pill pill-c2">
+            <span class="court-dot dot-c2"></span>
+            <span class="court-title-text" id="courtTitle2">CANCHA 2</span>
+          </div>
+
+          <div class="court-clock-pill" id="matchCenterBoard2">
+            <div class="period-badge" id="periodBadge2">1T</div>
+            <div class="timer-display" id="timerDisplay2">
+              <span class="timer-minutes" id="timerMinutes2">00</span>
+              <span class="timer-colon">:</span>
+              <span class="timer-seconds" id="timerSeconds2">00</span>
+            </div>
+            <div class="extra-time-badge" id="extraTimeBadge2" style="display: none;">
+              <span class="extra-label">+</span><span id="extraMinutes2">3</span>'
+            </div>
+            <div class="timer-status" id="timerStatusText2">PAUSADO</div>
+          </div>
         </div>
-        <span class="trophy-emoji">🏆</span>
+
+        <!-- Marcador Principal Cancha 2 -->
+        <div class="main-scoreboard court-scoreboard" id="scoreboardC2">
+          <!-- Cancha 2 - Equipo 1 (Local) -->
+          <div class="team-card team-home" id="cardC2Team1">
+            <div class="team-accent" id="accentC2Team1"></div>
+            <div class="logo-wrapper">
+              <img src="/assets/team-local.svg" alt="Local" id="logoC2Team1" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="turn-kicking-tag" id="turnTagC2Team1" style="display: none;">
+                <span class="pulse-fire">⚡</span> PATEANDO
+              </div>
+              <h2 class="team-name" id="nameC2Team1">EQUIPO C (C2)</h2>
+              <span class="team-tag">LOCAL</span>
+            </div>
+            <div class="score-box">
+              <span class="score-number" id="scoreC2Team1">0</span>
+            </div>
+          </div>
+
+          <!-- Separador VS Cancha 2 -->
+          <div class="match-vs-divider">
+            <span class="vs-text">VS</span>
+          </div>
+
+          <!-- Cancha 2 - Equipo 2 (Visita) -->
+          <div class="team-card team-away" id="cardC2Team2">
+            <div class="score-box">
+              <span class="score-number" id="scoreC2Team2">0</span>
+            </div>
+            <div class="team-info">
+              <div class="turn-kicking-tag" id="turnTagC2Team2" style="display: none;">
+                <span class="pulse-fire">⚡</span> PATEANDO
+              </div>
+              <h2 class="team-name" id="nameC2Team2">EQUIPO D (C2)</h2>
+              <span class="team-tag">VISITA</span>
+            </div>
+            <div class="logo-wrapper">
+              <img src="/assets/team-visita.svg" alt="Visita" id="logoC2Team2" class="team-logo">
+            </div>
+            <div class="team-accent" id="accentC2Team2"></div>
+          </div>
+        </div>
+
+        <!-- Tablero de Penales Cancha 2 -->
+        <section class="penalty-broadcast-board" id="penaltyBoard2" style="display: none;">
+          <div class="pen-board-header">
+            <div class="pen-header-left">
+              <span class="pen-live-pulse-badge">⚡ PENALES C2</span>
+              <span class="pen-rules-tag">REGLAMENTO FIFA</span>
+            </div>
+            <div class="pen-status-line" id="penStatusLine2">RONDA 1 DE 5 • TURNO DE: LOCAL</div>
+            <div class="pen-header-right">
+              <span class="pen-aggregate-label">PENALES:</span>
+              <span class="pen-aggregate-value" id="penAggregateScore2">0 - 0</span>
+            </div>
+          </div>
+
+          <div class="pen-teams-shootout">
+            <!-- Fila Local Cancha 2 -->
+            <div class="pen-team-row" id="penRowC2Team1">
+              <div class="pen-team-identity">
+                <div class="pen-row-accent" id="penAccentC2Team1"></div>
+                <img src="/assets/team-local.svg" alt="" id="penLogoC2Team1" class="pen-board-logo">
+                <div class="pen-name-wrap">
+                  <span class="pen-board-name" id="penNameC2Team1">EQUIPO C (C2)</span>
+                  <span class="pen-kicker-indicator" id="penKickerTagC2Team1" style="display: none;">⚡ PATEANDO</span>
+                </div>
+              </div>
+              <div class="pen-shots-strip" id="penShotsStripC2Team1"></div>
+              <div class="pen-total-box">
+                <span class="pen-total-label">GOLES</span>
+                <span class="pen-total-number" id="penScoreC2Team1">0</span>
+              </div>
+            </div>
+
+            <!-- Fila Visita Cancha 2 -->
+            <div class="pen-team-row" id="penRowC2Team2">
+              <div class="pen-team-identity">
+                <div class="pen-row-accent" id="penAccentC2Team2"></div>
+                <img src="/assets/team-visita.svg" alt="" id="penLogoC2Team2" class="pen-board-logo">
+                <div class="pen-name-wrap">
+                  <span class="pen-board-name" id="penNameC2Team2">EQUIPO D (C2)</span>
+                  <span class="pen-kicker-indicator" id="penKickerTagC2Team2" style="display: none;">⚡ PATEANDO</span>
+                </div>
+              </div>
+              <div class="pen-shots-strip" id="penShotsStripC2Team2"></div>
+              <div class="pen-total-box">
+                <span class="pen-total-label">GOLES</span>
+                <span class="pen-total-number" id="penScoreC2Team2">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ganador Penales Cancha 2 -->
+          <div class="penalty-winner-banner" id="penWinnerBanner2" style="display: none;">
+            <span class="trophy-emoji">🏆</span>
+            <div class="winner-info-wrap">
+              <span class="winner-title-text" id="penWinnerMsg2">¡GANADOR POR PENALES: EQUIPO C!</span>
+              <span class="winner-sub-text" id="penWinnerSub2">Serie finalizada matemáticamente</span>
+            </div>
+            <span class="trophy-emoji">🏆</span>
+          </div>
+        </section>
+
       </div>
-    </section>
+
+    </div>
 
     <!-- Barra Inferior Limpia -->
     <footer class="bottom-bar">
@@ -220,6 +357,7 @@
   <div class="goal-overlay" id="goalOverlay" style="display: none;">
     <div class="goal-burst"></div>
     <div class="goal-content">
+      <div class="goal-court-badge" id="goalCourtBadge">🏟️ CANCHA 1</div>
       <div class="goal-team-logo-wrap">
         <img src="" alt="" id="goalTeamLogo" class="goal-team-logo">
       </div>
@@ -233,8 +371,9 @@
   <div class="match-concluded-overlay" id="matchFinishedOverlay" style="display: none;">
     <div class="concluded-content">
       <button type="button" class="btn-close-concluded" id="btnCloseConcluded">&times;</button>
-      <div class="concluded-top-badge">🏁 RESULTADO FINAL • PARTIDO CONCLUIDO</div>
-      <div class="concluded-tournament" id="concludedTournament">TORNEO DE FÚTBOL</div>
+      <div class="concluded-top-badge" id="concludedTopBadge">🏁 RESULTADO FINAL • PARTIDO CONCLUIDO</div>
+      <div class="concluded-court-badge" id="concludedCourtBadge">🏟️ CANCHA 1</div>
+      <div class="concluded-tournament" id="concludedTournament">IES NUEVO HORIZONTE</div>
       
       <div class="concluded-scoreboard-card">
         <!-- Local -->

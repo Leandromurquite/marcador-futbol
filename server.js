@@ -120,13 +120,54 @@ function getRandomGoalClip() {
   return goalClips[Math.floor(Math.random() * goalClips.length)];
 }
 
-// Estado global del partido
+// Función para instanciar el estado individual de una cancha
+function createCourtState(courtName, t1Name, t1Color, t2Name, t2Color) {
+  return {
+    name: courtName,
+    team1: {
+      name: t1Name,
+      shortName: t1Name.substring(0, 4).toUpperCase(),
+      logo: '/assets/team-local.svg',
+      color: t1Color,
+      score: 0
+    },
+    team2: {
+      name: t2Name,
+      shortName: t2Name.substring(0, 4).toUpperCase(),
+      logo: '/assets/team-visita.svg',
+      color: t2Color,
+      score: 0
+    },
+    timer: {
+      seconds: 0,
+      isRunning: false,
+      period: '1T',
+      extraTime: 0
+    },
+    penalties: {
+      enabled: false,
+      firstKicker: 'team1', // 'team1' | 'team2'
+      currentTurn: 'team1', // 'team1' | 'team2' | null
+      currentRound: 1,      // 1..5, 6...
+      team1: ['pending', 'pending', 'pending', 'pending', 'pending'],
+      team2: ['pending', 'pending', 'pending', 'pending', 'pending'],
+      score1: 0,
+      score2: 0,
+      winner: null,      // 'team1' | 'team2' | null
+      winnerName: null,  // Nombre del equipo ganador
+      isFinished: false  // true si matemáticamente ya terminó
+    }
+  };
+}
+
+// Estado global del torneo con soporte para 2 partidos en simultáneo
 let matchState = {
-  tournament: 'TORNEO DE FÚTBOL',
+  tournament: 'IES NUEVO HORIZONTE',
   tournamentLogo: '/assets/tournament-default.png',
   pin: '1234',
   halfDurationMinutes: 12,
   theme: 'night', // 'night' | 'sunny' | 'cloudy' | 'sunset' | 'grass' | 'high-contrast'
+  viewMode: 'dual', // 'dual' (pantalla dividida 2 canchas) | 'cancha1' | 'cancha2'
   crowdAmbiance: {
     enabled: true,
     isPlaying: false,
@@ -140,46 +181,48 @@ let matchState = {
     selectedClip: '/assets/sounds/closs-cantalo.mp3',
     name: 'Mariano Closs (Aleatorio - Variar Frases)'
   },
-  team1: {
-    name: 'EQUIPO LOCAL',
-    shortName: 'LOC',
-    logo: '/assets/team-local.svg',
-    color: '#00d2ff',
-    score: 0
-  },
-  team2: {
-    name: 'EQUIPO VISITA',
-    shortName: 'VIS',
-    logo: '/assets/team-visita.svg',
-    color: '#ff3366',
-    score: 0
-  },
-  timer: {
-    seconds: 0,
-    isRunning: false,
-    period: '1T',
-    extraTime: 0
-  },
-  penalties: {
-    enabled: false,
-    firstKicker: 'team1', // 'team1' | 'team2'
-    currentTurn: 'team1', // 'team1' | 'team2' | null
-    currentRound: 1,      // 1..5, 6...
-    team1: ['pending', 'pending', 'pending', 'pending', 'pending'],
-    team2: ['pending', 'pending', 'pending', 'pending', 'pending'],
-    score1: 0,
-    score2: 0,
-    winner: null,      // 'team1' | 'team2' | null
-    winnerName: null,  // Nombre del equipo ganador
-    isFinished: false  // true si matemáticamente ya terminó
-  }
+  cancha1: createCourtState('Cancha 1', 'EQUIPO A (C1)', '#00d2ff', 'EQUIPO B (C1)', '#38bdf8'),
+  cancha2: createCourtState('Cancha 2', 'EQUIPO C (C2)', '#f59e0b', 'EQUIPO D (C2)', '#ef4444')
 };
+
+// Delegados hacia cancha1 para compatibilidad retrospectiva con clientes o tests legados
+Object.defineProperty(matchState, 'team1', {
+  get() { return this.cancha1.team1; },
+  set(v) { this.cancha1.team1 = v; },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(matchState, 'team2', {
+  get() { return this.cancha1.team2; },
+  set(v) { this.cancha1.team2 = v; },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(matchState, 'timer', {
+  get() { return this.cancha1.timer; },
+  set(v) { this.cancha1.timer = v; },
+  enumerable: true,
+  configurable: true
+});
+Object.defineProperty(matchState, 'penalties', {
+  get() { return this.cancha1.penalties; },
+  set(v) { this.cancha1.penalties = v; },
+  enumerable: true,
+  configurable: true
+});
+
+// Selector de cancha según datos recibidos
+function resolveCourt(data) {
+  const cKey = (data && (data.cancha === 'cancha2' || data.cancha === '2' || data.court === 'cancha2' || data.court === '2')) ? 'cancha2' : 'cancha1';
+  return { key: cKey, court: matchState[cKey] };
+}
 
 // =========================================================================
 // LÓGICA REGLAMENTARIA DE PENALES (REGLAS OFICIALES FIFA CON TURNOS ALTERNOS)
 // =========================================================================
-function evaluatePenalties(state) {
-  const p = state.penalties;
+function evaluatePenalties(target) {
+  const court = (target && target.penalties) ? target : (matchState[target] || matchState.cancha1);
+  const p = court.penalties;
   const t1 = p.team1;
   const t2 = p.team2;
   const first = p.firstKicker || 'team1';
@@ -200,8 +243,7 @@ function evaluatePenalties(state) {
     const rem1 = 5 - taken1;
     const rem2 = 5 - taken2;
 
-    // Condición de imposibilidad matemática:
-    // Si un equipo tiene más goles que los que el rival puede alcanzar sumando todos sus tiros restantes
+    // Condición de imposibilidad matemática
     if (score1 > score2 + rem2) {
       winner = 'team1';
       isFinished = true;
@@ -216,7 +258,7 @@ function evaluatePenalties(state) {
         winner = 'team2';
         isFinished = true;
       } else {
-        // Empate a 5 goles -> Iniciar Muerte Súbita (tiro 6)
+        // Empate a 5 goles -> Muerte Súbita
         t1.push('pending');
         t2.push('pending');
         isFinished = false;
@@ -225,7 +267,6 @@ function evaluatePenalties(state) {
     }
   } else {
     // 2. Muerte Súbita (Tiros 6 en adelante)
-    // Se decide únicamente cuando ambos equipos patearon el mismo número de tiros (por pares)
     if (taken1 === taken2 && taken1 >= 5) {
       if (score1 > score2) {
         winner = 'team1';
@@ -234,7 +275,6 @@ function evaluatePenalties(state) {
         winner = 'team2';
         isFinished = true;
       } else if (taken1 === t1.length) {
-        // Siguen empatados tras el par de tiros -> Agregar siguiente tiro
         t1.push('pending');
         t2.push('pending');
         isFinished = false;
@@ -245,7 +285,7 @@ function evaluatePenalties(state) {
 
   p.winner = winner;
   p.isFinished = isFinished;
-  p.winnerName = winner === 'team1' ? state.team1.name : (winner === 'team2' ? state.team2.name : null);
+  p.winnerName = winner === 'team1' ? court.team1.name : (winner === 'team2' ? court.team2.name : null);
 
   // Determinar turno actual y número de ronda
   if (isFinished) {
@@ -285,11 +325,29 @@ let timerInterval = null;
 function startServerTimer() {
   if (timerInterval) return;
   timerInterval = setInterval(() => {
-    if (matchState.timer.isRunning) {
-      matchState.timer.seconds++;
+    let tickNeeded = false;
+    if (matchState.cancha1 && matchState.cancha1.timer && matchState.cancha1.timer.isRunning) {
+      matchState.cancha1.timer.seconds++;
+      tickNeeded = true;
+    }
+    if (matchState.cancha2 && matchState.cancha2.timer && matchState.cancha2.timer.isRunning) {
+      matchState.cancha2.timer.seconds++;
+      tickNeeded = true;
+    }
+    if (tickNeeded) {
       io.emit('timer_tick', {
-        seconds: matchState.timer.seconds,
-        isRunning: matchState.timer.isRunning
+        cancha: 'both',
+        cancha1: {
+          seconds: matchState.cancha1.timer.seconds,
+          isRunning: matchState.cancha1.timer.isRunning
+        },
+        cancha2: {
+          seconds: matchState.cancha2.timer.seconds,
+          isRunning: matchState.cancha2.timer.isRunning
+        },
+        // Compatibilidad retrospectiva con oyentes legados
+        seconds: matchState.cancha1.timer.seconds,
+        isRunning: matchState.cancha1.timer.isRunning
       });
     }
   }, 1000);
@@ -373,8 +431,10 @@ app.get('/api/history', (req, res) => {
   }
 });
 
-// Función auxiliar para construir el registro oficial del partido actual
-function buildCurrentMatchRecord() {
+// Función auxiliar para construir el registro oficial del partido actual (admite cancha1 o cancha2)
+function buildCurrentMatchRecord(courtKey = 'cancha1') {
+  const cKey = (courtKey === 'cancha2' || courtKey === '2') ? 'cancha2' : 'cancha1';
+  const court = matchState[cKey] || matchState.cancha1;
   const now = new Date();
   const dateFormatted = now.toLocaleDateString('es-AR', {
     weekday: 'long',
@@ -387,18 +447,18 @@ function buildCurrentMatchRecord() {
   let winnerName = null;
   let winnerType = 'regular';
 
-  const p = matchState.penalties;
+  const p = court.penalties;
   if (p && p.enabled && p.winner) {
     winner = p.winner;
-    winnerName = p.winnerName || matchState[p.winner].name;
+    winnerName = p.winnerName || court[p.winner].name;
     winnerType = 'penalties';
-  } else if (matchState.team1.score > matchState.team2.score) {
+  } else if (court.team1.score > court.team2.score) {
     winner = 'team1';
-    winnerName = matchState.team1.name;
+    winnerName = court.team1.name;
     winnerType = 'regular';
-  } else if (matchState.team2.score > matchState.team1.score) {
+  } else if (court.team2.score > court.team1.score) {
     winner = 'team2';
-    winnerName = matchState.team2.name;
+    winnerName = court.team2.name;
     winnerType = 'regular';
   } else {
     winner = 'draw';
@@ -407,15 +467,17 @@ function buildCurrentMatchRecord() {
   }
 
   return {
-    id: 'match-' + Date.now(),
+    id: 'match-' + cKey + '-' + Date.now(),
+    courtKey: cKey,
+    courtName: court.name,
     timestamp: now.toISOString(),
     dateFormatted,
-    tournament: matchState.tournament,
+    tournament: matchState.tournament || 'IES NUEVO HORIZONTE',
     tournamentLogo: matchState.tournamentLogo,
-    team1: { ...matchState.team1 },
-    team2: { ...matchState.team2 },
-    timer: { ...matchState.timer },
-    penalties: JSON.parse(JSON.stringify(matchState.penalties)),
+    team1: { ...court.team1 },
+    team2: { ...court.team2 },
+    timer: { ...court.timer },
+    penalties: JSON.parse(JSON.stringify(court.penalties)),
     winner,
     winnerName,
     winnerType
@@ -425,9 +487,10 @@ function buildCurrentMatchRecord() {
 // Descarga directa de Acta en PDF (en cualquier momento)
 app.get('/api/report/pdf', async (req, res) => {
   try {
-    const record = buildCurrentMatchRecord();
+    const courtKey = (req.query.cancha === 'cancha2' || req.query.cancha === '2') ? 'cancha2' : 'cancha1';
+    const record = buildCurrentMatchRecord(courtKey);
     const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
-    const filename = `Acta_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}.pdf`;
+    const filename = `Acta_${courtKey.toUpperCase()}_${sanitize(record.team1.name)}_vs_${sanitize(record.team2.name)}.pdf`;
     const tempPath = path.join(reportsDir, `temp_${Date.now()}_${filename}`);
     await generateMatchPdf(record, tempPath);
     res.download(tempPath, filename, (err) => {
@@ -444,9 +507,10 @@ app.get('/api/report/pdf', async (req, res) => {
 // Descarga directa de Planilla en Excel (en cualquier momento)
 app.get('/api/report/excel', (req, res) => {
   try {
-    const record = buildCurrentMatchRecord();
+    const courtKey = (req.query.cancha === 'cancha2' || req.query.cancha === '2') ? 'cancha2' : 'cancha1';
+    const record = buildCurrentMatchRecord(courtKey);
     const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
-    const filename = `Planilla_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}.xlsx`;
+    const filename = `Planilla_${courtKey.toUpperCase()}_${sanitize(record.team1.name)}_vs_${sanitize(record.team2.name)}.xlsx`;
     const tempPath = path.join(reportsDir, `temp_${Date.now()}_${filename}`);
     generateMatchExcel(record, tempPath);
     res.download(tempPath, filename, (err) => {
@@ -473,10 +537,19 @@ app.get('/marcador', (req, res) => {
 io.on('connection', (socket) => {
   socket.emit('sync_state', matchState);
 
-  // Actualizar goles
+  // Modo de visualización de pantalla TV ('dual' | 'cancha1' | 'cancha2')
+  socket.on('set_view_mode', (data) => {
+    if (data && ['dual', 'cancha1', 'cancha2'].includes(data.mode)) {
+      matchState.viewMode = data.mode;
+      io.emit('view_mode_updated', { viewMode: matchState.viewMode });
+    }
+  });
+
+  // Actualizar goles (admite data.cancha)
   socket.on('update_score', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
     if (data.team === 'team1' || data.team === 'team2') {
-      const team = matchState[data.team];
+      const team = court[data.team];
       const previousScore = team.score;
       if (typeof data.score === 'number') {
         team.score = Math.max(0, data.score);
@@ -485,8 +558,11 @@ io.on('connection', (socket) => {
       }
 
       io.emit('score_updated', {
+        cancha: cKey,
         team: data.team,
         score: team.score,
+        courtScore1: court.team1.score,
+        courtScore2: court.team2.score,
         state: matchState
       });
 
@@ -499,12 +575,14 @@ io.on('connection', (socket) => {
         }
 
         io.emit('goal_celebration', {
+          cancha: cKey,
+          courtName: court.name,
           teamKey: data.team,
           teamName: team.name,
           teamColor: team.color,
           teamLogo: team.logo,
-          score1: matchState.team1.score,
-          score2: matchState.team2.score,
+          score1: court.team1.score,
+          score2: court.team2.score,
           goalAudio: {
             ...matchState.goalAudio,
             customUrl: clipToPlay
@@ -514,73 +592,91 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Cronómetro
-  socket.on('timer_toggle', () => {
-    matchState.timer.isRunning = !matchState.timer.isRunning;
+  // Cronómetro (iniciar/pausar por cancha)
+  socket.on('timer_toggle', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
+    court.timer.isRunning = !court.timer.isRunning;
     io.emit('timer_state', {
-      seconds: matchState.timer.seconds,
-      isRunning: matchState.timer.isRunning
+      cancha: cKey,
+      seconds: court.timer.seconds,
+      isRunning: court.timer.isRunning,
+      cancha1: { seconds: matchState.cancha1.timer.seconds, isRunning: matchState.cancha1.timer.isRunning },
+      cancha2: { seconds: matchState.cancha2.timer.seconds, isRunning: matchState.cancha2.timer.isRunning }
     });
     if (matchState.crowdAmbiance.enabled && matchState.crowdAmbiance.autoWithTimer) {
-      matchState.crowdAmbiance.isPlaying = matchState.timer.isRunning;
+      const anyRunning = matchState.cancha1.timer.isRunning || matchState.cancha2.timer.isRunning;
+      matchState.crowdAmbiance.isPlaying = anyRunning;
       io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
     }
   });
 
   socket.on('timer_set', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
     if (typeof data.seconds === 'number') {
-      matchState.timer.seconds = Math.max(0, data.seconds);
+      court.timer.seconds = Math.max(0, data.seconds);
       if (typeof data.isRunning === 'boolean') {
-        matchState.timer.isRunning = data.isRunning;
+        court.timer.isRunning = data.isRunning;
       }
       io.emit('timer_state', {
-        seconds: matchState.timer.seconds,
-        isRunning: matchState.timer.isRunning
+        cancha: cKey,
+        seconds: court.timer.seconds,
+        isRunning: court.timer.isRunning,
+        cancha1: { seconds: matchState.cancha1.timer.seconds, isRunning: matchState.cancha1.timer.isRunning },
+        cancha2: { seconds: matchState.cancha2.timer.seconds, isRunning: matchState.cancha2.timer.isRunning }
       });
     }
   });
 
-  socket.on('timer_reset', () => {
-    matchState.timer.seconds = 0;
-    matchState.timer.isRunning = false;
+  socket.on('timer_reset', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
+    court.timer.seconds = 0;
+    court.timer.isRunning = false;
     io.emit('timer_state', {
+      cancha: cKey,
       seconds: 0,
-      isRunning: false
+      isRunning: false,
+      cancha1: { seconds: matchState.cancha1.timer.seconds, isRunning: matchState.cancha1.timer.isRunning },
+      cancha2: { seconds: matchState.cancha2.timer.seconds, isRunning: matchState.cancha2.timer.isRunning }
     });
     if (matchState.crowdAmbiance.autoWithTimer) {
-      matchState.crowdAmbiance.isPlaying = false;
+      const anyRunning = matchState.cancha1.timer.isRunning || matchState.cancha2.timer.isRunning;
+      matchState.crowdAmbiance.isPlaying = anyRunning;
       io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
     }
   });
 
-  // Periodos
+  // Periodos (por cancha)
   socket.on('set_period', (data) => {
     if (data && data.period) {
-      matchState.timer.period = data.period;
+      const { key: cKey, court } = resolveCourt(data);
+      court.timer.period = data.period;
 
       if (data.period === 'Penales') {
-        matchState.penalties.enabled = true;
+        court.penalties.enabled = true;
       } else {
-        // Al regresar a periodos regulares o finalizar, ocultar tablero de penales de la TV
-        matchState.penalties.enabled = false;
+        court.penalties.enabled = false;
       }
 
       if (data.autoSetTime) {
         const halfSeconds = (matchState.halfDurationMinutes || 12) * 60;
-        if (data.period === '2T' && matchState.timer.seconds < halfSeconds) {
-          matchState.timer.seconds = halfSeconds;
-        } else if (data.period === '1T' && matchState.timer.seconds === 0) {
-          matchState.timer.seconds = 0;
+        if (data.period === '2T' && court.timer.seconds < halfSeconds) {
+          court.timer.seconds = halfSeconds;
+        } else if (data.period === '1T' && court.timer.seconds === 0) {
+          court.timer.seconds = 0;
         }
       }
 
       io.emit('period_updated', {
-        period: matchState.timer.period,
-        seconds: matchState.timer.seconds,
-        isRunning: matchState.timer.isRunning,
-        penalties: matchState.penalties
+        cancha: cKey,
+        period: court.timer.period,
+        seconds: court.timer.seconds,
+        isRunning: court.timer.isRunning,
+        penalties: court.penalties
       });
-      io.emit('penalties_updated', matchState.penalties);
+      io.emit('penalties_updated', {
+        cancha: cKey,
+        penalties: court.penalties
+      });
     }
   });
 
@@ -596,33 +692,35 @@ io.on('connection', (socket) => {
 
   // Tiempo extra (personalizado para demoras / pelota perdida)
   socket.on('set_extra_time', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
     if (typeof data.minutes === 'number') {
-      matchState.timer.extraTime = Math.max(0, Math.min(60, Math.round(data.minutes)));
+      court.timer.extraTime = Math.max(0, Math.min(60, Math.round(data.minutes)));
       io.emit('extra_time_updated', {
-        extraTime: matchState.timer.extraTime
+        cancha: cKey,
+        extraTime: court.timer.extraTime
       });
     }
   });
 
-  // CONTROL DE PENALES CON LÓGICA FIFA Y TURNOS ALTERNADOS
+  // CONTROL DE PENALES CON LÓGICA FIFA Y TURNOS ALTERNADOS (POR CANCHA)
   socket.on('set_penalty_shot', (data) => {
-    // data: { team: 'team1'|'team2', index: number, state: 'pending'|'scored'|'missed' }
+    const { key: cKey, court } = resolveCourt(data);
     if (data.team === 'team1' || data.team === 'team2') {
-      const p = matchState.penalties;
+      const p = court.penalties;
 
-      // Si ya finalizó
       if (p.isFinished && data.state !== 'pending') {
         socket.emit('penalty_turn_error', {
+          cancha: cKey,
           message: `La serie de penales ya finalizó. ¡${p.winnerName} es el ganador!`,
           currentTurn: null
         });
         return;
       }
 
-      // Validación de turno al marcar gol o fallo
       if (data.state !== 'pending' && p.currentTurn && data.team !== p.currentTurn) {
-        const turnTeamName = matchState[p.currentTurn].name;
+        const turnTeamName = court[p.currentTurn].name;
         socket.emit('penalty_turn_error', {
+          cancha: cKey,
           message: `No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal (Turno de ${turnTeamName})`,
           currentTurn: p.currentTurn,
           teamName: turnTeamName
@@ -635,8 +733,11 @@ io.on('connection', (socket) => {
         arr[data.index] = data.state;
       }
 
-      const isWon = evaluatePenalties(matchState);
-      io.emit('penalties_updated', matchState.penalties);
+      const isWon = evaluatePenalties(court);
+      io.emit('penalties_updated', {
+        cancha: cKey,
+        penalties: court.penalties
+      });
 
       if (isWon) {
         io.emit('play_sound', { sound: 'whistle_long' });
@@ -646,12 +747,11 @@ io.on('connection', (socket) => {
 
   // Acción rápida de penal (+Gol, +Fallo, Deshacer) con estricto turno alterno
   socket.on('quick_penalty_action', (data) => {
-    // data: { team: 'team1'|'team2', action: 'scored' | 'missed' | 'undo' }
+    const { key: cKey, court } = resolveCourt(data);
     if (data.team === 'team1' || data.team === 'team2') {
-      const p = matchState.penalties;
+      const p = court.penalties;
 
       if (data.action === 'undo') {
-        // Deshacer el último tiro registrado en la serie
         const taken1 = p.team1.filter(s => s !== 'pending').length;
         const taken2 = p.team2.filter(s => s !== 'pending').length;
 
@@ -673,24 +773,27 @@ io.on('connection', (socket) => {
           }
         }
 
-        evaluatePenalties(matchState);
-        io.emit('penalties_updated', matchState.penalties);
+        evaluatePenalties(court);
+        io.emit('penalties_updated', {
+          cancha: cKey,
+          penalties: court.penalties
+        });
         return;
       }
 
-      // Si la serie ya terminó
       if (p.isFinished) {
         socket.emit('penalty_turn_error', {
+          cancha: cKey,
           message: `La serie de penales ya finalizó. ¡${p.winnerName} es el ganador!`,
           currentTurn: null
         });
         return;
       }
 
-      // VALIDACIÓN ESTRICTA DE TURNO
       if (p.currentTurn && data.team !== p.currentTurn) {
-        const turnTeamName = matchState[p.currentTurn].name;
+        const turnTeamName = court[p.currentTurn].name;
         socket.emit('penalty_turn_error', {
+          cancha: cKey,
           message: `No se puede hacer el gol, falta que el otro equipo ejecute el tiro penal (Turno de ${turnTeamName})`,
           currentTurn: p.currentTurn,
           teamName: turnTeamName
@@ -699,7 +802,6 @@ io.on('connection', (socket) => {
       }
 
       const arr = p[data.team];
-      // Encontrar primer tiro pendiente
       let found = false;
       for (let i = 0; i < arr.length; i++) {
         if (arr[i] === 'pending') {
@@ -709,15 +811,17 @@ io.on('connection', (socket) => {
         }
       }
 
-      // Muerte súbita: si no había pendientes
       if (!found && !p.isFinished) {
         p.team1.push('pending');
         p.team2.push('pending');
         p[data.team][arr.length - 1] = data.action;
       }
 
-      const isWon = evaluatePenalties(matchState);
-      io.emit('penalties_updated', matchState.penalties);
+      const isWon = evaluatePenalties(court);
+      io.emit('penalties_updated', {
+        cancha: cKey,
+        penalties: court.penalties
+      });
 
       if (isWon) {
         io.emit('play_sound', { sound: 'whistle_long' });
@@ -731,34 +835,46 @@ io.on('connection', (socket) => {
   });
 
   socket.on('set_first_kicker', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
     if (data && (data.team === 'team1' || data.team === 'team2')) {
-      const taken1 = matchState.penalties.team1.filter(s => s !== 'pending').length;
-      const taken2 = matchState.penalties.team2.filter(s => s !== 'pending').length;
+      const taken1 = court.penalties.team1.filter(s => s !== 'pending').length;
+      const taken2 = court.penalties.team2.filter(s => s !== 'pending').length;
       if (taken1 === 0 && taken2 === 0) {
-        matchState.penalties.firstKicker = data.team;
-        matchState.penalties.currentTurn = data.team;
-        io.emit('penalties_updated', matchState.penalties);
+        court.penalties.firstKicker = data.team;
+        court.penalties.currentTurn = data.team;
+        io.emit('penalties_updated', {
+          cancha: cKey,
+          penalties: court.penalties
+        });
       }
     }
   });
 
   socket.on('toggle_penalties_visibility', (data) => {
-    matchState.penalties.enabled = typeof data.enabled === 'boolean' ? data.enabled : !matchState.penalties.enabled;
-    io.emit('penalties_updated', matchState.penalties);
+    const { key: cKey, court } = resolveCourt(data);
+    court.penalties.enabled = typeof data.enabled === 'boolean' ? data.enabled : !court.penalties.enabled;
+    io.emit('penalties_updated', {
+      cancha: cKey,
+      penalties: court.penalties
+    });
   });
 
-  socket.on('reset_penalties', () => {
-    matchState.penalties.team1 = ['pending', 'pending', 'pending', 'pending', 'pending'];
-    matchState.penalties.team2 = ['pending', 'pending', 'pending', 'pending', 'pending'];
-    matchState.penalties.score1 = 0;
-    matchState.penalties.score2 = 0;
-    matchState.penalties.winner = null;
-    matchState.penalties.winnerName = null;
-    matchState.penalties.isFinished = false;
-    matchState.penalties.firstKicker = 'team1';
-    matchState.penalties.currentTurn = 'team1';
-    matchState.penalties.currentRound = 1;
-    io.emit('penalties_updated', matchState.penalties);
+  socket.on('reset_penalties', (data) => {
+    const { key: cKey, court } = resolveCourt(data);
+    court.penalties.team1 = ['pending', 'pending', 'pending', 'pending', 'pending'];
+    court.penalties.team2 = ['pending', 'pending', 'pending', 'pending', 'pending'];
+    court.penalties.score1 = 0;
+    court.penalties.score2 = 0;
+    court.penalties.winner = null;
+    court.penalties.winnerName = null;
+    court.penalties.isFinished = false;
+    court.penalties.firstKicker = 'team1';
+    court.penalties.currentTurn = 'team1';
+    court.penalties.currentRound = 1;
+    io.emit('penalties_updated', {
+      cancha: cKey,
+      penalties: court.penalties
+    });
   });
 
   // Cambio de Tema / Clima de Cancha (Soleado, Nublado, Atardecer, Noche, Césped, Alto Contraste)
@@ -825,116 +941,95 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Actualizar nombres, colores y logo del torneo
+  // Actualizar nombres, colores y logo del torneo (admite cancha1 y cancha2)
   socket.on('update_teams', (data) => {
     if (data.tournament !== undefined) matchState.tournament = data.tournament;
     if (data.tournamentLogo !== undefined) matchState.tournamentLogo = data.tournamentLogo;
-    if (data.team1) {
-      matchState.team1 = { ...matchState.team1, ...data.team1 };
+
+    if (data.cancha1) {
+      if (data.cancha1.team1) matchState.cancha1.team1 = { ...matchState.cancha1.team1, ...data.cancha1.team1 };
+      if (data.cancha1.team2) matchState.cancha1.team2 = { ...matchState.cancha1.team2, ...data.cancha1.team2 };
     }
-    if (data.team2) {
-      matchState.team2 = { ...matchState.team2, ...data.team2 };
+    if (data.cancha2) {
+      if (data.cancha2.team1) matchState.cancha2.team1 = { ...matchState.cancha2.team1, ...data.cancha2.team1 };
+      if (data.cancha2.team2) matchState.cancha2.team2 = { ...matchState.cancha2.team2, ...data.cancha2.team2 };
     }
-    // Reevaluar ganador si cambiaron los nombres
-    if (matchState.penalties.winner) {
-      matchState.penalties.winnerName = matchState.penalties.winner === 'team1' ? matchState.team1.name : matchState.team2.name;
+
+    if (data.cancha && matchState[data.cancha]) {
+      const court = matchState[data.cancha];
+      if (data.team1) court.team1 = { ...court.team1, ...data.team1 };
+      if (data.team2) court.team2 = { ...court.team2, ...data.team2 };
+    } else if (!data.cancha1 && !data.cancha2) {
+      if (data.team1) matchState.cancha1.team1 = { ...matchState.cancha1.team1, ...data.team1 };
+      if (data.team2) matchState.cancha1.team2 = { ...matchState.cancha1.team2, ...data.team2 };
     }
+
+    evaluatePenalties(matchState.cancha1);
+    evaluatePenalties(matchState.cancha2);
     io.emit('teams_updated', matchState);
   });
 
-  // Reiniciar partido
-  socket.on('reset_match', () => {
-    matchState.team1.score = 0;
-    matchState.team2.score = 0;
-    matchState.timer.seconds = 0;
-    matchState.timer.isRunning = false;
-    matchState.timer.period = '1T';
-    matchState.timer.extraTime = 0;
-    matchState.crowdAmbiance.isPlaying = false;
-    matchState.penalties.enabled = false;
-    matchState.penalties.team1 = ['pending', 'pending', 'pending', 'pending', 'pending'];
-    matchState.penalties.team2 = ['pending', 'pending', 'pending', 'pending', 'pending'];
-    matchState.penalties.score1 = 0;
-    matchState.penalties.score2 = 0;
-    matchState.penalties.winner = null;
-    matchState.penalties.winnerName = null;
-    matchState.penalties.isFinished = false;
-    matchState.penalties.firstKicker = 'team1';
-    matchState.penalties.currentTurn = 'team1';
-    matchState.penalties.currentRound = 1;
+  // Reiniciar partido (por cancha o todo)
+  socket.on('reset_match', (data) => {
+    const resetCourt = (court) => {
+      court.team1.score = 0;
+      court.team2.score = 0;
+      court.timer.seconds = 0;
+      court.timer.isRunning = false;
+      court.timer.period = '1T';
+      court.timer.extraTime = 0;
+      court.penalties.enabled = false;
+      court.penalties.team1 = ['pending', 'pending', 'pending', 'pending', 'pending'];
+      court.penalties.team2 = ['pending', 'pending', 'pending', 'pending', 'pending'];
+      court.penalties.score1 = 0;
+      court.penalties.score2 = 0;
+      court.penalties.winner = null;
+      court.penalties.winnerName = null;
+      court.penalties.isFinished = false;
+      court.penalties.firstKicker = 'team1';
+      court.penalties.currentTurn = 'team1';
+      court.penalties.currentRound = 1;
+    };
+
+    if (data && (data.cancha === 'cancha1' || data.cancha === 'cancha2')) {
+      resetCourt(matchState[data.cancha]);
+    } else {
+      resetCourt(matchState.cancha1);
+      resetCourt(matchState.cancha2);
+      matchState.crowdAmbiance.isPlaying = false;
+    }
+
     io.emit('sync_state', matchState);
-    io.emit('match_reset');
+    io.emit('match_reset', { cancha: data && data.cancha ? data.cancha : 'both' });
     io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
   });
 
-  // FINALIZAR PARTIDO OFICIALMENTE Y GENERAR REPORTES (EXCEL Y PDF)
-  socket.on('finish_match', async () => {
-    // 1. Detener cronómetro y cambiar periodo a Finalizado
-    matchState.timer.isRunning = false;
-    matchState.timer.period = 'Finalizado';
-    if (matchState.crowdAmbiance.isPlaying) {
+  // FINALIZAR PARTIDO OFICIALMENTE Y GENERAR REPORTES (EXCEL Y PDF POR CANCHA)
+  socket.on('finish_match', async (data) => {
+    const { key: cKey, court } = resolveCourt(data);
+
+    court.timer.isRunning = false;
+    court.timer.period = 'Finalizado';
+
+    const anyRunning = matchState.cancha1.timer.isRunning || matchState.cancha2.timer.isRunning;
+    if (!anyRunning && matchState.crowdAmbiance.isPlaying) {
       matchState.crowdAmbiance.isPlaying = false;
       io.emit('crowd_ambiance_updated', matchState.crowdAmbiance);
     }
 
-    // 2. Determinar ganador oficial
-    let winner = null;
-    let winnerName = null;
-    let winnerType = 'regular'; // 'regular' | 'penalties' | 'draw'
-
-    const p = matchState.penalties;
-    if (p && p.enabled && p.winner) {
-      winner = p.winner;
-      winnerName = p.winnerName || matchState[p.winner].name;
-      winnerType = 'penalties';
-    } else if (matchState.team1.score > matchState.team2.score) {
-      winner = 'team1';
-      winnerName = matchState.team1.name;
-      winnerType = 'regular';
-    } else if (matchState.team2.score > matchState.team1.score) {
-      winner = 'team2';
-      winnerName = matchState.team2.name;
-      winnerType = 'regular';
-    } else {
-      winner = 'draw';
-      winnerName = 'Empate';
-      winnerType = 'draw';
-    }
-
     const timestamp = Date.now();
-    const now = new Date();
-    const dateFormatted = now.toLocaleDateString('es-AR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }) + ' ' + now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-
+    const matchRecord = buildCurrentMatchRecord(cKey);
     const sanitize = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 18);
-    const filenameBase = `partido_${timestamp}_${sanitize(matchState.team1.name)}_vs_${sanitize(matchState.team2.name)}`;
+    const filenameBase = `partido_${cKey}_${timestamp}_${sanitize(court.team1.name)}_vs_${sanitize(court.team2.name)}`;
     const xlsxFilename = `${filenameBase}.xlsx`;
     const pdfFilename = `${filenameBase}.pdf`;
 
     const xlsxPath = path.join(reportsDir, xlsxFilename);
     const pdfPath = path.join(reportsDir, pdfFilename);
 
-    const matchRecord = {
-      id: 'match-' + timestamp,
-      timestamp: now.toISOString(),
-      dateFormatted: dateFormatted,
-      tournament: matchState.tournament,
-      tournamentLogo: matchState.tournamentLogo,
-      team1: { ...matchState.team1 },
-      team2: { ...matchState.team2 },
-      timer: { ...matchState.timer },
-      penalties: JSON.parse(JSON.stringify(matchState.penalties)),
-      winner,
-      winnerName,
-      winnerType,
-      files: {
-        xlsx: `/reports/${xlsxFilename}`,
-        pdf: `/reports/${pdfFilename}`
-      }
+    matchRecord.files = {
+      xlsx: `/reports/${xlsxFilename}`,
+      pdf: `/reports/${pdfFilename}`
     };
 
     try {
@@ -953,7 +1048,7 @@ io.on('connection', (socket) => {
       if (history.length > 50) history = history.slice(0, 50);
       fs.writeFileSync(historyFilePath, JSON.stringify(history, null, 2), 'utf8');
 
-      console.log(`[PARTIDO TERMINADO] ${matchState.team1.name} ${matchState.team1.score} - ${matchState.team2.score} ${matchState.team2.name}`);
+      console.log(`[PARTIDO TERMINADO - ${court.name.toUpperCase()}] ${court.team1.name} ${court.team1.score} - ${court.team2.score} ${court.team2.name}`);
       console.log(`✓ Reporte PDF: ${pdfFilename}`);
       console.log(`✓ Planilla Excel: ${xlsxFilename}`);
     } catch (err) {
@@ -961,14 +1056,18 @@ io.on('connection', (socket) => {
     }
 
     io.emit('timer_state', {
-      seconds: matchState.timer.seconds,
-      isRunning: false
+      cancha: cKey,
+      seconds: court.timer.seconds,
+      isRunning: false,
+      cancha1: { seconds: matchState.cancha1.timer.seconds, isRunning: matchState.cancha1.timer.isRunning },
+      cancha2: { seconds: matchState.cancha2.timer.seconds, isRunning: matchState.cancha2.timer.isRunning }
     });
     io.emit('period_updated', {
+      cancha: cKey,
       period: 'Finalizado',
-      seconds: matchState.timer.seconds,
+      seconds: court.timer.seconds,
       isRunning: false,
-      penalties: matchState.penalties
+      penalties: court.penalties
     });
     io.emit('play_sound', { sound: 'whistle_long' });
     io.emit('match_finished', matchRecord);

@@ -19,7 +19,8 @@ function generateMatchExcel(match, filePath) {
     ['MARCADOR DIGITAL DE FÚTBOL EN TIEMPO REAL'],
     [],
     ['INFORMACIÓN GENERAL'],
-    ['Torneo / Competencia:', match.tournament || 'Torneo Oficial'],
+    ['Torneo / Competencia:', match.tournament || 'IES NUEVO HORIZONTE'],
+    ['Cancha / Pista de Juego:', (match.courtName || 'Cancha 1').toUpperCase()],
     ['Fecha y Hora de Finalización:', match.dateFormatted || new Date().toLocaleString('es-AR')],
     ['Estado del Encuentro:', 'FINALIZADO'],
     ['Tiempo de Juego Transcurrido:', `${minutesPlayed} min ${secondsPlayed} seg`],
@@ -111,8 +112,9 @@ function generateMatchPdf(match, filePath) {
       doc.fillColor('#fbbf24').fontSize(17).font('Helvetica-Bold')
          .text('ACTA OFICIAL DE PARTIDO', 58, 52);
 
+      const tournamentAndCourt = `${match.tournament || 'IES NUEVO HORIZONTE'}${match.courtName ? ' • ' + match.courtName.toUpperCase() : ''}`;
       doc.fillColor('#94a3b8').fontSize(11).font('Helvetica')
-         .text((match.tournament || 'TORNEO DE FÚTBOL').toUpperCase(), 58, 76, { width: 280, ellipsis: true });
+         .text(tournamentAndCourt.toUpperCase(), 58, 76, { width: 330, ellipsis: true });
 
       doc.fillColor('#cbd5e1').fontSize(9).font('Helvetica')
          .text(match.dateFormatted || new Date().toLocaleString('es-AR'), 300, 64, { width: 245, align: 'right' });
@@ -178,6 +180,7 @@ function generateMatchPdf(match, filePath) {
       const secondsPlayed = (match.timer ? match.timer.seconds : 0) % 60;
 
       const details = [
+        ['Cancha / Pista de Juego:', (match.courtName || 'Cancha 1').toUpperCase()],
         ['Estado:', 'FINALIZADO (Tiempo Reglamentario cumplido)'],
         ['Tiempo de Juego Transcurrido:', `${minutesPlayed} minutos y ${secondsPlayed} segundos`],
         ['Tiempo Añadido (Extra Time):', `+${(match.timer && match.timer.extraTime) || 0} minutos`],
