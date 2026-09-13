@@ -728,22 +728,29 @@ body {
   100% { transform: scale(1); }
 }
 
-/* SECCIÓN CENTRAL: CRONÓMETRO AL MEDIO ENTRE EQUIPOS */
-.match-center-board {
+/* SECCIÓN DEL CRONÓMETRO: ARRIBA Y EN EL MEDIO DE LOS EQUIPOS */
+.court-clock-section {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0.2rem auto 0.7rem auto;
+  position: relative;
+  z-index: 10;
+}
+
+.match-center-board {
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(8, 14, 28, 0.98));
+  gap: 1.4rem;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(8, 14, 28, 0.98));
   border: 2px solid rgba(255, 255, 255, 0.18);
-  border-radius: 22px;
-  padding: 0.6rem 1.2rem;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(56, 189, 248, 0.08);
+  border-radius: 999px;
+  padding: 0.4rem 2.2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(56, 189, 248, 0.08);
   position: relative;
-  min-width: 140px;
-  flex-shrink: 0;
-  z-index: 5;
 }
 
 .period-badge {
@@ -1806,87 +1813,118 @@ body[data-theme="high-contrast"] .pen-total-number {
 }
 
 /* ==========================================================================
-   MARCADOR PRINCIPAL DE CANCHA (LOCAL - CRONÓMETRO AL MEDIO - VISITA)
+   MARCADOR PRINCIPAL DE CANCHA (LOCAL - SEPARADOR VS - VISITA)
    ========================================================================== */
 .court-scoreboard {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 0.85rem;
+  gap: 1.2rem;
   width: 100%;
   min-height: 0;
 }
 
 /* Modo Dual: Proporciones calibradas para 2 canchas simultáneas */
-.courts-stage-wrapper.mode-dual .court-scoreboard {
-  gap: 0.65rem;
+.courts-stage-wrapper.mode-dual {
+  align-items: stretch;
 }
 
+.courts-stage-wrapper.mode-dual .court-arena-box {
+  height: 100%;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.courts-stage-wrapper.mode-dual .court-scoreboard {
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+/* Fondo ancho y alto uniforme para los equipos (Ambas canchas parejas) */
 .courts-stage-wrapper.mode-dual .court-scoreboard .team-card {
-  padding: 0.75rem 0.95rem;
-  gap: 0.75rem;
-  border-radius: 18px;
+  padding: 1.1rem 1.4rem;
+  gap: 0.9rem;
+  border-radius: 20px;
+  min-height: 140px;
+  height: 100%;
 }
 
 .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
   padding: 6px;
 }
 
+.courts-stage-wrapper.mode-dual .court-scoreboard .team-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: visible;
+}
+
 .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
-  font-size: clamp(1.1rem, 1.4vw, 1.5rem);
-  max-width: 175px;
+  font-size: clamp(1.15rem, 1.5vw, 1.7rem);
+  line-height: 1.15;
+  word-break: break-word;
+  max-width: none;
 }
 
 .courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
-  min-width: 80px;
-  height: 80px;
+  min-width: 85px;
+  height: 85px;
 }
 
 .courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
-  font-size: clamp(3.8rem, 4.8vw, 5rem);
+  font-size: clamp(4.2rem, 5.5vw, 5.8rem);
   line-height: 1;
 }
 
+/* Cronómetro superior central en modo dual */
+.courts-stage-wrapper.mode-dual .court-clock-section {
+  margin: 0.15rem auto 0.6rem auto;
+}
+
 .courts-stage-wrapper.mode-dual .match-center-board {
-  min-width: 118px;
-  padding: 0.5rem 0.85rem;
-  gap: 0.28rem;
-  border-radius: 18px;
+  padding: 0.35rem 1.6rem;
+  gap: 1.2rem;
 }
 
 .courts-stage-wrapper.mode-dual .match-center-board .period-badge {
-  font-size: 0.92rem;
-  padding: 0.15rem 0.7rem;
+  font-size: 0.95rem;
+  padding: 0.18rem 0.8rem;
 }
 
 .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
-  font-size: clamp(2.3rem, 3.2vw, 3.4rem);
-  letter-spacing: 1.5px;
+  font-size: clamp(2.4rem, 3.4vw, 3.5rem);
+  letter-spacing: 2px;
 }
 
 .courts-stage-wrapper.mode-dual .match-center-board .extra-time-badge {
-  font-size: 1.25rem;
-  padding: 0.08rem 0.5rem;
+  font-size: 1.3rem;
+  padding: 0.1rem 0.55rem;
 }
 
 .courts-stage-wrapper.mode-dual .match-center-board .timer-status {
-  font-size: 0.65rem;
-  padding: 0.15rem 0.55rem;
+  font-size: 0.68rem;
+  padding: 0.18rem 0.6rem;
 }
 
 /* ==========================================================================
-   MODO CANCHA INDIVIDUAL (PANTALLA COMPLETA "COMO ANTES" PERO CON RELOJ AL MEDIO)
+   MODO CANCHA INDIVIDUAL (PANTALLA COMPLETA GIGANTE "COMO ANTES")
    ========================================================================== */
 .courts-stage-wrapper:not(.mode-dual) {
   grid-template-columns: 1fr;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-arena-box {
-  padding: 1.6rem 2.4rem;
+  padding: 1.8rem 2.8rem;
+  min-height: 380px;
   border-radius: 28px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
 }
@@ -1901,68 +1939,78 @@ body[data-theme="high-contrast"] .pen-total-number {
   padding: 0.45rem 1.35rem;
 }
 
+.courts-stage-wrapper:not(.mode-dual) .court-clock-section {
+  margin: 0.2rem auto 1.2rem auto;
+}
+
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard {
-  gap: 1.5rem;
+  gap: 2rem;
+  align-items: stretch;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-card {
-  padding: 1.6rem 2.2rem;
-  gap: 1.6rem;
-  border-radius: 26px;
+  padding: 2rem 2.6rem;
+  gap: 2rem;
+  border-radius: 28px;
+  min-height: 220px;
+  height: 100%;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .logo-wrapper {
-  width: 115px;
-  height: 115px;
-  min-width: 115px;
-  padding: 10px;
+  width: 125px;
+  height: 125px;
+  min-width: 125px;
+  padding: 12px;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-info {
+  justify-content: center;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-name {
-  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+  font-size: clamp(2rem, 3vw, 3.2rem);
   max-width: none;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-tag {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   letter-spacing: 3px;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-box {
-  min-width: 125px;
-  height: 125px;
+  min-width: 140px;
+  height: 140px;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-number {
-  font-size: clamp(6.8rem, 8.8vw, 9.2rem);
+  font-size: clamp(7.5rem, 10vw, 10.5rem);
   line-height: 1;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .match-center-board {
-  min-width: 200px;
-  padding: 1.1rem 2rem;
-  gap: 0.65rem;
-  border-radius: 26px;
+  padding: 0.6rem 3rem;
+  gap: 2.2rem;
+  border-radius: 999px;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .match-center-board .period-badge {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   padding: 0.35rem 1.4rem;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .match-center-board .timer-display {
-  font-size: clamp(4.2rem, 6vw, 6.2rem);
+  font-size: clamp(4.4rem, 6vw, 6.5rem);
   letter-spacing: 3px;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .match-center-board .extra-time-badge {
-  font-size: 1.8rem;
-  padding: 0.2rem 0.9rem;
+  font-size: 2rem;
+  padding: 0.2rem 1rem;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .match-center-board .timer-status {
-  font-size: 0.9rem;
-  padding: 0.3rem 1rem;
+  font-size: 0.95rem;
+  padding: 0.35rem 1.2rem;
 }
 
 /* ==========================================================================
@@ -2206,32 +2254,36 @@ body[data-theme="high-contrast"] .pen-total-number {
     font-size: clamp(2.6rem, 7.5vw, 3.8rem);
   }
 
-  /* Cronómetro Central */
+  /* Cronómetro Superior Central Horizontal */
+  .court-clock-section {
+    margin: 0.1rem auto 0.4rem auto;
+  }
+
   .match-center-board,
   .courts-stage-wrapper.mode-dual .match-center-board {
-    min-width: 85px;
-    padding: 0.4rem 0.6rem;
-    border-radius: 14px;
-    gap: 0.2rem;
+    padding: 0.25rem 1rem;
+    border-radius: 999px;
+    gap: 0.8rem;
+    min-width: auto;
   }
 
   .match-center-board .period-badge,
   .courts-stage-wrapper.mode-dual .match-center-board .period-badge {
-    font-size: 0.75rem;
-    padding: 0.12rem 0.5rem;
+    font-size: 0.78rem;
+    padding: 0.12rem 0.55rem;
     letter-spacing: 1px;
   }
 
   .match-center-board .timer-display,
   .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-    letter-spacing: 1px;
+    font-size: clamp(1.8rem, 5.2vw, 2.4rem);
+    letter-spacing: 1.5px;
   }
 
   .match-center-board .extra-time-badge,
   .courts-stage-wrapper.mode-dual .match-center-board .extra-time-badge {
-    font-size: 1rem;
-    padding: 0.06rem 0.35rem;
+    font-size: 1.05rem;
+    padding: 0.06rem 0.4rem;
   }
 
   .match-center-board .timer-status,
@@ -2273,6 +2325,12 @@ body[data-theme="high-contrast"] .pen-total-number {
     letter-spacing: 1px;
   }
 
+  .court-scoreboard .team-card,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-card {
+    padding: 0.5rem 0.5rem;
+    min-height: 78px;
+  }
+
   .court-scoreboard .logo-wrapper,
   .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
     width: 36px;
@@ -2298,10 +2356,15 @@ body[data-theme="high-contrast"] .pen-total-number {
     font-size: 2.3rem;
   }
 
+  .court-clock-section {
+    margin: 0.1rem auto 0.35rem auto;
+  }
+
   .match-center-board,
   .courts-stage-wrapper.mode-dual .match-center-board {
-    min-width: 72px;
-    padding: 0.3rem 0.45rem;
+    padding: 0.2rem 0.75rem;
+    gap: 0.55rem;
+    min-width: auto;
   }
 
   .match-center-board .timer-display,
@@ -2323,11 +2386,16 @@ body[data-theme="high-contrast"] .pen-total-number {
 
   .court-arena-box {
     padding: 0.65rem 1.1rem;
+    min-height: 210px;
   }
 
   .court-top-strip {
-    margin-bottom: 0.4rem;
-    padding-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .court-clock-section {
+    margin: 0.1rem auto 0.45rem auto;
   }
 
   .court-scoreboard .score-box,
@@ -2347,6 +2415,12 @@ body[data-theme="high-contrast"] .pen-total-number {
     min-width: 50px;
   }
 
+  .court-scoreboard .team-card,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-card {
+    min-height: 115px;
+    padding: 0.85rem 1.1rem;
+  }
+
   .court-scoreboard .team-name,
   .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
     font-size: 1.25rem;
@@ -2354,7 +2428,8 @@ body[data-theme="high-contrast"] .pen-total-number {
 
   .match-center-board,
   .courts-stage-wrapper.mode-dual .match-center-board {
-    padding: 0.4rem 0.8rem;
+    padding: 0.3rem 1.4rem;
+    gap: 1rem;
   }
 
   .match-center-board .timer-display,
