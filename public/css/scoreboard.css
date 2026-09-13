@@ -728,20 +728,22 @@ body {
   100% { transform: scale(1); }
 }
 
-/* SECCIÓN CENTRAL: RELOJ Y TIEMPO EXTRA */
-/* SECCIÓN DEL CRONÓMETRO: EN LA PARTE SUPERIOR */
+/* SECCIÓN CENTRAL: CRONÓMETRO AL MEDIO ENTRE EQUIPOS */
 .match-center-board {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.8rem;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(8, 14, 28, 0.98));
+  gap: 0.35rem;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(8, 14, 28, 0.98));
   border: 2px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  padding: 0.5rem 2.8rem;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(0, 210, 255, 0.08);
+  border-radius: 22px;
+  padding: 0.6rem 1.2rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(56, 189, 248, 0.08);
   position: relative;
+  min-width: 140px;
+  flex-shrink: 0;
+  z-index: 5;
 }
 
 .period-badge {
@@ -1720,13 +1722,13 @@ body[data-theme="high-contrast"] .pen-total-number {
   border-color: rgba(255, 255, 255, 0.22);
 }
 
-/* Tira Superior de Cada Cancha (Identidad + Cronómetro Compacto LED) */
+/* Tira Superior de Cada Cancha (Identidad + Etiqueta En Vivo) */
 .court-top-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.6rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1772,117 +1774,247 @@ body[data-theme="high-contrast"] .pen-total-number {
   box-shadow: 0 0 8px #f59e0b;
 }
 
-/* Cronómetro de Cancha */
-.court-clock-pill {
+.court-live-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 0.25rem 0.8rem;
-}
-
-.court-clock-pill .period-badge {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.25rem;
-  color: #fbbf24;
-  letter-spacing: 1px;
-}
-
-.court-clock-pill .timer-display {
-  font-family: 'Teko', sans-serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #38bdf8;
+  gap: 0.45rem;
+  background: rgba(225, 29, 72, 0.15);
+  border: 1px solid rgba(225, 29, 72, 0.5);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
   letter-spacing: 1.5px;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+  color: #f43f5e;
 }
 
-.court-clock-pill .timer-display.timer-paused {
-  color: #94a3b8;
-  text-shadow: none;
+.court-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulseLive 1.5s infinite;
 }
 
-.court-clock-pill .extra-time-badge {
-  background: rgba(34, 197, 94, 0.2);
-  border: 1px solid rgba(34, 197, 94, 0.6);
-  color: #4ade80;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 0.15rem 0.45rem;
-  border-radius: 6px;
+.court-live-dot.dot-c1 {
+  background: #00d2ff;
+  box-shadow: 0 0 8px #00d2ff;
 }
 
-.court-clock-pill .timer-status {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #94a3b8;
+.court-live-dot.dot-c2 {
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
 }
 
-/* Marcador Principal de Cancha (Ajustado para Dual o Single) */
+/* ==========================================================================
+   MARCADOR PRINCIPAL DE CANCHA (LOCAL - CRONÓMETRO AL MEDIO - VISITA)
+   ========================================================================== */
 .court-scoreboard {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  min-height: 140px;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 0;
 }
 
-.courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
-  min-width: 90px;
-  height: 90px;
-}
-
-.courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
-  font-size: 5rem;
-  line-height: 90px;
+/* Modo Dual: Proporciones calibradas para 2 canchas simultáneas */
+.courts-stage-wrapper.mode-dual .court-scoreboard {
+  gap: 0.65rem;
 }
 
 .courts-stage-wrapper.mode-dual .court-scoreboard .team-card {
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 0.95rem;
   gap: 0.75rem;
+  border-radius: 18px;
 }
 
-.courts-stage-wrapper.mode-dual .court-scoreboard .team-logo {
+.courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
   width: 60px;
   height: 60px;
+  min-width: 60px;
+  padding: 6px;
 }
 
 .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
-  font-size: 1.35rem;
-  max-width: 170px;
+  font-size: clamp(1.1rem, 1.4vw, 1.5rem);
+  max-width: 175px;
 }
 
-/* Modo Single Court: Tamaños Gigantescos */
-.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-box {
-  min-width: 130px;
-  height: 130px;
+.courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
+  min-width: 80px;
+  height: 80px;
 }
 
-.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-number {
-  font-size: 7.5rem;
-  line-height: 130px;
+.courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
+  font-size: clamp(3.8rem, 4.8vw, 5rem);
+  line-height: 1;
+}
+
+.courts-stage-wrapper.mode-dual .match-center-board {
+  min-width: 118px;
+  padding: 0.5rem 0.85rem;
+  gap: 0.28rem;
+  border-radius: 18px;
+}
+
+.courts-stage-wrapper.mode-dual .match-center-board .period-badge {
+  font-size: 0.92rem;
+  padding: 0.15rem 0.7rem;
+}
+
+.courts-stage-wrapper.mode-dual .match-center-board .timer-display {
+  font-size: clamp(2.3rem, 3.2vw, 3.4rem);
+  letter-spacing: 1.5px;
+}
+
+.courts-stage-wrapper.mode-dual .match-center-board .extra-time-badge {
+  font-size: 1.25rem;
+  padding: 0.08rem 0.5rem;
+}
+
+.courts-stage-wrapper.mode-dual .match-center-board .timer-status {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.55rem;
+}
+
+/* ==========================================================================
+   MODO CANCHA INDIVIDUAL (PANTALLA COMPLETA "COMO ANTES" PERO CON RELOJ AL MEDIO)
+   ========================================================================== */
+.courts-stage-wrapper:not(.mode-dual) {
+  grid-template-columns: 1fr;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-arena-box {
+  padding: 1.6rem 2.4rem;
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-top-strip {
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-identity-pill {
+  font-size: 1.05rem;
+  padding: 0.45rem 1.35rem;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard {
+  gap: 1.5rem;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-card {
-  padding: 1.4rem 1.8rem;
-  gap: 1.4rem;
+  padding: 1.6rem 2.2rem;
+  gap: 1.6rem;
+  border-radius: 26px;
 }
 
-.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-logo {
-  width: 95px;
-  height: 95px;
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .logo-wrapper {
+  width: 115px;
+  height: 115px;
+  min-width: 115px;
+  padding: 10px;
 }
 
 .courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-name {
-  font-size: 2.1rem;
+  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+  max-width: none;
 }
 
-/* Insignia de Cancha en Celebración de Gol */
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .team-tag {
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-box {
+  min-width: 125px;
+  height: 125px;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .court-scoreboard .score-number {
+  font-size: clamp(6.8rem, 8.8vw, 9.2rem);
+  line-height: 1;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .match-center-board {
+  min-width: 200px;
+  padding: 1.1rem 2rem;
+  gap: 0.65rem;
+  border-radius: 26px;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .match-center-board .period-badge {
+  font-size: 1.35rem;
+  padding: 0.35rem 1.4rem;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .match-center-board .timer-display {
+  font-size: clamp(4.2rem, 6vw, 6.2rem);
+  letter-spacing: 3px;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .match-center-board .extra-time-badge {
+  font-size: 1.8rem;
+  padding: 0.2rem 0.9rem;
+}
+
+.courts-stage-wrapper:not(.mode-dual) .match-center-board .timer-status {
+  font-size: 0.9rem;
+  padding: 0.3rem 1rem;
+}
+
+/* ==========================================================================
+   PENALES INTEGRADOS DENTRO DE CADA CANCHA
+   ========================================================================== */
+.court-pen-board {
+  margin-top: 0.8rem;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  gap: 0.5rem;
+  border-radius: 14px;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-team-identity {
+  min-width: 120px;
+  max-width: 150px;
+  gap: 0.5rem;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-board-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-board-name {
+  font-size: 0.9rem;
+  max-width: 105px;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-shots-strip {
+  gap: 0.4rem;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-shot-card {
+  width: 30px;
+  height: 30px;
+  font-size: 1.05rem;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-total-box {
+  min-width: 48px;
+  padding: 0.15rem 0.4rem;
+}
+
+.courts-stage-wrapper.mode-dual .court-pen-board .pen-total-number {
+  font-size: 1.6rem;
+}
+
+/* Insignia de Cancha en Celebración de Gol y Final */
 .goal-court-badge {
   display: inline-block;
   background: rgba(0, 0, 0, 0.7);
@@ -1909,6 +2041,326 @@ body[data-theme="high-contrast"] .pen-total-number {
   padding: 0.25rem 0.8rem;
   border-radius: 999px;
   margin-bottom: 0.6rem;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD TOTAL (TABLETS, CELULARES, LAPTOPS, PANTALLAS CHICAS)
+   ========================================================================== */
+
+/* Breakpoint 1: Tablets y Pantallas Medianas (<= 1024px) */
+@media (max-width: 1024px) {
+  body {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .scoreboard-wrapper {
+    height: auto;
+    min-height: 100vh;
+    padding: 1rem 1.2rem 2rem 1.2rem;
+    gap: 1rem;
+  }
+
+  /* En modo dual, apilar verticalmente las 2 canchas para que cada una tenga 100% de ancho */
+  .courts-stage-wrapper.mode-dual {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+  }
+
+  .court-arena-box {
+    min-height: auto;
+    padding: 1rem 1.2rem;
+  }
+
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
+    font-size: clamp(4.5rem, 7vw, 6rem);
+  }
+
+  .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
+    width: 75px;
+    height: 75px;
+    min-width: 75px;
+  }
+
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    max-width: 220px;
+  }
+
+  .courts-stage-wrapper.mode-dual .match-center-board {
+    min-width: 140px;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
+    font-size: clamp(2.8rem, 4vw, 3.8rem);
+  }
+}
+
+/* Breakpoint 2: Smartphones y Dispositivos Móviles (<= 768px) */
+@media (max-width: 768px) {
+  .scoreboard-wrapper {
+    padding: 0.8rem 0.8rem 1.5rem 0.8rem;
+    gap: 0.8rem;
+  }
+
+  /* Barra superior flexible */
+  .top-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+
+  .tournament-badge {
+    order: 1;
+    font-size: 0.88rem;
+    padding: 0.35rem 1rem 0.35rem 0.65rem;
+    letter-spacing: 1.5px;
+  }
+
+  .tournament-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .view-mode-selector {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding: 0.2rem;
+  }
+
+  .btn-view-mode {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  .broadcast-live {
+    order: 2;
+    font-size: 0.72rem;
+    padding: 0.25rem 0.7rem;
+  }
+
+  /* Cancha individual y tarjetas de equipo */
+  .court-arena-box {
+    padding: 0.75rem 0.75rem;
+    border-radius: 16px;
+  }
+
+  .court-top-strip {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .court-identity-pill {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .court-live-tag {
+    font-size: 0.68rem;
+    padding: 0.18rem 0.6rem;
+  }
+
+  .court-scoreboard {
+    gap: 0.4rem;
+  }
+
+  .court-scoreboard .team-card,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-card {
+    padding: 0.55rem 0.6rem;
+    gap: 0.45rem;
+    border-radius: 14px;
+  }
+
+  .court-scoreboard .logo-wrapper,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 4px;
+  }
+
+  .court-scoreboard .team-name,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
+    font-size: clamp(0.95rem, 2.9vw, 1.25rem);
+    max-width: 120px;
+    line-height: 1.1;
+  }
+
+  .court-scoreboard .team-tag {
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .court-scoreboard .score-box,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
+    min-width: 48px;
+    height: 52px;
+  }
+
+  .court-scoreboard .score-number,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
+    font-size: clamp(2.6rem, 7.5vw, 3.8rem);
+  }
+
+  /* Cronómetro Central */
+  .match-center-board,
+  .courts-stage-wrapper.mode-dual .match-center-board {
+    min-width: 85px;
+    padding: 0.4rem 0.6rem;
+    border-radius: 14px;
+    gap: 0.2rem;
+  }
+
+  .match-center-board .period-badge,
+  .courts-stage-wrapper.mode-dual .match-center-board .period-badge {
+    font-size: 0.75rem;
+    padding: 0.12rem 0.5rem;
+    letter-spacing: 1px;
+  }
+
+  .match-center-board .timer-display,
+  .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    letter-spacing: 1px;
+  }
+
+  .match-center-board .extra-time-badge,
+  .courts-stage-wrapper.mode-dual .match-center-board .extra-time-badge {
+    font-size: 1rem;
+    padding: 0.06rem 0.35rem;
+  }
+
+  .match-center-board .timer-status,
+  .courts-stage-wrapper.mode-dual .match-center-board .timer-status {
+    font-size: 0.58rem;
+    padding: 0.12rem 0.45rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Penales en celular */
+  .pen-dot {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+  .penalty-dots-container {
+    padding: 4px 6px;
+    gap: 3px;
+  }
+  .penalty-dots-row {
+    gap: 4px;
+  }
+  .pen-shot-card,
+  .courts-stage-wrapper.mode-dual .court-pen-board .pen-shot-card {
+    width: 26px;
+    height: 26px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Breakpoint 3: Pantallas Ultra Pequeñas / Celular Vertical Estrecho (<= 480px) */
+@media (max-width: 480px) {
+  .scoreboard-wrapper {
+    padding: 0.5rem 0.5rem 1.2rem 0.5rem;
+  }
+
+  .tournament-badge {
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+  }
+
+  .court-scoreboard .logo-wrapper,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 2px;
+  }
+
+  .court-scoreboard .team-name,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
+    font-size: 0.88rem;
+    max-width: 90px;
+  }
+
+  .court-scoreboard .score-box,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
+    min-width: 38px;
+    height: 44px;
+  }
+
+  .court-scoreboard .score-number,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
+    font-size: 2.3rem;
+  }
+
+  .match-center-board,
+  .courts-stage-wrapper.mode-dual .match-center-board {
+    min-width: 72px;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .match-center-board .timer-display,
+  .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
+    font-size: 1.55rem;
+  }
+}
+
+/* Breakpoint 4: Laptops con Poca Altura Vertical (<= 750px de altura y pantalla ancha) */
+@media (max-height: 750px) and (min-width: 1025px) {
+  .scoreboard-wrapper {
+    padding: 0.6rem 2rem 1rem 2rem;
+    gap: 0.6rem;
+  }
+
+  .top-bar {
+    margin-bottom: 0.2rem;
+  }
+
+  .court-arena-box {
+    padding: 0.65rem 1.1rem;
+  }
+
+  .court-top-strip {
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .court-scoreboard .score-box,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-box {
+    height: 75px;
+  }
+
+  .court-scoreboard .score-number,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .score-number {
+    font-size: 4rem;
+  }
+
+  .court-scoreboard .logo-wrapper,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .logo-wrapper {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+  }
+
+  .court-scoreboard .team-name,
+  .courts-stage-wrapper.mode-dual .court-scoreboard .team-name {
+    font-size: 1.25rem;
+  }
+
+  .match-center-board,
+  .courts-stage-wrapper.mode-dual .match-center-board {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .match-center-board .timer-display,
+  .courts-stage-wrapper.mode-dual .match-center-board .timer-display {
+    font-size: 2.5rem;
+  }
 }
 
 
